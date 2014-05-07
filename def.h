@@ -9,6 +9,14 @@
 #ifndef _def_h
 #define _def_h
 
+typedef union{
+  int intval;
+  double realval;
+  char *stringval;
+  enum {FALSE, TRUE} bval;
+} Value;
+
+
 #define CHAR	256
 #define INT		257
 #define REAL	258
@@ -26,6 +34,8 @@
 #define FUNC	267
 #define TOINT	268
 #define TOREAL	269
+#define BEGIN	301
+#define END		302
 
 #define REL_OP	270
 #define EQ		271
@@ -65,6 +75,12 @@
 
 #define WRITE 	298
 #define WR 		299
+
+#define ASSIGN	300
+//302
+
+#define ERROR	303
+
 
 //#define TRUE	
 //#define FALSE
