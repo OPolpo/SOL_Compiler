@@ -1,39 +1,28 @@
 %{
 #include <stdlib.h>
 #include "def.h"
-#include ""
 value lexval;
 %}
-<<<<<<< HEAD
 %option	noyywrap
 
-delimiter [ \t\n]
-spacing {delimiter}+
-letter [A­Za­z]
-digit [0­9]
-id {letter}({letter}|{digit})*
-num {digit}+
-=======
 
-spacing {[ \t\n]}+
-letter [A­-Za-­z]
-digit [0­-9]
-id {letter}({letter}|{digit})*
-num {digit}+
-sugar [(){}:,;]
-charconst \'.\'
-intconst {num}
-realconst {num}?.{num}
+spacing		([ \t\n])+
+letter		[a-­zA-Z]
+digit		[0­]
+id			{letter}({letter}|{digit})*
+num 		{digit}+
+sugar 		[(){}:,;]
+charconst 	\'.\'
+intconst 	{num}
+realconst 	{num}?.{num}
 stringconst \"([^\"])*\"
-boolconst (true|false)
->>>>>>> f5f63040d7d93a914ba2024b61e331f6def53458
+boolconst 	(true|false)
 
 
 %%
 
 
 {spacing}		;
-
 char			{return (CHAR);}
 int				{return (INT);}
 real			{return (REAL);}

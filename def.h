@@ -82,11 +82,11 @@ typedef union{
 #define ERROR	303
 
 
-#define INT_CONST       300
-#define REAL_CONST      301
-#define CHAR_CONST      302
-#define STRING_CONST    303
-#define BOOL_CONST      304
+#define INT_CONST       304
+#define REAL_CONST      305
+#define CHAR_CONST      306
+#define STRING_CONST    307
+#define BOOL_CONST      308
 
 
 //#define TRUE	
