@@ -4,6 +4,7 @@
 #include ""
 value lexval;
 %}
+<<<<<<< HEAD
 %option	noyywrap
 
 delimiter [ \t\n]
@@ -12,6 +13,20 @@ letter [A­Za­z]
 digit [0­9]
 id {letter}({letter}|{digit})*
 num {digit}+
+=======
+
+spacing {[ \t\n]}+
+letter [A­-Za-­z]
+digit [0­-9]
+id {letter}({letter}|{digit})*
+num {digit}+
+sugar [(){}:,;]
+charconst \'.\'
+intconst {num}
+realconst {num}?.{num}
+stringconst \"([^\"])*\"
+boolconst (true|false)
+>>>>>>> f5f63040d7d93a914ba2024b61e331f6def53458
 
 
 %%
