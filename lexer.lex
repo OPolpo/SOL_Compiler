@@ -2,12 +2,20 @@
 #include <stdlib.h>
 #include "def.h" /* IF, THEN, ELSE, ID, NUM, RELOP, LT, LE, EQ, NE, GT, GE */ int lexval;
 %}
-delimiter [ \t\n]
-spacing {delimiter}+
-letter [A­Za­z]
-digit [0­9]
+
+spacing {[ \t\n]}+
+letter [A­-Za-­z]
+digit [0­-9]
 id {letter}({letter}|{digit})*
 num {digit}+
+sugar [(){}:,;]
+charconst \'.\'
+intconst {num}
+realconst {num}?.{num}
+stringconst \"([^\"])*\"
+boolconst (true|false)
+
+
 %%
 {spacing} ;
 if {return(IF);}
