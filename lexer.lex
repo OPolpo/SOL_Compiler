@@ -1,22 +1,22 @@
 %{
 #include <stdlib.h>
 #include "def.h"
-value lexval;
+Value lexval;
 %}
 %option	noyywrap
 
 
 spacing		([ \t\n])+
 letter		[a-­zA-Z]
-digit		[0­]
+digit		[0-9]
 id			{letter}({letter}|{digit})*
 num 		{digit}+
 sugar 		[(){}:,;]
 charconst 	\'.\'
 intconst 	{num}
-realconst 	{num}?.{num}
+realconst	{num}?.{num}
+boolconst	(true|false)
 stringconst \"([^\"])*\"
-boolconst 	(true|false)
 
 
 %%
@@ -37,20 +37,23 @@ const			{return (CONST);}
 func			{return (FUNC);}
 toint			{return (TOINT);}
 toreal			{return (TOREAL);}
-"<"				{lexval = LT; return(REL_OP);}
-"<="			{lexval = LE; return(REL_OP);}
-"=="			{lexval = EQ; return(REL_OP);}
-"<>"			{lexval = NE; return(REL_OP);}
-">"				{lexval = GT; return(REL_OP);}
-">="			{lexval = GE; return(REL_OP);}
-in				{lexval = IN; return(REL_OP);}
+begin			{return (F_BEGIN);}
+end				{return (F_END);}
+"<"				{lexval.intval = LT; return(REL_OP);}
+"<="			{lexval.intval = LE; return(REL_OP);}
+"=="			{lexval.intval = EQ; return(REL_OP);}
+"<>"			{lexval.intval = NE; return(REL_OP);}
+">"				{lexval.intval = GT; return(REL_OP);}
+">="			{lexval.intval = GE; return(REL_OP);}
+in				{lexval.intval = IN; return(REL_OP);}
 "+"				{return(yytext[0]);}
 "-"				{return(yytext[0]);}
 "*"				{return(yytext[0]);}
 "/"				{return(yytext[0]);}
-and				{lexval = AND; return(LOG_OP);}
-or				{lexval = OR; return(LOG_OP);}
-not				{lexval = NOT; return(LOG_OP);}
+"="				{return (ASSIGN);}
+and				{lexval.intval = AND; return(LOG_OP);}
+or				{lexval.intval = OR; return(LOG_OP);}
+not				{lexval.intval = NOT; return(LOG_OP);}
 if				{return (IF);}
 then			{return (THEN);}
 else			{return (ELSE);}
@@ -63,7 +66,7 @@ for				{return (FOR);}
 to				{return (TO);}
 endfor			{return (ENDFOR);}
 foreach			{return (FOREACH);}
-endforeach		{return (ENDFOREA);}
+endforeach		{return (ENDFOREACH);}
 return			{return (RETURN);}
 read			{return (READ);}
 rd				{return (RD);}
@@ -71,16 +74,18 @@ write			{return (WRITE);}
 wr				{return (WR);}
 
 
-{id}			{lexval.stringval = store_id(yytext); return(ID);}
-{intconst}		{lexval.intval = atoi(yytext); return(INT_CONST);}
-{realconst}		{lexval = atof(yytext); return(REAL_CONST);}
-{charconst}		{lexval = yytext[1]; return(CHAR_CONST);}
-{stringconst}	{lexval.stringval = store_str(yytext); return(STRCONST);}
+
 {boolconst}		{
 					lexval.boolval = (yytext[0] == 'f' ? FALSE : TRUE);
-					return(BOOLCONST);
+					return(BOOL_CONST);
 				}
+{intconst}		{lexval.intval = atoi(yytext); return(INT_CONST);}
+{realconst}		{lexval.realval = atof(yytext); return(REAL_CONST);}
+{charconst}		{lexval.intval = yytext[1]; return(CHAR_CONST);}
+{stringconst}	{lexval.stringval = store_str(yytext); return(STRING_CONST);}
+{id}			{lexval.stringval = store_id(yytext); return(ID);}
 
+.				{return (ERROR);}
 
 %%
 
@@ -90,9 +95,7 @@ char *newstring(char *s) {
  	strcpy(p, s);
  	return(p);
 }
-
-int store_id(){
-	int line;
-	//if((line = lookup(yytext)) == 0) line = insert(yytext);
-  	return(line);
+main()
+{	
+ 	printf("%d\n", yylex());
 }

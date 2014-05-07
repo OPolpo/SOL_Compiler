@@ -11,9 +11,9 @@
 
 typedef union{
   int intval;
-  double realval;
+  float realval;
   char *stringval;
-  enum {FALSE, TRUE} bval;
+  enum {FALSE, TRUE} boolval;
 } Value;
 
 
@@ -34,8 +34,8 @@ typedef union{
 #define FUNC	267
 #define TOINT	268
 #define TOREAL	269
-#define BEGIN	301
-#define END		302
+#define F_BEGIN	301
+#define F_END	302
 
 #define REL_OP	270
 #define EQ		271
@@ -87,9 +87,19 @@ typedef union{
 #define CHAR_CONST      306
 #define STRING_CONST    307
 #define BOOL_CONST      308
+#define ID				309
 
 
-//#define TRUE	
-//#define FALSE
+char* store_id(char* string){
+	int line;
+	//if((line = lookup(yytext)) == 0) line = insert(yytext);
+  	return "ciao";
+}
+
+char* store_str(char* string){
+	int line;
+	//if((line = lookup(yytext)) == 0) line = insert(yytext);
+  	return NULL;
+}
 
 #endif
