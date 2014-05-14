@@ -10,6 +10,11 @@ Pnode root = NULL;
 
 %token DEF INTEGER STRING BOOLEAN ID INTCONST STRCONST BOOLCONST ASSIGN
 %token ERROR
+%left AND OR
+%nonassoc EQ NE '>' GE '<' LE IN
+%left '+' '-'
+%left '*' '/'
+%right '-' NOT 
 
 %%
 
