@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include "def.h"
 Value lexval;
+double row_counter = 1;
 %}
 %option	noyywrap
 
 
-spacing		([ \t\n])+
+spacing		([ \t])+
+eol			\n
 letter		[a-­zA-Z]
 digit		[0-9]
 id			{letter}({letter}|{digit})*
@@ -23,6 +25,8 @@ stringconst \"([^\"])*\"
 
 
 {spacing}		;
+{eol}			row_counter++;
+
 char			{return (CHAR);}
 int				{return (INT);}
 real			{return (REAL);}
@@ -95,7 +99,8 @@ char *newstring(char *s) {
  	strcpy(p, s);
  	return(p);
 }
-main()
+int main()
 {	
- 	printf("%d\n", yylex());
+ 	printf("%.0f:\t%d\n", row_counter, yylex());
+ 	return 0;
 }
