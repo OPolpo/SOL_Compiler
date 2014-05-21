@@ -1,8 +1,10 @@
 %{
 #include <stdlib.h>
-#include "def.h"
+#include "def_y.h"
+#include "parser.h"
+
 Value lexval;
-double row_counter = 1;
+unsigned int line = 1;
 %}
 %option	noyywrap
 
@@ -25,8 +27,8 @@ stringconst \"([^\"])*\"
 
 
 {spacing}		;
-{eol}			row_counter++;
-
+{eol}			line++;
+{sugar}			{return(yytext[0]);}
 char			{return (CHAR);}
 int				{return (INT);}
 real			{return (REAL);}
@@ -43,21 +45,21 @@ toint			{return (TOINT);}
 toreal			{return (TOREAL);}
 begin			{return (F_BEGIN);}
 end				{return (F_END);}
-"<"				{lexval.intval = LT; return(REL_OP);}
-"<="			{lexval.intval = LE; return(REL_OP);}
-"=="			{lexval.intval = EQ; return(REL_OP);}
-"<>"			{lexval.intval = NE; return(REL_OP);}
-">"				{lexval.intval = GT; return(REL_OP);}
-">="			{lexval.intval = GE; return(REL_OP);}
-in				{lexval.intval = IN; return(REL_OP);}
+"<"				{lexval.ival = '<'; return(REL_OP);}
+"<="			{lexval.ival = LE; return(REL_OP);}
+"=="			{lexval.ival = EQ; return(REL_OP);}
+"<>"			{lexval.ival = NE; return(REL_OP);}
+">"				{lexval.ival = '>'; return(REL_OP);}
+">="			{lexval.ival = GE; return(REL_OP);}
+in				{lexval.ival = IN; return(REL_OP);}
 "+"				{return(yytext[0]);}
 "-"				{return(yytext[0]);}
 "*"				{return(yytext[0]);}
 "/"				{return(yytext[0]);}
-"="				{return (ASSIGN);}
-and				{lexval.intval = AND; return(LOG_OP);}
-or				{lexval.intval = OR; return(LOG_OP);}
-not				{lexval.intval = NOT; return(LOG_OP);}
+"="				{return(yytext[0]);}
+and				{lexval.ival = AND; return(LOG_OP);}
+or				{lexval.ival = OR; return(LOG_OP);}
+not				{lexval.ival = NOT; return(LOG_OP);}
 if				{return (IF);}
 then			{return (THEN);}
 else			{return (ELSE);}
@@ -80,18 +82,19 @@ wr				{return (WR);}
 
 
 {boolconst}		{
-					lexval.boolval = (yytext[0] == 'f' ? FALSE : TRUE);
-					return(BOOL_CONST);
+					lexval.bval = (yytext[0] == 'f' ? FALSE : TRUE);
+					return(BOOLCONST);
 				}
-{intconst}		{lexval.intval = atoi(yytext); return(INT_CONST);}
-{realconst}		{lexval.realval = atof(yytext); return(REAL_CONST);}
-{charconst}		{lexval.intval = yytext[1]; return(CHAR_CONST);}
-{stringconst}	{lexval.stringval = store_str(yytext); return(STRING_CONST);}
-{id}			{lexval.stringval = store_id(yytext); return(ID);}
+{intconst}		{lexval.ival = atoi(yytext); return(INTCONST);}
+{realconst}		{lexval.rval = atof(yytext); return(REALCONST);}
+{charconst}		{lexval.ival = yytext[1]; return(CHARCONST);}
+{stringconst}	{lexval.sval = newstring(yytext); return(STRCONST);}
+{id}			{lexval.sval = newstring(yytext); return(ID);}
 
 .				{return (ERROR);}
 
 %%
+
 
 char *newstring(char *s) {
 	char *p;
@@ -99,8 +102,10 @@ char *newstring(char *s) {
  	strcpy(p, s);
  	return(p);
 }
-int main()
-{	
- 	printf("%.0f:\t%d\n", row_counter, yylex());
- 	return 0;
+
+/**
+int main(){
+	yylex();
+	printf("%d:  %d\n",line,yylex());
 }
+**/
