@@ -1,7 +1,10 @@
 CC=cc
 CFLAGS=-c -Wall
 
-all:prova
+all: prova clean
+
+lexer: lex.c parser.h def_y.h
+	cc -o lexer lex.c -DLEXER
 
 prova: lex.o parser.o
 	cc -g -o prova lex.o parser.o
@@ -18,5 +21,5 @@ lex.c: lexer.lex parser.y parser.h parser.c def_y.h
 parser.h: parser.y def_y.h
 	bison -d -o parser.c parser.y
 
-lexer: lex.c parser.h def_y.h
-	cc -o lexer lex.c
+clean: 
+	rm lex.c lex.o parser.c parser.h

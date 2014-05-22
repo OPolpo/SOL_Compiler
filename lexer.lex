@@ -99,9 +99,9 @@ char *newstring(char *s) {
  	return(p);
 }
 
-/*
+#ifdef LEXER
 int main(){
 	//yylex();
 	printf("%d:  %d\n",line, yylex());
 }
-*/
+#endif

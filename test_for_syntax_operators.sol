@@ -8,24 +8,51 @@ var a, b, c: int;
 
 const MM: int=20;
 
-func sum(v: vector [DIM] of int;):int 
-	var n, res: int;
-	begin sum
-		res = 0;
-		foreach n in v do
-			res = res + n; 
-		endforeach; 
-		return res;
-	end sum
+func sum(v: vector [10] of int;):int 
+var n, res: int;
+begin sum
+	res = 0;
+	foreach n in v do
+		res = res + n; 
+	endforeach; 
+	return res;
+end sum
 
-	func fact(n: int): int 
-	begin fact
-		if n <= 0 then 
-			return 1;
-		else
-			return n * fact(n­1);
-		endif; 
-	end fact
+func fact(n: int;): int 
+begin fact
+	if n <= 0 then 
+		return 1;
+	else
+		return n * fact(n­1);
+	endif; 
+end fact
+func exread(): int
+type Vect: vector [100] of int;
+var name: string; v1, v2: Vect;
+begin exread
+	v1 = rd Vect;
+	v2 = reverse(rd [name] Vect);
+end exread
+
+func exwrite():int
+var i, j: int;
+	name: string;
+	v: vector [100] of int;
+begin exwrite
+	write f(v);
+	read name;
+	write [name] reverse(v);
+end exwrite
+
+func exwrite2():int
+var i: int;
+	name: string;
+	v: vector [100] of int;
+	v1, v2: vector [20] of int;
+begin exwrite2
+	v1 = wr f(v);
+	v2 = f(wr [name] v);
+end exwrite2
 
 begin tester2
 
@@ -59,31 +86,5 @@ begin tester2
 	read v;
 	read ["v.dat"] v;
 
-	func exread(): int
-	type Vect: vector [100] of int;
-	var name: string; v1, v2: Vect;
-	begin exread
-		v1 = rd Vect;
-		v2 = reverse(rd [name] Vect);
-	end exread
 
-	func exwrite():int
-	var i, j: int;
-		name: string;
-		v: vector [100] of int;
-	begin exwrite
-		write f(v);
-		read name;
-		write [name] reverse(v);
-	end exwrite
-
-	func exwrite2():int
-	var i: int;
-		name: string;
-		v: vector [100] of int;
-		v1, v2: vector [20] of int;
-	begin exwrite2
-		v1 = wr f(v);
-		v2 = f(wr [name] v);
-	end exwrite2
 end tester2
