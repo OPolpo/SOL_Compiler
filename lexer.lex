@@ -15,10 +15,10 @@ letter		[a-­zA-Z]
 digit		[0-9]
 id			{letter}({letter}|{digit})*
 num 		{digit}+
-sugar 		[(){}:,;]
+sugar 		[\(\)\[\]\{\}".":,;]
 charconst 	\'.\'
 intconst 	{num}
-realconst	{num}?.{num}
+realconst	{num}?"."{num}
 boolconst	(true|false)
 stringconst \"([^\"])*\"
 
@@ -28,7 +28,6 @@ stringconst \"([^\"])*\"
 
 {spacing}		;
 {eol}			line++;
-{sugar}			{return(yytext[0]);}
 char			{return (CHAR);}
 int				{return (INT);}
 real			{return (REAL);}
@@ -45,21 +44,21 @@ toint			{return (TOINT);}
 toreal			{return (TOREAL);}
 begin			{return (F_BEGIN);}
 end				{return (F_END);}
-"<"				{lexval.ival = '<'; return(REL_OP);}
-"<="			{lexval.ival = LE; return(REL_OP);}
-"=="			{lexval.ival = EQ; return(REL_OP);}
-"<>"			{lexval.ival = NE; return(REL_OP);}
-">"				{lexval.ival = '>'; return(REL_OP);}
-">="			{lexval.ival = GE; return(REL_OP);}
-in				{lexval.ival = IN; return(REL_OP);}
+"=="			{return(EQ);}
+"<>"			{return(NE);}
+"<="			{return(LE);}
+">="			{return(GE);}
+">"				{return('>');}
+"<"				{return('<');}
+in				{return(IN);}
 "+"				{return(yytext[0]);}
 "-"				{return(yytext[0]);}
 "*"				{return(yytext[0]);}
 "/"				{return(yytext[0]);}
 "="				{return(yytext[0]);}
-and				{lexval.ival = AND; return(LOG_OP);}
-or				{lexval.ival = OR; return(LOG_OP);}
-not				{lexval.ival = NOT; return(LOG_OP);}
+and				{return(AND);}
+or				{return(OR);}
+not				{return(NOT);}
 if				{return (IF);}
 then			{return (THEN);}
 else			{return (ELSE);}
@@ -78,9 +77,6 @@ read			{return (READ);}
 rd				{return (RD);}
 write			{return (WRITE);}
 wr				{return (WR);}
-
-
-
 {boolconst}		{
 					lexval.bval = (yytext[0] == 'f' ? FALSE : TRUE);
 					return(BOOLCONST);
@@ -89,8 +85,8 @@ wr				{return (WR);}
 {realconst}		{lexval.rval = atof(yytext); return(REALCONST);}
 {charconst}		{lexval.ival = yytext[1]; return(CHARCONST);}
 {stringconst}	{lexval.sval = newstring(yytext); return(STRCONST);}
+{sugar}			{return(yytext[0]);}
 {id}			{lexval.sval = newstring(yytext); return(ID);}
-
 .				{return (ERROR);}
 
 %%
@@ -103,9 +99,9 @@ char *newstring(char *s) {
  	return(p);
 }
 
-/**
+/*
 int main(){
-	yylex();
-	printf("%d:  %d\n",line,yylex());
+	//yylex();
+	printf("%d:  %d\n",line, yylex());
 }
-**/
+*/

@@ -113,7 +113,7 @@ factor : unary_op factor
 	| cond_expr 
 	| built_in_call 
 	| dynamic_input
-unary_op : '−' 
+unary_op : '−' %prec UMINUS
 	| NOT 
 	| dynamic_output
 atomic_const : CHARCONST 
