@@ -1,11 +1,61 @@
 %{
 #include "def_y.h"
+#include "parser_nodes.h"
 #define YYSTYPE Pnode
 extern char *yytext;
 extern Value lexval;
 extern unsigned int line;
 extern FILE *yyin;
 Pnode root = NULL;
+
+Pnode nontermnode(Nonterminal nonterm){
+    Pnode p = newnode(T_NONTERMINAL);
+    p->value.ival = nonterm;
+    return(p);
+}
+
+Pnode idnode(){
+    Pnode p = newnode(T_ID);
+    p->value.sval = lexval.sval;
+    return(p);
+}
+
+Pnode intconstnode(){
+    Pnode p = newnode(T_INTCONST);
+    p->value.ival = lexval.ival;
+    return(p);
+}
+
+Pnode charconstnode(){
+    Pnode p = newnode(T_CHARCONST);
+    p->value.ival = lexval.ival;
+    return(p);
+}
+
+Pnode realconstnode(){
+    Pnode p = newnode(T_REALCONST);
+    p->value.rval = lexval.rval;
+    return(p);
+}
+
+Pnode strconstnode(){
+    Pnode p = newnode(T_STRCONST);
+    p->value.sval = lexval.sval;
+    return(p);
+}
+
+Pnode boolconstnode(){
+  Pnode p = newnode(T_BOOLCONST);
+  p->value.bval = lexval.bval;
+  return(p);
+}
+
+Pnode newnode(Typenode tnode){
+  Pnode p = malloc(sizeof(Node));
+  p->type = tnode;
+  p->child = p->brother = NULL;
+  return(p);
+}
 %}
 
 %token CHAR	
@@ -147,54 +197,7 @@ dynamic_output : WR specifier_opt
 %%
 
 
-Pnode nontermnode(Nonterminal nonterm){
-    Pnode p = newnode(T_NONTERMINAL);
-    p->value.ival = nonterm;
-    return(p);
-}
 
-Pnode idnode(){
-    Pnode p = newnode(T_ID);
-    p->value.sval = lexval.sval;
-    return(p);
-}
-
-Pnode intconstnode(){
-    Pnode p = newnode(T_INTCONST);
-    p->value.ival = lexval.ival;
-    return(p);
-}
-
-Pnode charconstnode(){
-    Pnode p = newnode(T_CHARCONST);
-    p->value.ival = lexval.ival;
-    return(p);
-}
-
-Pnode realconstnode(){
-    Pnode p = newnode(T_REALCONST);
-    p->value.rval = lexval.rval;
-    return(p);
-}
-
-Pnode strconstnode(){
-    Pnode p = newnode(T_STRCONST);
-    p->value.sval = lexval.sval;
-    return(p);
-}
-
-Pnode boolconstnode(){
-  Pnode p = newnode(T_BOOLCONST);
-  p->value.bval = lexval.bval;
-  return(p);
-}
-
-Pnode newnode(Typenode tnode){
-  Pnode p = malloc(sizeof(Node));
-  p->type = tnode;
-  p->child = p->brother = NULL;
-  return(p);
-}
 
 int main(){
 	int result;

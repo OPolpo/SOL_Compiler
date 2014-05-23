@@ -6,14 +6,14 @@ all: prova clean
 lexer: lex.c parser.h def_y.h
 	cc -o lexer lex.c -DLEXER
 
-prova: lex.o parser.o tree.o
-	cc -g -o prova lex.o parser.o tree.o
+prova: lex.o parser.o tree.o 
+	cc -g -o prova lex.o parser.o tree.o 
 
 lex.o: lex.c parser.h def_y.h
 	cc -g -c lex.c 
 
-parser.o: parser.c def_y.h tree.o
-	cc -g -c parser.c tree.o
+parser.o: parser.c def_y.h 
+	cc -g -c parser.c
 
 tree.o:tree.c def_y.h parser.h
 	cc -g -c tree.c

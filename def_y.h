@@ -1,6 +1,8 @@
+#ifndef _def_h
+#define _def_h
+
 #include <stdio.h>
 #include <stdlib.h>
-#include "parser.h"
 
 typedef enum{	
 	NPROGRAM,
@@ -71,3 +73,5 @@ Pnode nontermode(Nonterminal),
 	  rconstnode(),
 	  bconstnode(),
 	  newnode(Typenode);
+
+#endif
