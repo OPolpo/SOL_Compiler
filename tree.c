@@ -1,4 +1,5 @@
 #include "def_y.h"
+#include "parser.h"
 
 char* tabtypes[] =
 {
@@ -83,8 +84,8 @@ void treeprint(Pnode root, int indent)
     else if(root->type == T_REALCONST)
         printf(" (%f)", root->value.rval);
     else if(root->type == T_BOOLCONST)
-        printf(" (%s)", (root->value.ival == TRUE ? "TRUE" : "FALSE"));
+        printf(" (%s)", (root->value.bval == TRUE ? "TRUE" : "FALSE"));
     printf("\n");
     for(p=root->child; p != NULL; p = p->brother)
         treeprint(p, indent+1);
-    
+}

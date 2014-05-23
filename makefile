@@ -15,7 +15,7 @@ lex.o: lex.c parser.h def_y.h
 parser.o: parser.c def_y.h tree.o
 	cc -g -c parser.c tree.o
 
-tree.o:tree.c def_y.h
+tree.o:tree.c def_y.h parser.h
 	cc -g -c tree.c
 
 lex.c: lexer.lex parser.y parser.h parser.c def_y.h
