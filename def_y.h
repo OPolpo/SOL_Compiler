@@ -32,8 +32,7 @@ typedef enum{
 	NWRITE_STAT,
 	NCOND_EXP,
 	NELSIF_EXPR_LIST_OPT,
-	NBUILT_IN_CALL,
-	NEXPR
+	NBUILT_IN_CALL
 } Nonterminal;
 
 typedef enum{
