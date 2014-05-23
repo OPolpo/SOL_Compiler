@@ -20,8 +20,8 @@ Pnode root = NULL;
 
 %%
 
-program : func_decl
-func_decl : FUNC ID '(' decl_list_opt ')' ':' domain type_sect_opt var_sect_opt const_sect_opt func_list_opt func_body
+program : func_decl {root = $$ = nontermnode(NPROGRAM); $$->child = $1}
+func_decl : FUNC ID {$$=idnode();} '(' decl_list_opt ')' ':' domain type_sect_opt var_sect_opt const_sect_opt func_list_opt func_body {$$ = nontermnode(NFUNC_DECL); $$->child = $3; $3->brother = $5;}
 decl_list_opt : decl_list 
 	| /** eps **/
 decl_list : decl ';' decl_list 
@@ -157,6 +157,12 @@ Pnode idnode(){
 
 Pnode intconstnode(){
     Pnode p = newnode(T_INTCONST);
+    p->value.ival = lexval.ival;
+    return(p);
+}
+
+Pnode charconstnode(){
+    Pnode p = newnode(T_CHARCONST);
     p->value.ival = lexval.ival;
     return(p);
 }
