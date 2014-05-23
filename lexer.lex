@@ -21,11 +21,11 @@ intconst 	{num}
 realconst	{num}?"."{num}
 boolconst	(true|false)
 stringconst \"([^\"])*\"
-
+comment		--.*\n
 
 %%
 
-
+{comment}		line++;
 {spacing}		;
 {eol}			line++;
 char			{return (CHAR);}

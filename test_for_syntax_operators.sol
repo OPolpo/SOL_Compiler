@@ -1,4 +1,5 @@
-func tester2():int
+--test :P
+fulnc tester2():int
 var a, b, c: int;
 	res: int;
 	t, r: struct(x: int; y: string;);
