@@ -22,13 +22,21 @@ Pnode root = NULL;
 
 program : func_decl
 func_decl : FUNC ID '(' decl_list_opt ')' ':' domain type_sect_opt var_sect_opt const_sect_opt func_list_opt func_body
-decl_list_opt : decl_list 
+decl_list_opt : decl_list {$$ = nontermnode(NDECL_LIST_OPT);
+						   $$->child = $1}
 	| /** eps **/
+}
 decl_list : decl ';' decl_list 
 	| decl ';'
-decl : id_list ':' domain
-id_list : ID ',' id_list 
-	| ID
+decl : id_list ':' domain {$$ = nontermnode(NDECL);
+						   $$->child = nontermnode(NID_LIST);
+						   $$->child->child = $1;
+						   $$->child->brother = $3;}
+id_list : ID {$$ = idnode()} ',' id_list {$$ = $2;
+										  $2->brother = $4;}
+	| ID {$$ = idnode()}
+}
+}
 domain : atomic_domain 
 	| struct_domain 
 	| vector_domain 
