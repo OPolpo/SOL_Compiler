@@ -224,7 +224,7 @@ int main(){
 	  
 	yyin = stdin;
 	if((result = yyparse()) == 0)
-		treeprint(root, 0);
+		treeprint(root, "");
 	return(result);
 }
 

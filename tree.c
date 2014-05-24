@@ -49,14 +49,16 @@ char* tabnonterm[] =
     "BUILT_IN_CALL"
 };
 
-void treeprint(Pnode root, int indent) {
+void treeprint(Pnode root, char* father_indent) {
     if(root==NULL) return;
     int i;
     Pnode p;
 
-    for(i=0; i<indent; i++)
-        printf("    ");
-    printf("%s", (root->type == T_NONTERMINAL ? tabnonterm[root->value.ival] : tabtypes[root->type]));
+    char* my_indent = malloc(sizeof(char)*1000);
+    my_indent[0]=0;
+    strcpy(my_indent, father_indent);
+    strcat(my_indent,"   |");
+    printf("%s-%s", my_indent, (root->type == T_NONTERMINAL ? tabnonterm[root->value.ival] : tabtypes[root->type]));
     if(root->type == T_ID || root->type == T_STRCONST)
         printf(" (%s)", root->value.sval);
     else if(root->type == T_ATOMIC_DOMAIN)
@@ -90,6 +92,11 @@ void treeprint(Pnode root, int indent) {
     else if(root->type == T_BOOLCONST)
         printf(" (%s)", (root->value.bval == TRUE ? "TRUE" : "FALSE"));
     printf("\n");
-    for(p=root->child; p != NULL; p = p->brother)
-        treeprint(p, indent+1);
+    for(p=root->child; p != NULL; p = p->brother){
+        if(root->brother == NULL){
+            my_indent[strlen(my_indent)-4]=0;
+            strcat(my_indent,"    ");
+        }
+        treeprint(p, my_indent);
+    }
 }
