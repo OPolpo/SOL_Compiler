@@ -1,6 +1,5 @@
 %{
 #include "def_y.h"
-#include "parser_nodes.h"
 #define YYSTYPE Pnode
 extern char *yytext;
 extern Value lexval;
@@ -20,33 +19,39 @@ Pnode idnode(){
     return(p);
 }
 
-Pnode intconstnode(){
+Pnode iconstnode(){
     Pnode p = newnode(T_INTCONST);
     p->value.ival = lexval.ival;
     return(p);
 }
 
-Pnode charconstnode(){
+Pnode cconstnode(){
     Pnode p = newnode(T_CHARCONST);
     p->value.ival = lexval.ival;
     return(p);
 }
 
-Pnode realconstnode(){
+Pnode rconstnode(){
     Pnode p = newnode(T_REALCONST);
     p->value.rval = lexval.rval;
     return(p);
 }
 
-Pnode strconstnode(){
+Pnode sconstnode(){
     Pnode p = newnode(T_STRCONST);
     p->value.sval = lexval.sval;
     return(p);
 }
 
-Pnode boolconstnode(){
+Pnode bconstnode(){
   Pnode p = newnode(T_BOOLCONST);
   p->value.bval = lexval.bval;
+  return(p);
+}
+
+Pnode atomicdomainnode(int domain){
+  Pnode p = newnode(T_ATOMIC_DOMAIN);
+  p->value.ival = domain;
   return(p);
 }
 
@@ -70,28 +75,32 @@ Pnode newnode(Typenode tnode){
 %%
 
 program : func_decl {root = $$ = nontermnode(NPROGRAM); $$->child = $1}
-func_decl : FUNC ID {$$=idnode();} '(' decl_list_opt ')' ':' domain type_sect_opt var_sect_opt const_sect_opt func_list_opt func_body {$$ = nontermnode(NFUNC_DECL); $$->child = $3; $3->brother = $5;}
+func_decl : FUNC ID {$$=idnode();} '(' decl_list_opt ')' ':' domain type_sect_opt var_sect_opt const_sect_opt func_list_opt func_body {$$ = nontermnode(NFUNC_DECL); 
+																																	   $$->child = $3; 
+																																	   $3->brother = $5;}
 decl_list_opt : decl_list {$$ = nontermnode(NDECL_LIST_OPT);
 						   $$->child = $1}
-	| /** eps **/
-decl_list : decl ';' decl_list 
-	| decl ';'
+			  | /** eps **/
+decl_list : decl ';' decl_list {$$->brother = $3}
+		  | decl ';'
 decl : id_list ':' domain {$$ = nontermnode(NDECL);
 						   $$->child = nontermnode(NID_LIST);
 						   $$->child->child = $1;
 						   $$->child->brother = $3;}
-id_list : ID {$$ = idnode()} ',' id_list {$$ = $2;
+id_list : ID {$$ = idnode();} ',' id_list {$$ = $2;
 										  $2->brother = $4;}
-	| ID {$$ = idnode()}
+		| ID {$$ = idnode();}
 domain : atomic_domain 
-	| struct_domain 
-	| vector_domain 
-	| ID
-atomic_domain : CHAR 
-	| INT 
-	| REAL 
-	| STRING 
-	| BOOL
+	   | struct_domain 
+	   | vector_domain 
+	   | ID
+atomic_domain : CHAR {$$ = atomicdomainnode(CHAR);}
+			  | INT {$$ = atomicdomainnode(INT);}
+			  | REAL {$$ = atomicdomainnode(REAL);}
+			  | STRING {$$ = atomicdomainnode(STRING);}
+			  | BOOL {$$ = atomicdomainnode(BOOL);}
+
+
 struct_domain : STRUCT '(' decl_list ')'
 vector_domain : VECTOR '[' INTCONST ']' OF domain
 type_sect_opt : TYPE decl_list 

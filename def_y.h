@@ -72,6 +72,7 @@ Pnode nontermode(Nonterminal),
 	  sconstnode(),
 	  rconstnode(),
 	  bconstnode(),
+      atomicdomainnode(int domain),
 	  newnode(Typenode);
 
 #endif

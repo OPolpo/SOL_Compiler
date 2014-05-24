@@ -48,8 +48,7 @@ char* tabnonterm[] =
     "BUILT_IN_CALL"
 };
 
-void treeprint(Pnode root, int indent)
-{
+void treeprint(Pnode root, int indent) {
     if(root==NULL) return;
     int i;
     Pnode p;
@@ -59,23 +58,27 @@ void treeprint(Pnode root, int indent)
     printf("%s", (root->type == T_NONTERMINAL ? tabnonterm[root->value.ival] : tabtypes[root->type]));
     if(root->type == T_ID || root->type == T_STRCONST)
         printf(" (%s)", root->value.sval);
-        else if(root->type == T_ATOMIC_DOMAIN)
+    else if(root->type == T_ATOMIC_DOMAIN)
         switch(root->value.ival){
             case CHAR:
-                printf(" CHAR");
+                printf(" (CHAR)");
                 break;
             case INT:
-                printf(" INT");
+                printf(" (INT)");
                 break;
             case REAL:
-                printf(" REAL");
+                printf(" (REAL)");
                 break;
             case STRING:
-                printf(" STRING");
+                printf(" (STRING)");
                 break;
             case BOOL:
-                printf(" BOOL");
+                printf(" (BOOL)");
                 break;
+            default:
+                printf("error %d", root->value.ival);
+                break;
+                
         }
     else if(root->type == T_INTCONST)
         printf(" (%d)", root->value.ival);
