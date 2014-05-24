@@ -82,7 +82,8 @@ func_decl : FUNC ID {$$=idnode();} '(' decl_list_opt ')' ':' domain type_sect_op
 																																	   $3->brother = $5;
 																																	   $5->brother = $8;
 																																	   $8->brother = $9;
-																																	   
+																																	   $9->brother = $10;
+																																	   printf("-%d-",$8->value.ival);
 																																   }
 																								 
 decl_list_opt : decl_list {$$ = nontermnode(NDECL_LIST_OPT);
@@ -115,9 +116,10 @@ vector_domain : VECTOR '[' INTCONST {$$ = iconstnode();} ']' OF domain {$$ = non
 																		$$->child->brother->child = $6;}	   
 type_sect_opt : TYPE decl_list {$$ = nontermnode(NTYPE_SECT_OPT);
 								$$->child = $2;}
-			  | /** eps **/
-var_sect_opt : VAR decl_list
-	| /** eps **/
+			  | /** eps **/{$$ = nontermnode(NTYPE_SECT_OPT);}
+var_sect_opt : VAR decl_list  {$$ = nontermnode(NVAR_SECT_OPT);
+							   $$->child = $2;}
+			 | /** eps **/{$$ = nontermnode(NVAR_SECT_OPT);}
 const_sect_opt : CONST const_list 
 	| /** eps **/
 const_list : const_decl const_list 
