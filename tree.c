@@ -1,6 +1,7 @@
 #include "def_y.h"
 #include "parser.h"
 #include "tree.h"
+#include <string.h>
 
 char* tabtypes[] =
 {
