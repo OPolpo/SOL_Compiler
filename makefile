@@ -15,7 +15,7 @@ lex.o: lex.c parser.h def_y.h
 parser.o: parser.c def_y.h 
 	cc -g -c parser.c
 
-tree.o:tree.c def_y.h parser.h
+tree.o: tree.c tree.h def_y.h parser.h
 	cc -g -c tree.c
 
 lex.c: lexer.lex parser.y parser.h parser.c def_y.h
@@ -25,4 +25,4 @@ parser.h: parser.y def_y.h
 	bison -d -o parser.c parser.y
 
 clean: 
-	rm lex.c lex.o parser.c parser.h
+	rm lex.c lex.o parser.c parser.h tree.o

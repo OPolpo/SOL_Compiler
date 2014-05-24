@@ -75,4 +75,7 @@ Pnode nontermode(Nonterminal),
       atomicdomainnode(int domain),
 	  newnode(Typenode);
 
+int yylex (void);
+int yyerror ();
+
 #endif

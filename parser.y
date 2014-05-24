@@ -1,5 +1,7 @@
 %{
 #include "def_y.h"
+#include "tree.h"
+
 #define YYSTYPE Pnode
 extern char *yytext;
 extern Value lexval;
@@ -217,7 +219,7 @@ int main(){
 	return(result);
 }
 
-int yyerror(){
+int yyerror(void){
   fprintf(stderr, "Line %d: syntax error on symbol \"%s\"\n", line, yytext);
   exit(-1);
 }
