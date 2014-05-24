@@ -78,7 +78,11 @@ program : func_decl {root = $$ = nontermnode(NPROGRAM); $$->child = $1}
 func_decl : FUNC ID {$$=idnode();} '(' decl_list_opt ')' ':' domain type_sect_opt var_sect_opt const_sect_opt func_list_opt func_body {$$ = nontermnode(NFUNC_DECL); 
 																																	   $$->child = $3; 
 																																	   $3->brother = $5;
-																																	   $5->brother = $8;}
+																																	   $5->brother = $8;
+																																	   $8->brother = $9;
+																																	   
+																																   }
+																								 
 decl_list_opt : decl_list {$$ = nontermnode(NDECL_LIST_OPT);
 						   $$->child = $1}
 			  | /** eps **/
@@ -103,13 +107,14 @@ atomic_domain : CHAR {$$ = atomicdomainnode(CHAR);}
 			  | BOOL {$$ = atomicdomainnode(BOOL);}
 struct_domain : STRUCT '(' decl_list ')' {$$ = nontermnode(NSTRUCT_DOMAIN);
 										  $$->child = $3;}
-vector_domain : VECTOR '[' INTCONST ']' OF domain {$$ = nontermnode(NVECTOR_DOMAIN);
-												   $$->child = iconstnode();
-												   $$->child->brother = nontermnode(NDOMAIN);
-												   $$->child->brother->child = $6;}
-type_sect_opt : TYPE decl_list 
-	| /** eps **/
-var_sect_opt : VAR decl_list 
+vector_domain : VECTOR '[' INTCONST {$$ = iconstnode();} ']' OF domain {$$ = nontermnode(NVECTOR_DOMAIN);
+																		$$->child = $4;
+																		$$->child->brother = nontermnode(NDOMAIN);
+																		$$->child->brother->child = $6;}	   
+type_sect_opt : TYPE decl_list {$$ = nontermnode(NTYPE_SECT_OPT);
+								$$->child = $2;}
+			  | /** eps **/
+var_sect_opt : VAR decl_list
 	| /** eps **/
 const_sect_opt : CONST const_list 
 	| /** eps **/
