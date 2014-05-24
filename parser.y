@@ -77,7 +77,8 @@ Pnode newnode(Typenode tnode){
 program : func_decl {root = $$ = nontermnode(NPROGRAM); $$->child = $1}
 func_decl : FUNC ID {$$=idnode();} '(' decl_list_opt ')' ':' domain type_sect_opt var_sect_opt const_sect_opt func_list_opt func_body {$$ = nontermnode(NFUNC_DECL); 
 																																	   $$->child = $3; 
-																																	   $3->brother = $5;}
+																																	   $3->brother = $5;
+																																	   $5->brother = $8;}
 decl_list_opt : decl_list {$$ = nontermnode(NDECL_LIST_OPT);
 						   $$->child = $1}
 			  | /** eps **/
@@ -86,23 +87,26 @@ decl_list : decl ';' decl_list {$$->brother = $3}
 decl : id_list ':' domain {$$ = nontermnode(NDECL);
 						   $$->child = nontermnode(NID_LIST);
 						   $$->child->child = $1;
-						   $$->child->brother = $3;}
+						   $$->child->brother = nontermnode(NDOMAIN);
+						   $$->child->brother->child = $3;}
 id_list : ID {$$ = idnode();} ',' id_list {$$ = $2;
-										  $2->brother = $4;}
+										   $2->brother = $4;}
 		| ID {$$ = idnode();}
 domain : atomic_domain 
 	   | struct_domain 
 	   | vector_domain 
-	   | ID
+	   | ID {$$ = idnode();}
 atomic_domain : CHAR {$$ = atomicdomainnode(CHAR);}
 			  | INT {$$ = atomicdomainnode(INT);}
 			  | REAL {$$ = atomicdomainnode(REAL);}
 			  | STRING {$$ = atomicdomainnode(STRING);}
 			  | BOOL {$$ = atomicdomainnode(BOOL);}
-
-
-struct_domain : STRUCT '(' decl_list ')'
-vector_domain : VECTOR '[' INTCONST ']' OF domain
+struct_domain : STRUCT '(' decl_list ')' {$$ = nontermnode(NSTRUCT_DOMAIN);
+										  $$->child = $3;}
+vector_domain : VECTOR '[' INTCONST ']' OF domain {$$ = nontermnode(NVECTOR_DOMAIN);
+												   $$->child = iconstnode();
+												   $$->child->brother = nontermnode(NDOMAIN);
+												   $$->child->brother->child = $6;}
 type_sect_opt : TYPE decl_list 
 	| /** eps **/
 var_sect_opt : VAR decl_list 
