@@ -76,27 +76,26 @@ Pnode newnode(Typenode tnode){
 
 %%
 
-program : func_decl {root = $$ = nontermnode(NPROGRAM); $$->child = $1}
+program : func_decl {root = $$ = nontermnode(NPROGRAM); $$->child = $1;}
 func_decl : FUNC ID {$$=idnode();} '(' decl_list_opt ')' ':' domain type_sect_opt var_sect_opt const_sect_opt func_list_opt func_body {$$ = nontermnode(NFUNC_DECL); 
 																																	   $$->child = $3; 
-																																	   $3->brother = $5;
+																																	   $$->brother = $5;
 																																	   $5->brother = $8;
 																																	   $8->brother = $9;
 																																	   $9->brother = $10;
 																																	   $10->brother= $12;
 																																   }
 																								 
-decl_list_opt : decl_list {$$ = nontermnode(NDECL_LIST_OPT);
-						   $$->child = $1}
-			  | /** eps **/
-decl_list : decl ';' decl_list {$$->brother = $3}
+decl_list_opt : decl_list {$$ = nontermnode(NDECL_LIST_OPT); $$->child = $1;}
+			  | /** eps **/ {$$ = nontermnode(NDECL_LIST_OPT);}
+decl_list : decl ';' decl_list {$$->brother = $3;}
 		  | decl ';'
 decl : id_list ':' domain {$$ = nontermnode(NDECL);
 						   $$->child = nontermnode(NID_LIST);
 						   $$->child->child = $1;
 						   $$->child->brother = $3;}
 id_list : ID {$$ = idnode();} ',' id_list {$$ = $2;
-										   $2->brother = $4;}
+										   $$->brother = $4;}
 		| ID {$$ = idnode();}
 domain : atomic_domain {$$ = nontermnode(NDOMAIN); $$->child = $1;}
 	   | struct_domain {$$ = nontermnode(NDOMAIN); $$->child = $1;}
@@ -132,9 +131,13 @@ func_list_opt : func_list {$$ = nontermnode(NFUNC_LIST_OPT);
 			  | /** eps **/ {$$ = nontermnode(NFUNC_LIST_OPT);}
 func_list : func_decl func_list {$$ = $1; $$->brother = $2;}
 		  | func_decl
-func_body : F_BEGIN ID stat_list F_END ID
-stat_list : stat ';' stat_list 
-	| stat ';'
+func_body : F_BEGIN ID stat_list F_END ID {$$ = nontermnode(NFUNC_BODY);
+										   $$->child = idnode();
+										   $$->child->child = $2;
+										   $$->child->brother = $3;
+										   $3->brother = $5;}
+stat_list : stat ';' stat_list {$$ = nontermnode(NSTAT_LIST);}
+	| stat ';' {$$ = nontermnode(NSTAT_LIST);}
 stat : assign_stat 
 	| if_stat 
 	| while_stat 
