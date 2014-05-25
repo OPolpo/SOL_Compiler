@@ -83,7 +83,7 @@ func_decl : FUNC ID {$$=idnode();} '(' decl_list_opt ')' ':' domain type_sect_op
 																																	   $5->brother = $8;
 																																	   $8->brother = $9;
 																																	   $9->brother = $10;
-																																	   printf("-%d-",$8->value.ival);
+																																	   $10->brother= $12;
 																																   }
 																								 
 decl_list_opt : decl_list {$$ = nontermnode(NDECL_LIST_OPT);
@@ -94,15 +94,14 @@ decl_list : decl ';' decl_list {$$->brother = $3}
 decl : id_list ':' domain {$$ = nontermnode(NDECL);
 						   $$->child = nontermnode(NID_LIST);
 						   $$->child->child = $1;
-						   $$->child->brother = nontermnode(NDOMAIN);
-						   $$->child->brother->child = $3;}
+						   $$->child->brother = $3;}
 id_list : ID {$$ = idnode();} ',' id_list {$$ = $2;
 										   $2->brother = $4;}
 		| ID {$$ = idnode();}
-domain : atomic_domain 
-	   | struct_domain 
-	   | vector_domain 
-	   | ID {$$ = idnode();}
+domain : atomic_domain {$$ = nontermnode(NDOMAIN); $$->child = $1;}
+	   | struct_domain {$$ = nontermnode(NDOMAIN); $$->child = $1;}
+	   | vector_domain {$$ = nontermnode(NDOMAIN); $$->child = $1;}
+	   | ID  {$$ = nontermnode(NDOMAIN); $$->child = idnode();}
 atomic_domain : CHAR {$$ = atomicdomainnode(CHAR);}
 			  | INT {$$ = atomicdomainnode(INT);}
 			  | REAL {$$ = atomicdomainnode(REAL);}
@@ -112,23 +111,27 @@ struct_domain : STRUCT '(' decl_list ')' {$$ = nontermnode(NSTRUCT_DOMAIN);
 										  $$->child = $3;}
 vector_domain : VECTOR '[' INTCONST {$$ = iconstnode();} ']' OF domain {$$ = nontermnode(NVECTOR_DOMAIN);
 																		$$->child = $4;
-																		$$->child->brother = nontermnode(NDOMAIN);
-																		$$->child->brother->child = $6;}	   
+																		$$->child->brother = $7;}	   
 type_sect_opt : TYPE decl_list {$$ = nontermnode(NTYPE_SECT_OPT);
 								$$->child = $2;}
 			  | /** eps **/{$$ = nontermnode(NTYPE_SECT_OPT);}
 var_sect_opt : VAR decl_list  {$$ = nontermnode(NVAR_SECT_OPT);
 							   $$->child = $2;}
 			 | /** eps **/{$$ = nontermnode(NVAR_SECT_OPT);}
+
+
 const_sect_opt : CONST const_list 
-	| /** eps **/
+			   | /** eps **/
 const_list : const_decl const_list 
-	| const_decl
+		   | const_decl
 const_decl : decl '=' expr ';'
-func_list_opt : func_list 
-	| /** eps **/
-func_list : func_decl func_list 
-	| func_decl
+							  
+							  
+func_list_opt : func_list {$$ = nontermnode(NFUNC_LIST_OPT);
+						   $$->child = $1;}
+			  | /** eps **/ {$$ = nontermnode(NFUNC_LIST_OPT);}
+func_list : func_decl func_list {$$ = $1; $$->brother = $2;}
+		  | func_decl
 func_body : F_BEGIN ID stat_list F_END ID
 stat_list : stat ';' stat_list 
 	| stat ';'
