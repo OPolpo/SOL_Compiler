@@ -83,8 +83,9 @@ func_decl : FUNC ID {$$=idnode();} '(' decl_list_opt ')' ':' domain type_sect_op
 																																	   $3->brother = $5;
 																																	   $5->brother = $8;
 																																	   $8->brother = $9;
-																																	   $9->brother = $10; /* TODO $11 */
-																																	   $10->brother= $12;
+																																	   $9->brother = $10;
+																																	   $10->brother = $11;
+																																	   $11->brother= $12;
 																																	   $12->brother= $13;
 																																   }
 																								 
@@ -121,11 +122,12 @@ var_sect_opt : VAR decl_list  {$$ = nontermnode(NVAR_SECT_OPT);
 			 | /** eps **/{$$ = nontermnode(NVAR_SECT_OPT);}
 
 
-const_sect_opt : CONST const_list 
-			   | /** eps **/
-const_list : const_decl const_list 
+const_sect_opt : CONST const_list {$$ = nontermnode(NCONST_SECT_OPT);
+							 	   $$->child = $2;}
+			   | /** eps **/ {$$ = nontermnode(NCONST_SECT_OPT);}
+const_list : const_decl const_list {$$->brother = $2;}
 		   | const_decl
-const_decl : decl '=' expr ';'
+const_decl : decl '=' expr ';' {$$ = $1; $1->brother = $3;}
 							  
 							  
 func_list_opt : func_list {$$ = nontermnode(NFUNC_LIST_OPT);
@@ -134,10 +136,10 @@ func_list_opt : func_list {$$ = nontermnode(NFUNC_LIST_OPT);
 func_list : func_decl func_list {$$ = $1; $$->brother = $2;}
 		  | func_decl
 func_body : F_BEGIN ID {$$ = idnode();} stat_list F_END ID {$$ = nontermnode(NFUNC_BODY);
-										   $$->child = $3;
-										   $3->brother = nontermnode(NSTAT_LIST);
-										   $3->brother->child = $4;
-										   $3->brother->brother = idnode();}
+										   					$$->child = $3;
+										   				 	$3->brother = nontermnode(NSTAT_LIST);
+										   				 	$3->brother->child = $4;
+										   				 	$3->brother->brother = idnode();}
 stat_list : stat ';' stat_list {$$ = $1; $$->brother = $3;}
 	| stat ';' 
 stat : assign_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
@@ -148,28 +150,57 @@ stat : assign_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
 	| return_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
 	| read_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
 	| write_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
-
-assign_stat : left_hand_side '=' expr
-left_hand_side : ID 
-	| fielding 
-	| indexing
-fielding : left_hand_side '.' ID
-indexing : left_hand_side '[' expr ']'
-if_stat : IF expr THEN stat_list elsif_stat_list_opt else_stat_opt ENDIF
-elsif_stat_list_opt : ELSIF expr THEN stat_list elsif_stat_list_opt 
+assign_stat : left_hand_side '=' expr {$$ = nontermnode(NASSIGN_STAT); 
+									   $$->child = $1; 
+									   $1->brother = $3;}
+left_hand_side : ID {$$ = nontermnode(NLEFT_HAND_SIDE); $$ = idnode();}
+			   | fielding {$$ = nontermnode(NLEFT_HAND_SIDE); $$->child = $1;}
+			   | indexing {$$ = nontermnode(NLEFT_HAND_SIDE); $$->child = $1;}
+fielding : left_hand_side '.' ID {$$ = nontermnode(NFIELDING);
+								  $$->child = $1;
+								  $1->brother = idnode();}
+indexing : left_hand_side '[' expr ']' {$$ = nontermnode(NINDEXING); 
+								  		$$->child = $1;
+								  	  	$1->brother = $3;}
+if_stat : IF expr THEN stat_list elsif_stat_list_opt else_stat_opt ENDIF {$$ = nontermnode(NIF_STAT);
+	/*	  $1  $2  $3	$4				$5				$6*/
+																		  $$->child = $2;
+																		  $2->brother = $4;
+																		  $4->brother = $5;
+																		  $5->brother = $6;
+																	  }
+elsif_stat_list_opt : ELSIF expr THEN stat_list elsif_stat_list_opt {$$ = nontermnode(NELSIF_STAT_LIS_OPT);
+																	 $$->child = $2;
+																	 $2->brother = $4;
+																	 $4->brother = $5;}
+	| /** eps **/ {$$ = nontermnode(NELSIF_STAT_LIS_OPT);}
+else_stat_opt : ELSE stat_list {$$ = $2;}
 	| /** eps **/
-else_stat_opt : ELSE stat_list 
-	| /** eps **/
-while_stat : WHILE expr DO stat_list ENDWHILE
-for_stat : FOR ID '=' expr TO expr DO stat_list ENDFOR
-foreach_stat : FOREACH ID IN expr DO stat_list ENDFOREACH
-return_stat : RETURN expr
-read_stat : READ specifier_opt ID
-specifier_opt : '[' expr ']' 
-	| /** eps **/
-write_stat : WRITE specifier_opt expr
-expr : expr bool_op bool_term 
-	| bool_term
+while_stat : WHILE expr DO stat_list ENDWHILE {$$ = nontermnode(NWHILE_STAT);
+											   $$->child = $2;
+											   $2->brother = $4;}
+for_stat : FOR ID {$$ = idnode();} '=' expr TO expr DO stat_list ENDFOR {$$ = nontermnode(NFOR_STAT);
+																		 $$->child = $3;
+																		 $3->brother = $5;
+																		 $5->brother = $7;
+																		 $7->brother = $9;}
+foreach_stat : FOREACH ID {$$ = idnode();} IN expr DO stat_list ENDFOREACH {$$ = nontermnode(NFOREACH_STAT);
+														  	 				$$->child = $3;
+														   				 	$3->brother = $5;
+														   				 	$5->brother = $7;}
+return_stat : RETURN expr {$$ = nontermnode(NRETURN_STAT);
+						   $$->child = $2;}
+read_stat : READ specifier_opt ID {$$ = nontermnode(NREAD_STAT);
+						   		   $$->child = $2;
+							   	   $2->brother = idnode();}
+specifier_opt : '[' expr ']' {$$ = nontermnode(NSPECIFIER_OPT);
+							  $$->child = $2;}
+			  | /** eps **/ {$$ = nontermnode(NSPECIFIER_OPT);}
+write_stat : WRITE specifier_opt expr {$$ = nontermnode(NWRITE_STAT);
+						   		   	   $$->child = $2;
+							   	       $2->brother = idnode();}
+expr : expr bool_op bool_term {$$ = iconstnode();/*TO BE REMOVED*/}
+	| bool_term {$$ = iconstnode();/*TO BE REMOVED*/}
 bool_op : AND 
 	| OR
 bool_term : rel_term rel_op rel_term 

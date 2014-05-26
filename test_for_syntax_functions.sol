@@ -33,6 +33,7 @@ func prog(): int
 						struct("Louis", "Green", 1998), 
 						struct("Ann", "Black", 2001));
 		ok = person.name == "John";
+		matrix[3][4] = matrix[3][8];
 	end f1
 	
 begin prog 
