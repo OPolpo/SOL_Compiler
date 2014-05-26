@@ -78,12 +78,14 @@ Pnode newnode(Typenode tnode){
 
 program : func_decl {root = $$ = nontermnode(NPROGRAM); $$->child = $1;}
 func_decl : FUNC ID {$$=idnode();} '(' decl_list_opt ')' ':' domain type_sect_opt var_sect_opt const_sect_opt func_list_opt func_body {$$ = nontermnode(NFUNC_DECL); 
+	/*		$1	 $2		$3			$4		$5		  $6 $7		$8		$9				$10			$11				$12			$13 */
 																																	   $$->child = $3; 
-																																	   $$->brother = $5;
+																																	   $3->brother = $5;
 																																	   $5->brother = $8;
 																																	   $8->brother = $9;
-																																	   $9->brother = $10;
+																																	   $9->brother = $10; /* TODO $11 */
 																																	   $10->brother= $12;
+																																	   $12->brother= $13;
 																																   }
 																								 
 decl_list_opt : decl_list {$$ = nontermnode(NDECL_LIST_OPT); $$->child = $1;}
@@ -131,21 +133,22 @@ func_list_opt : func_list {$$ = nontermnode(NFUNC_LIST_OPT);
 			  | /** eps **/ {$$ = nontermnode(NFUNC_LIST_OPT);}
 func_list : func_decl func_list {$$ = $1; $$->brother = $2;}
 		  | func_decl
-func_body : F_BEGIN ID stat_list F_END ID {$$ = nontermnode(NFUNC_BODY);
-										   $$->child = idnode();
-										   $$->child->child = $2;
-										   $$->child->brother = $3;
-										   $3->brother = $5;}
-stat_list : stat ';' stat_list {$$ = nontermnode(NSTAT_LIST);}
-	| stat ';' {$$ = nontermnode(NSTAT_LIST);}
-stat : assign_stat 
-	| if_stat 
-	| while_stat 
-	| for_stat 
-	| foreach_stat 
-	| return_stat 
-	| read_stat 
-	| write_stat
+func_body : F_BEGIN ID {$$ = idnode();} stat_list F_END ID {$$ = nontermnode(NFUNC_BODY);
+										   $$->child = $3;
+										   $3->brother = nontermnode(NSTAT_LIST);
+										   $3->brother->child = $4;
+										   $3->brother->brother = idnode();}
+stat_list : stat ';' stat_list {$$ = $1; $$->brother = $3;}
+	| stat ';' 
+stat : assign_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	| if_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	| while_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	| for_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	| foreach_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	| return_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	| read_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	| write_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+
 assign_stat : left_hand_side '=' expr
 left_hand_side : ID 
 	| fielding 
