@@ -33,9 +33,18 @@ typedef enum{
 	NREAD_STAT,
 	NSPECIFIER_OPT,
 	NWRITE_STAT,
+    NMATH_EXPR,
+    NLOGIC_EXPR,
+    NREL_EXPR,
+    NNEG_EXPR,
+    NWR_EXPR,
+    NRD_EXPR,
+    NINSTANCE_EXPR,
+    NFUNC_CALL,
 	NCOND_EXP,
 	NELSIF_EXPR_LIST_OPT,
-	NBUILT_IN_CALL
+	NBUILT_IN_CALL,
+    
 } Nonterminal;
 
 typedef enum{
@@ -59,6 +68,7 @@ typedef union{
 typedef struct snode{
 	Typenode type;
 	Value value;
+    int qualifier;
 	struct snode *child, *brother;
 } Node;
 

@@ -199,7 +199,7 @@ specifier_opt : '[' expr ']' {$$ = nontermnode(NSPECIFIER_OPT);
 write_stat : WRITE specifier_opt expr {$$ = nontermnode(NWRITE_STAT);
 						   		   	   $$->child = $2;
 							   	       $2->brother = idnode();}
-expr : expr bool_op bool_term {$$ = iconstnode();/*TO BE REMOVED*/}
+expr : expr bool_op bool_term {$$ = nontermnode(NLOGIC_EXPR); }
 	| bool_term {$$ = iconstnode();/*TO BE REMOVED*/}
 bool_op : AND 
 	| OR
