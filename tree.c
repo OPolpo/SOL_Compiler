@@ -100,8 +100,64 @@ void treeprint(Pnode root, char* father_indent) {
         printf(" (%f)", root->value.rval);
     else if(root->type == T_BOOLCONST)
         printf(" (%s)", (root->value.bval == TRUE ? "TRUE" : "FALSE"));
-    else if(root->type == T_NONTERMINAL && root->value.ival == NLOGIC_EXPR)
-        printf(" [%d]", root->qualifier);
+    else if(root->type == T_NONTERMINAL){
+        switch (root->qualifier) {
+            case AND:
+                printf(" [AND]");
+                break;
+            case OR:
+                printf(" [OR]");
+                break;
+            case EQ:
+                printf(" [EQ]");
+                break;
+            case '>':
+                printf(" [>]");
+                break;
+            case GE:
+                printf(" [GE]");
+                break;
+            case '<':
+                printf(" [<]");
+                break;
+            case LE:
+                printf(" [LE]");
+                break;
+            case IN:
+                printf(" [IN]");
+                break;
+            case '+':
+                printf(" [+]");
+                break;
+            case '-':
+                printf(" [-]");
+                break;
+            case '*':
+                printf(" [*]");
+                break;
+            case '/':
+                printf(" [/]");
+                break;
+            case NOT:
+                printf(" [NOT]");
+                break;
+            case STRUCT:
+                printf(" [STRUCT]");
+                break;
+            case VECTOR:
+                printf(" [VECTOR]");
+                break;
+            case TOINT:
+                printf(" [TOINT]");
+                break;
+            case TOREAL:
+                printf(" [TOREAL]");
+                break;
+            default:
+                break;
+        }
+    }
+    
     printf("\n");
     for(p=root->child; p != NULL; p = p->brother){
         if(root->brother == NULL){
