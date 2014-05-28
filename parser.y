@@ -125,9 +125,9 @@ var_sect_opt : VAR decl_list  {$$ = nontermnode(NVAR_SECT_OPT);
 const_sect_opt : CONST const_list {$$ = nontermnode(NCONST_SECT_OPT);
 							 	   $$->child = $2;}
 			   | /** eps **/ {$$ = nontermnode(NCONST_SECT_OPT);}
-const_list : const_decl const_list {$$->brother = $2;}
+const_list : const_decl const_list {$$->brother->brother = $2;}
 		   | const_decl
-const_decl : decl '=' expr ';' {$$ = $1; $1->brother = $3;}
+const_decl : decl '=' expr ';' {$$ = $1; $$->brother = $3;}
 							  
 							  
 func_list_opt : func_list {$$ = nontermnode(NFUNC_LIST_OPT);
@@ -141,15 +141,15 @@ func_body : F_BEGIN ID {$$ = idnode();} stat_list F_END ID {$$ = nontermnode(NFU
 										   				 	$3->brother->child = $4;
 										   				 	$3->brother->brother = idnode();}
 stat_list : stat ';' stat_list {$$ = $1; $$->brother = $3;}
-	| stat ';' 
+		  | stat ';' 
 stat : assign_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
-	| if_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
-	| while_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
-	| for_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
-	| foreach_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
-	| return_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
-	| read_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
-	| write_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	 | if_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	 | while_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	 | for_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	 | foreach_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	 | return_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	 | read_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
+	 | write_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
 assign_stat : left_hand_side '=' expr {$$ = nontermnode(NASSIGN_STAT); 
 									   $$->child = $1; 
 									   $1->brother = $3;}
@@ -169,13 +169,13 @@ if_stat : IF expr THEN stat_list elsif_stat_list_opt else_stat_opt ENDIF {$$ = n
 																		  $4->brother = $5;
 																		  $5->brother = $6;
 																	  }
-elsif_stat_list_opt : ELSIF expr THEN stat_list elsif_stat_list_opt {$$ = nontermnode(NELSIF_STAT_LIS_OPT);
+elsif_stat_list_opt : ELSIF expr THEN stat_list elsif_stat_list_opt {$$ = nontermnode(NELSIF_STAT_LIST_OPT);
 																	 $$->child = $2;
 																	 $2->brother = $4;
 																	 $4->brother = $5;}
-	| /** eps **/ {$$ = nontermnode(NELSIF_STAT_LIS_OPT);}
+				 	| /** eps **/ {$$ = nontermnode(NELSIF_STAT_LIST_OPT);}
 else_stat_opt : ELSE stat_list {$$ = $2;}
-	| /** eps **/
+			  | /** eps **/
 while_stat : WHILE expr DO stat_list ENDWHILE {$$ = nontermnode(NWHILE_STAT);
 											   $$->child = $2;
 											   $2->brother = $4;}
@@ -282,7 +282,7 @@ dynamic_input : RD specifier_opt domain {$$ = nontermnode(NRD_EXPR);
 										 $$->child = $2;
 										 $2->brother = $3;}
 dynamic_output : WR specifier_opt {$$ = nontermnode(NWR_EXPR);
-										$$->child = $2;}
+								   $$->child = $2;}
 
 %%
 

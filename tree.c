@@ -37,7 +37,7 @@ char* tabnonterm[] =
     "FIELDING",
     "INDEXING",
     "IF_STAT",
-    "ELSIF_STAT_LIS_OPT",
+    "ELSIF_STAT_LIST_OPT",
     "WHILE_STAT",
     "FOR_STAT",
     "FOREACH_STAT",

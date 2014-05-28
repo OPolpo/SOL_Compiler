@@ -12,4 +12,16 @@ begin tester2
 	return p();
 	return ppp(ll);
 	a[o]=funzione(parametro1, parametro2, 0 , e[o], t.o);
+
+	testiiiiiinng =0;
+	
+	if a==b then
+		t = r;
+	elsif a>b then
+		t = struct(2, "alpha");
+		a = b + c;
+	else
+		a = b-c;
+	endif;
+
 end tester2
