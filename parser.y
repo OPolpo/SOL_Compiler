@@ -225,33 +225,39 @@ low_bin_op : '+' {$$ = nontermnode(NMATH_EXPR); $$->qualifier = '+';}
 low_term : low_term high_bin_op factor {$$ = $2;
 										$$->child = $1;
 										$1->brother = $3;}
-		 | factor {$$ = iconstnode();/*TO BE REMOVED*/}
+		 | factor 
 high_bin_op : '*' {$$ = nontermnode(NMATH_EXPR); $$->qualifier = '*';}
 			| '/' {$$ = nontermnode(NMATH_EXPR); $$->qualifier = '/';}
-factor : unary_op factor 
-	| '(' expr ')' 
-	| left_hand_side 
-	| atomic_const 
-	| instance_construction 
-	| func_call 
-	| cond_expr 
-	| built_in_call 
-	| dynamic_input
-unary_op : '−' %prec UMINUS
-	| NOT 
-	| dynamic_output
-atomic_const : CHARCONST 
-	| INTCONST 
-	| REALCONST 
-	| STRCONST 
-	| BOOLCONST
+factor : unary_op factor {$$ = $1; $1->child = $2;}
+	   | '(' expr ')' {$$ = $2;}
+	   | left_hand_side 
+	   | atomic_const 
+	   | instance_construction
+	   | func_call
+	   | cond_expr {$$ = iconstnode();/*TO BE REMOVED*/}
+	   | built_in_call {$$ = iconstnode();/*TO BE REMOVED*/}
+	   | dynamic_input {$$ = iconstnode();/*TO BE REMOVED*/}
+unary_op : '-' {$$ = nontermnode(NNEG_EXPR); $$->qualifier = '-';}
+		 | NOT {$$ = nontermnode(NNEG_EXPR); $$->qualifier = NOT;}
+		 | dynamic_output {$$ = iconstnode();/*TO BE REMOVED*/}
+atomic_const : CHARCONST {$$ = iconstnode();} 
+			 | INTCONST  {$$ = iconstnode();}
+			 | REALCONST {$$ = rconstnode();}
+			 | STRCONST  {$$ = sconstnode();}
+			 | BOOLCONST {$$ = bconstnode();}
 instance_construction : struct_construction 
-	| vector_construction
-struct_construction : STRUCT '(' expr_list ')'
-expr_list : expr ',' expr_list 
-	| expr
-vector_construction : VECTOR '(' expr_list ')'
-func_call : ID '(' expr_list_opt ')'
+					  | vector_construction
+struct_construction : STRUCT '(' expr_list ')' {$$ = nontermnode(NINSTANCE_EXPR);
+												$$->qualifier = STRUCT;
+												$$->child = $3;}
+expr_list : expr ',' expr_list {$$ = $1; $$->brother = $3;}
+		  | expr
+vector_construction : VECTOR '(' expr_list ')' {$$ = nontermnode(NINSTANCE_EXPR);
+												$$->qualifier = VECTOR;
+												$$->child = $3;}
+func_call : ID {$$ = idnode();} '(' expr_list_opt ')' {$$ = nontermnode(NFUNC_CALL);
+													   $$->child = $2;
+													   $2->brother = $4;}
 expr_list_opt : expr_list 
 	| /** eps **/
 cond_expr : IF expr THEN expr elsif_expr_list_opt ELSE expr ENDIF
