@@ -199,29 +199,35 @@ specifier_opt : '[' expr ']' {$$ = nontermnode(NSPECIFIER_OPT);
 write_stat : WRITE specifier_opt expr {$$ = nontermnode(NWRITE_STAT);
 						   		   	   $$->child = $2;
 							   	       $2->brother = idnode();}
-expr : expr bool_op bool_term {$$=$2;
+expr : expr bool_op bool_term {$$ = $2;
 							   $$->child = $1;
 							   $1->brother = $3;}
-	 | bool_term {$$ = iconstnode();/*TO BE REMOVED*/}
+	 | bool_term
 bool_op : AND {$$ = nontermnode(NLOGIC_EXPR); $$->qualifier = AND}
 		| OR {$$ = nontermnode(NLOGIC_EXPR); $$->qualifier = OR}
-bool_term : rel_term rel_op rel_term 
-	| rel_term
-rel_op : EQ
-	| NE 
-	| '>' 
-	| GE 
-	| '<' 
-	| LE 
-	| IN
-rel_term : rel_term low_bin_op low_term 
-	| low_term
-low_bin_op : '+' 
-	| '-'
-low_term : low_term high_bin_op factor 
-	| factor
-high_bin_op : '*' 
-	| '/'
+bool_term : rel_term rel_op rel_term {$$ = $2;
+									  $$->child = $1;
+									  $1->brother = $3;}
+		  | rel_term 
+rel_op : EQ  {$$ = nontermnode(NREL_EXPR); $$->qualifier = EQ;}
+	   | NE  {$$ = nontermnode(NREL_EXPR); $$->qualifier = NE;}
+	   | '>' {$$ = nontermnode(NREL_EXPR); $$->qualifier = '>';}
+	   | GE  {$$ = nontermnode(NREL_EXPR); $$->qualifier = GE;}
+	   | '<' {$$ = nontermnode(NREL_EXPR); $$->qualifier = '<';}
+	   | LE  {$$ = nontermnode(NREL_EXPR); $$->qualifier = LE;}
+	   | IN  {$$ = nontermnode(NREL_EXPR); $$->qualifier = IN;}
+rel_term : rel_term low_bin_op low_term	{$$ = $2;
+										 $$->child = $1;
+										 $1->brother = $3;}
+		 | low_term 
+low_bin_op : '+' {$$ = nontermnode(NMATH_EXPR); $$->qualifier = '+';}
+		   | '-' {$$ = nontermnode(NMATH_EXPR); $$->qualifier = '-';}
+low_term : low_term high_bin_op factor {$$ = $2;
+										$$->child = $1;
+										$1->brother = $3;}
+		 | factor {$$ = iconstnode();/*TO BE REMOVED*/}
+high_bin_op : '*' {$$ = nontermnode(NMATH_EXPR); $$->qualifier = '*';}
+			| '/' {$$ = nontermnode(NMATH_EXPR); $$->qualifier = '/';}
 factor : unary_op factor 
 	| '(' expr ')' 
 	| left_hand_side 
