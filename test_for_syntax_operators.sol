@@ -12,19 +12,19 @@ const MM: int=20;
 func sum(v: vector [10] of int;):int 
 var n, res: int;
 begin sum
-	res = 0;
+	res = 0;	
 	foreach n in v do
 		res = res + n; 
 	endforeach; 
 	return res;
 end sum
-
+	
 func fact(n: int;): int 
 begin fact
 	if n <= 0 then 
 		return 1;
 	else
-		return n * fact(n­1);
+		return n * fact(n-1);
 	endif; 
 end fact
 func exread(): int
@@ -58,7 +58,7 @@ end exwrite2
 begin tester2
 
 	m = sum(v);
-	a = if b>c then b+c elsif b==c+1 then b­c else a+1 endif;
+	a = if b>c then b+c elsif b==c+1 then b-c else a+1 endif;
 
 	if a==b then
 		t = r;
@@ -66,7 +66,7 @@ begin tester2
 		t = struct(2, "alpha");
 		a = b + c;
 	else
-		a = b­c;
+		a = b-c;
 	endif;
 
 	res = 0;

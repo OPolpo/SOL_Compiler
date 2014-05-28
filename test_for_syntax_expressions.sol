@@ -11,4 +11,5 @@ begin tester2
 	return -pippo88878y65cytrdxctrctrct7;
 	return p();
 	return ppp(ll);
+	a[o]=funzione(parametro1, parametro2, 0 , e[o], t.o);
 end tester2

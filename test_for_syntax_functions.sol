@@ -40,6 +40,6 @@ begin prog
 	
 book = struct(struct("Carl Gustav", "Jung"), "Man and his symbols",
 struct("ETA", 1992));
-	x = toreal(i+j)*(r­toreal(i));
+	x = toreal(i+j)*(r-toreal(i));
 	j = toint(x+y-1.25);
 end prog

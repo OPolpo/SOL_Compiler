@@ -41,9 +41,9 @@ typedef enum{
     NRD_EXPR,
     NINSTANCE_EXPR,
     NFUNC_CALL,
-	NCOND_EXP,
+	NCOND_EXPR,
 	NELSIF_EXPR_LIST_OPT,
-	NBUILT_IN_CALL,
+	NBUILT_IN_CALL
     
 } Nonterminal;
 

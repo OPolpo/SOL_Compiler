@@ -11,7 +11,7 @@ unsigned int line = 1;
 
 spacing		([ \t])+
 eol			\n
-letter		[a-­zA-Z]
+letter		[a-zA-Z]
 digit		[0-9]
 id			{letter}({letter}|{digit})*
 num 		{digit}+

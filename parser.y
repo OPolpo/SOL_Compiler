@@ -153,7 +153,7 @@ stat : assign_stat {$$ = nontermnode(NSTAT); $$->child = $1;}
 assign_stat : left_hand_side '=' expr {$$ = nontermnode(NASSIGN_STAT); 
 									   $$->child = $1; 
 									   $1->brother = $3;}
-left_hand_side : ID {$$ = nontermnode(NLEFT_HAND_SIDE); $$ = idnode();}
+left_hand_side : ID {$$ = nontermnode(NLEFT_HAND_SIDE); $$->child = idnode();}
 			   | fielding {$$ = nontermnode(NLEFT_HAND_SIDE); $$->child = $1;}
 			   | indexing {$$ = nontermnode(NLEFT_HAND_SIDE); $$->child = $1;}
 fielding : left_hand_side '.' ID {$$ = nontermnode(NFIELDING);
@@ -234,12 +234,12 @@ factor : unary_op factor {$$ = $1; $1->child = $2;}
 	   | atomic_const 
 	   | instance_construction
 	   | func_call
-	   | cond_expr {$$ = iconstnode();/*TO BE REMOVED*/}
-	   | built_in_call {$$ = iconstnode();/*TO BE REMOVED*/}
-	   | dynamic_input {$$ = iconstnode();/*TO BE REMOVED*/}
+	   | cond_expr
+	   | built_in_call
+	   | dynamic_input
 unary_op : '-' {$$ = nontermnode(NNEG_EXPR); $$->qualifier = '-';}
 		 | NOT {$$ = nontermnode(NNEG_EXPR); $$->qualifier = NOT;}
-		 | dynamic_output {$$ = iconstnode();/*TO BE REMOVED*/}
+		 | dynamic_output
 atomic_const : CHARCONST {$$ = iconstnode();} 
 			 | INTCONST  {$$ = iconstnode();}
 			 | REALCONST {$$ = rconstnode();}
@@ -259,16 +259,30 @@ func_call : ID {$$ = idnode();} '(' expr_list_opt ')' {$$ = nontermnode(NFUNC_CA
 													   $$->child = $2;
 													   $2->brother = $4;}
 expr_list_opt : expr_list 
-	| /** eps **/
-cond_expr : IF expr THEN expr elsif_expr_list_opt ELSE expr ENDIF
-elsif_expr_list_opt : ELSIF expr THEN expr elsif_expr_list_opt 
-	| /** eps **/ 
-built_in_call : toint_call 
-	| toreal_call
-toint_call : TOINT '(' expr ')'
-toreal_call : TOREAL '(' expr ')'
-dynamic_input : RD specifier_opt domain
-dynamic_output : WR specifier_opt
+			  | /** eps **/
+cond_expr : IF expr THEN expr elsif_expr_list_opt ELSE expr ENDIF {$$ = nontermnode(NCOND_EXPR);
+																   $$->child = $2;
+																   $2->brother = $4;
+																   $4->brother = $5;
+																   $5->brother = $7;}
+elsif_expr_list_opt : ELSIF expr THEN expr elsif_expr_list_opt {$$ = nontermnode(NELSIF_EXPR_LIST_OPT);
+																$$->child = $2;
+																$2->brother = $4;
+																$4->brother = $5;}
+					| /** eps **/ {$$ = nontermnode(NELSIF_EXPR_LIST_OPT);}
+built_in_call : toint_call
+			  | toreal_call
+toint_call : TOINT '(' expr ')' {$$ = nontermnode(NBUILT_IN_CALL);
+								 $$->qualifier = TOINT;
+								 $$->child = $3;}
+toreal_call : TOREAL '(' expr ')' {$$ = nontermnode(NBUILT_IN_CALL);
+								   $$->qualifier = TOREAL;
+								   $$->child = $3;}
+dynamic_input : RD specifier_opt domain {$$ = nontermnode(NRD_EXPR);
+										 $$->child = $2;
+										 $2->brother = $3;}
+dynamic_output : WR specifier_opt {$$ = nontermnode(NWR_EXPR);
+										$$->child = $2;}
 
 %%
 
