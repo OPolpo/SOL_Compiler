@@ -45,7 +45,7 @@ toreal			{return (TOREAL);}
 begin			{return (F_BEGIN);}
 end				{return (F_END);}
 "=="			{return(EQ);}
-"<>"			{return(NE);}
+"!="			{return(NE);}
 "<="			{return(LE);}
 ">="			{return(GE);}
 ">"				{return('>');}

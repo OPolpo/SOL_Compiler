@@ -100,6 +100,8 @@ void treeprint(Pnode root, char* father_indent) {
         printf(" (%f)", root->value.rval);
     else if(root->type == T_BOOLCONST)
         printf(" (%s)", (root->value.bval == TRUE ? "TRUE" : "FALSE"));
+    else if(root->type == T_NONTERMINAL && root->value.ival == NLOGIC_EXPR)
+        printf(" [%d]", root->qualifier);
     printf("\n");
     for(p=root->child; p != NULL; p = p->brother){
         if(root->brother == NULL){
