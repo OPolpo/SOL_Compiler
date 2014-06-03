@@ -1,10 +1,11 @@
 #include "symbol_table.h"
 
 int oid = 1;
-
+int loc_oid = 1;
 
 
 Phash_node create_symbol_table(Pnode root, Phash_node * local_env){
+    Pnode current, child;
     switch (root->type) {
         case T_NONTERMINAL: {
             switch (root->value.ival) {
@@ -12,9 +13,61 @@ Phash_node create_symbol_table(Pnode root, Phash_node * local_env){
                     create_symbol_table(root->child, local_env);
                     break;
                 case NFUNC_DECL:
-                    new_function_node(root->name,/* schema */, /* num */, /* formal */);
+                    current = root->child; //ID
                     
-                    create_symbol_table(, );
+                    Phash_node func = new_function_node(current->value.sval);
+                    func->locenv = new_hash_table();
+                    loc_oid = 1;
+                    
+                    func->formals_num = 0;
+                    current = current->brother; //DECL_LIST_OPT
+                    if (current->child != NULL) {//handle parameters
+                        child = current->child; //DECL
+                        while (child != NULL) { //loop on DECL
+                            Pnode id_list = child->child;
+                            Pschema domain_sch = create_schema(id_list->brother);
+                            
+                            Pnode id = id_list->child;
+                            Formal * next_formal = func->formal;
+                            while (id != NULL) { //loop on IDs
+                                Phash_node id_node = new_id_node(id->value.sval, CLPAR);
+                                id_node->schema = domain_sch;
+                                insert(id_node, func->locenv);
+                                
+                                next_formal = (Formal *)malloc(sizeof(Formal));
+                                next_formal->formal = id_node;
+                                next_formal = next_formal->next;
+                                
+                                func->formals_num++;//on single ID
+                                id = id->brother;
+                            }
+                            
+                        }
+                    }
+                    
+                    current = current->brother; //DOMAIN
+                    func->schema = create_schema(current);
+                    
+                    current = current->brother; //TYPE_SECT_OPT
+                    if (current->child != NULL) {//handle types
+                        
+                    }
+                    
+                    current = current->brother; //VAR_SECT_OPT
+                    if (current->child != NULL) {//handle variables
+                        
+                    }
+                    
+                    current = current->brother; //CONST_SECT_OPT
+                    if (current->child != NULL) {//handle constants
+                        
+                    }
+                    
+                    current = current->brother; //FUNC_LIST_OPT
+                    if (current->child != NULL) {//handle func declaration
+                        
+                    }
+
                     break;
                 case NDECL_LIST_OPT:
                     
@@ -57,19 +110,19 @@ Phash_node create_symbol_table(Pnode root, Phash_node * local_env){
             
             break;
         case T_ATOMIC_DOMAIN:
-            <#statements#>
+            
             break;
         case T_CHARCONST:
-            <#statements#>
+            
             break;
         case T_INTCONST:
-            <#statements#>
+            
             break;
         case T_REALCONST:
-            <#statements#>
+            
             break;
         case T_STRCONST:
-            <#statements#>
+            
             break;
         case T_BOOLCONST:
             
@@ -85,20 +138,25 @@ Phash_node create_symbol_table(Pnode root, Phash_node * local_env){
      */
 }
 
-Phash_node new_function_node(char * _name, Pschema _schema, int _num, Formal * _formal){
+Phash_node new_function_node(char * _name){
     Phash_node node = (Phash_node) malloc (sizeof(Hash_node));
     node->name = _name;
     node->oid = oid;
     oid++;
     node->class_node = CLFUNC;
-    node->schema = _schema;
-    node->formals_num = _num;
-    node->formal = _formal;
-    node->locenv = new_hash_table();
 }
 
-Pnode visit_absTree(Pnode root);
+Phash_node new_id_node(char * _name, Class _class){
+    Phash_node node = (Phash_node) malloc (sizeof(Hash_node));
+    node->name = _name;
+    node->oid = loc_oid;
+    loc_oid++;
+    node->class_node = _class;
+}
 
+Pschema create_schema(Pnode p){
+
+}
 // *
 //  typedef struct shash_node{
 //  char * name;

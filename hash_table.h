@@ -31,7 +31,7 @@ typedef struct shash_node{
     char * name;
     int oid;
     Class class_node; //TYPE, VAR, CONST, FUNC, PAR
-    Schema * schema;
+    Pschema schema;
     struct shash_node ** locenv;
     int formals_num;
     Formal * formal;
