@@ -5,7 +5,20 @@ int oid = 1;
 
 
 Phash_node create_symbol_table(Pnode root, Phash_node ){
-    if ( root->type == T_NONTERMINAL && root->
+    switch (root->type) {
+        case T_NONTERMINAL:
+            <#statements#>
+            break;
+        case 	T_ID,
+            T_ATOMIC_DOMAIN,
+            T_CHARCONST,
+            T_INTCONST,
+            T_REALCONST,
+            T_STRCONST,
+            T_BOOLCONST,
+        default:
+            break;
+    }
     
     /*
     if (root == NULL) {
