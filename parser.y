@@ -1,6 +1,7 @@
 %{
 #include "def_y.h"
 #include "tree.h"
+#include "symbol_table.h"
 
 #define YYSTYPE Pnode
 extern char *yytext;
@@ -293,8 +294,10 @@ int main(){
 	int result;
 	  
 	yyin = stdin;
-	if((result = yyparse()) == 0)
+	if((result = yyparse()) == 0){
 		treeprint(root, "");
+		create_symbol_table(root);
+	}
 	return(result);
 }
 
