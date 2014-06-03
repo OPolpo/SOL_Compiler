@@ -97,6 +97,8 @@ Phash_node new_function_node(char * _name, Pschema _schema, int _num, Formal _fo
     node->locenv = new_hash_table();
 }
 
+Pnode visit_absTree(Pnode root);
+
 /**
  typedef struct shash_node{
  char * name;
