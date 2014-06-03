@@ -4,7 +4,7 @@
 #define TOT 3517
 #define SHIFT 4
 #include <string.h>
-#include "def_y.h"
+#include "def.h"
 
 typedef enum{
     CLTYPE,
