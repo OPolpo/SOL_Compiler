@@ -4,26 +4,84 @@ int oid = 1;
 
 
 
-Phash_node create_symbol_table(Pnode root, Phash_node ){
+Phash_node create_symbol_table(Pnode root, Phash_node * local_env){
     switch (root->type) {
-        case T_NONTERMINAL:
+        case T_NONTERMINAL: {
+            switch (root->value.ival) {
+                case NPROGRAM:
+                    create_symbol_table(root->child, local_env);
+                    break;
+                case NFUNC_DECL:
+                    new_function_node()
+                    
+                    create_symbol_table(, );
+                    break;
+                case NDECL_LIST_OPT:
+                    
+                    break;
+                case NDECL:
+                    
+                    break;
+                case NID_LIST:
+                    
+                    break;
+                case NDOMAIN:
+                    
+                    break;
+                case NSTRUCT_DOMAIN:
+                    
+                    break;
+                case NVECTOR_DOMAIN:
+                    
+                    break;
+                case NTYPE_SECT_OPT:
+                    
+                    break;
+                case NVAR_SECT_OPT:
+                    
+                    break;
+                case NCONST_SECT_OPT:
+                    
+                    break;
+                case NFUNC_LIST_OPT:
+                    
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+            
+            break;
+        case T_ID:
+            
+            break;
+        case T_ATOMIC_DOMAIN:
             <#statements#>
             break;
-        case 	T_ID,
-            T_ATOMIC_DOMAIN,
-            T_CHARCONST,
-            T_INTCONST,
-            T_REALCONST,
-            T_STRCONST,
-            T_BOOLCONST,
+        case T_CHARCONST:
+            <#statements#>
+            break;
+        case T_INTCONST:
+            <#statements#>
+            break;
+        case T_REALCONST:
+            <#statements#>
+            break;
+        case T_STRCONST:
+            <#statements#>
+            break;
+        case T_BOOLCONST:
+            
+            break;
         default:
             break;
     }
     
     /*
-    if (root == NULL) {
-        return Phash_node;
-    }
+     if (root == NULL) {
+     return Phash_node;
+     }
      */
 }
 
@@ -50,4 +108,4 @@ Phash_node new_function_node(char * _name, Pschema _schema, int _num, Formal _fo
  Formal * formal;
  struct shash_node * next;
  } Hash_node, * Phash_node;
-**/
+ **/

@@ -39,7 +39,7 @@ typedef struct shash_node{
 } Hash_node, * Phash_node;
 
 int hash (char* id);
-void insert(Phash_node p);
-Phash_node getNode(char * id);
+void insert(Phash_node p,Phash_node * table);
+Phash_node getNode(char * id, Phash_node * table);
 Phash_node * new_hash_table();
 #endif

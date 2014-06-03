@@ -70,9 +70,7 @@ typedef struct snode{
 	Value value;
     int qualifier;
 	struct snode *child, *brother;
-} Node;
-
-typedef Node *Pnode;
+} Node, * Pnode;
 
 char *newstring(char*);
 

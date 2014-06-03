@@ -296,7 +296,7 @@ int main(){
 	yyin = stdin;
 	if((result = yyparse()) == 0){
 		treeprint(root, "");
-		create_symbol_table(root);
+		//create_symbol_table(root);
 	}
 	return(result);
 }
