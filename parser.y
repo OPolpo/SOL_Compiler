@@ -1,5 +1,5 @@
 %{
-#include "def_y.h"
+#include "def.h"
 #include "tree.h"
 #include "symbol_table.h"
 

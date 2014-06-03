@@ -12,7 +12,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node * local_env){
                     create_symbol_table(root->child, local_env);
                     break;
                 case NFUNC_DECL:
-                    new_function_node()
+                    new_function_node(root->name,/* schema */, /* num */, /* formal */);
                     
                     create_symbol_table(, );
                     break;
@@ -85,7 +85,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node * local_env){
      */
 }
 
-Phash_node new_function_node(char * _name, Pschema _schema, int _num, Formal _formal){
+Phash_node new_function_node(char * _name, Pschema _schema, int _num, Formal * _formal){
     Phash_node node = (Phash_node) malloc (sizeof(Hash_node));
     node->name = _name;
     node->oid = oid;
@@ -99,15 +99,15 @@ Phash_node new_function_node(char * _name, Pschema _schema, int _num, Formal _fo
 
 Pnode visit_absTree(Pnode root);
 
-/**
- typedef struct shash_node{
- char * name;
- int oid;
- Class class_node; //TYPE, VAR, CONST, FUNC, PAR
- Schema * schema;
- struct shash_node ** locenv;
- int formals_num;
- Formal * formal;
- struct shash_node * next;
- } Hash_node, * Phash_node;
- **/
+// *
+//  typedef struct shash_node{
+//  char * name;
+//  int oid;
+//  Class class_node; //TYPE, VAR, CONST, FUNC, PAR
+//  Schema * schema;
+//  struct shash_node ** locenv;
+//  int formals_num;
+//  Formal * formal;
+//  struct shash_node * next;
+//  } Hash_node, * Phash_node;
+//  *

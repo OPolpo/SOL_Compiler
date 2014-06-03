@@ -1,105 +1,89 @@
-//
-//  def.h
-//
-//
-//  Created by Ilaria Martinelli on 07/05/14.
-//
-//
-
 #ifndef _def_h
 #define _def_h
 
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef enum{	
+	NPROGRAM,
+	NFUNC_DECL,
+	NDECL_LIST_OPT,
+	NDECL,
+	NID_LIST,
+	NDOMAIN,
+	NSTRUCT_DOMAIN,
+	NVECTOR_DOMAIN,
+	NTYPE_SECT_OPT,
+	NVAR_SECT_OPT,
+	NCONST_SECT_OPT,
+	NFUNC_LIST_OPT,
+	NFUNC_BODY,
+	NSTAT_LIST,
+	NSTAT,
+	NASSIGN_STAT,
+	NLEFT_HAND_SIDE,
+	NFIELDING,
+	NINDEXING,
+	NIF_STAT,
+	NELSIF_STAT_LIST_OPT,
+	NWHILE_STAT,
+	NFOR_STAT,
+	NFOREACH_STAT,
+	NRETURN_STAT,
+	NREAD_STAT,
+	NSPECIFIER_OPT,
+	NWRITE_STAT,
+    NMATH_EXPR,
+    NLOGIC_EXPR,
+    NREL_EXPR,
+    NNEG_EXPR,
+    NWR_EXPR,
+    NRD_EXPR,
+    NINSTANCE_EXPR,
+    NFUNC_CALL,
+	NCOND_EXPR,
+	NELSIF_EXPR_LIST_OPT,
+	NBUILT_IN_CALL
+    
+} Nonterminal;
+
+typedef enum{
+	T_ID,
+	T_ATOMIC_DOMAIN,
+	T_CHARCONST,
+	T_INTCONST,
+	T_REALCONST,
+	T_STRCONST,
+	T_BOOLCONST,
+	T_NONTERMINAL
+} Typenode;
+
 typedef union{
-  int intval;
-  float realval;
-  char *stringval;
-  enum {FALSE, TRUE} boolval;
+	int ival;
+	float rval;
+	char *sval;
+	enum {FALSE, TRUE} bval;
 } Value;
 
+typedef struct snode{
+	Typenode type;
+	Value value;
+    int qualifier;
+	struct snode *child, *brother;
+} Node, * Pnode;
 
-#define CHAR	256
-#define INT		257
-#define REAL	258
-#define STRING	259
-#define BOOL	260
+char *newstring(char*);
 
-#define STRUCT	261
-#define VECTOR	262
-#define OF		263
+Pnode nontermode(Nonterminal),
+	  idnode(),
+	  iconstnode(),
+	  sconstnode(),
+	  rconstnode(),
+	  bconstnode(),
+      atomicdomainnode(int domain),
+	  newnode(Typenode);
 
-#define TYPE	264
-#define VAR		265
-#define CONST	266
-
-#define FUNC	267
-#define TOINT	268
-#define TOREAL	269
-#define F_BEGIN	301
-#define F_END	302
-
-#define REL_OP	270
-#define EQ		271
-#define NE		272
-#define LT		273
-#define LE		274
-#define GT		275
-#define GE		276
-#define IN 		277
-
-#define LOG_OP	278
-#define AND		279
-#define OR		280
-#define NOT		281
-
-#define IF		282
-#define THEN	283
-#define ELSE	284
-#define ELSIF	285
-#define ENDIF	286
-
-#define WHILE	287
-#define DO		288
-#define ENDWHILE 289
-
-#define FOR 	290
-#define TO 		291
-#define ENDFOR 	292
-
-#define FOREACH 293
-#define ENDFOREACH 294
-
-#define RETURN	295
-
-#define READ	296
-#define RD 		297
-
-#define WRITE 	298
-#define WR 		299
-
-#define ASSIGN	300
-//302
-
-#define ERROR	303
-
-
-#define INT_CONST       304
-#define REAL_CONST      305
-#define CHAR_CONST      306
-#define STRING_CONST    307
-#define BOOL_CONST      308
-#define ID				309
-
-
-char* store_id(char* string){
-	int line;
-	//if((line = lookup(yytext)) == 0) line = insert(yytext);
-  	return "ciao";
-}
-
-char* store_str(char* string){
-	int line;
-	//if((line = lookup(yytext)) == 0) line = insert(yytext);
-  	return NULL;
-}
+int yylex (void);
+int yyerror ();
 
 #endif

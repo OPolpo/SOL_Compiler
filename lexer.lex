@@ -1,6 +1,6 @@
 %{
 #include <stdlib.h>
-#include "def_y.h"
+#include "def.h"
 #include "parser.h"
 
 Value lexval;

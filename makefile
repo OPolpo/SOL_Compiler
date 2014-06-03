@@ -3,28 +3,31 @@ CFLAGS=-c -Wall
 
 all: prova clean
 
-lexer: lex.c parser.h def_y.h
+lexer: lex.c parser.h def.h
 	cc -o lexer lex.c -DLEXER
 
-prova: lex.o parser.o tree.o hash_table.o
-	cc -g -o prova lex.o parser.o tree.o hash_table.o
+prova: lex.o parser.o tree.o hash_table.o symbol_table.o
+	cc -g -o prova lex.o parser.o tree.o hash_table.o symbol_table.o
 
-lex.o: lex.c parser.h def_y.h
+lex.o: lex.c parser.h def.h
 	cc -g -c lex.c 
 
-parser.o: parser.c def_y.h 
+parser.o: parser.c def.h 
 	cc -g -c parser.c
 
-tree.o: tree.c tree.h def_y.h parser.h
+tree.o: tree.c tree.h def.h parser.h
 	cc -g -c tree.c
 
 hash_table.o: hash_table.c hash_table.h
 	cc -g -c hash_table.c
 
-lex.c: lexer.lex parser.y parser.h parser.c def_y.h
+symbol_table.o: symbol_table.c symbol_table.h
+	cc -g -c symbol_table.c
+
+lex.c: lexer.lex parser.y parser.h parser.c def.h
 	flex -o lex.c lexer.lex
 
-parser.h: parser.y def_y.h
+parser.h: parser.y def.h
 	bison -d -o parser.c parser.y
 
 clean: 
