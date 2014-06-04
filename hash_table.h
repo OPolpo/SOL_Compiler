@@ -1,7 +1,7 @@
 #ifndef HASH_TABLE
 #define HASH_TABLE
 
-#define TOT 3517
+#define TOT 313
 #define SHIFT 4
 #include <string.h>
 #include "def.h"
@@ -42,4 +42,6 @@ int hash (char* id);
 void insert(Phash_node p,Phash_node * table);
 Phash_node getNode(char * id, Phash_node * table);
 Phash_node * new_hash_table();
+void print_func_node(Phash_node node);
+
 #endif

@@ -67,7 +67,11 @@ Phash_node create_symbol_table(Pnode root, Phash_node * local_env){
                     if (current->child != NULL) {//handle func declaration
                         
                     }
-
+                    
+                    
+                    print_func_node(func);
+                    
+                    
                     break;
                 case NDECL_LIST_OPT:
                     
@@ -155,7 +159,7 @@ Phash_node new_id_node(char * _name, Class _class){
 }
 
 Pschema create_schema(Pnode p){
-
+    return NULL;
 }
 // *
 //  typedef struct shash_node{
