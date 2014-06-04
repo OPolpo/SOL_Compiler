@@ -2,6 +2,26 @@
 
 int oid = 1;
 
+void handle_function_part(Pnode current, Phash_node func, int loc_oid, Class part_class){
+    if (current->child != NULL) {
+        Pnode child;
+        child = current->child;
+        while (child != NULL) {
+            Pnode id_list = child->child;
+            Pschema domain_sch = create_schema(id_list->brother);
+            
+            Pnode id = id_list->child;
+            while (id != NULL){
+                Phash_node id_node = new_id_node(id->value.sval, part_class, loc_oid);
+                loc_oid++;
+                id_node->schema = domain_sch;
+                insert(id_node, func->locenv);
+                id = id->brother;
+            }
+            child = child->brother;
+        }
+    }
+}
 
 Phash_node create_symbol_table(Pnode root){
     Pnode current, child;
@@ -56,71 +76,26 @@ Phash_node create_symbol_table(Pnode root){
                     current = current->brother; //DOMAIN
                     func->schema = create_schema(current);
                     
-                    // current = current->brother; //TYPE_SECT_OPT
-                    // if (current->child != NULL) {//handle types
-                    //     child = current->child; //DECL
-                    //     while (child != NULL) { //loop on DECL
-                    //         Pnode id_list = child->child;
-                    //         Pschema domain_sch = create_schema(id_list->brother);
-                            
-                    //         Pnode id = id_list->child;
-                    //         while (id != NULL){ //loop on IDs
-                    //             Phash_node id_node = new_id_node(id->value.sval, CLTYPE, loc_oid);
-                    //             loc_oid++;
-                    //             id_node->schema = domain_sch;
-                    //             insert(id_node, func->locenv);
-                    //             id = id->brother;
-                    //         }
-                    //         child = child->brother; //next DECL
-                    //     }
-                    // }
+                    current = current->brother; //TYPE_SECT_OPT
+                    handle_function_part(current, func, loc_oid, CLTYPE);
+
                     
-                    // current = current->brother; //VAR_SECT_OPT
-                    // if (current->child != NULL) {//handle variables
-                    //     child = current->child; //DECL
-                    //     while (child != NULL) { //loop on DECL
-                    //         Pnode id_list = child->child;
-                    //         Pschema domain_sch = create_schema(id_list->brother);
-                            
-                    //         Pnode id = id_list->child;
-                    //         while (id != NULL){ //loop on IDs
-                    //             Phash_node id_node = new_id_node(id->value.sval, CLVAR, loc_oid);
-                    //             loc_oid++;
-                    //             id_node->schema = domain_sch;
-                    //             insert(id_node, func->locenv);
-                    //             id = id->brother;
-                    //         }
-                    //         child = child->brother; //next DECL
-                    //     }
-                    // }
+                    current = current->brother; //VAR_SECT_OPT
+                    handle_function_part(current, func, loc_oid, CLVAR);
+
                     
-                    // current = current->brother; //CONST_SECT_OPT
-                    // if (current->child != NULL) {//handle constants
-                    //     child = current->child; //DECL
-                    //     while (child != NULL) { //loop on DECL
-                    //         Pnode id_list = child->child;
-                    //         Pschema domain_sch = create_schema(id_list->brother);
-                            
-                    //         Pnode id = id_list->child;
-                    //         while (id != NULL){ //loop on IDs
-                    //             Phash_node id_node = new_id_node(id->value.sval, CLCONST, loc_oid);
-                    //             loc_oid++;
-                    //             id_node->schema = domain_sch;
-                    //             insert(id_node, func->locenv);
-                    //             id = id->brother;
-                    //         }
-                    //         child = child->brother->brother; //next DECL
-                    //     }
-                    // }
+                    current = current->brother; //CONST_SECT_OPT
+                    handle_function_part(current, func, loc_oid, CLCONST);
+
                     
-                    // current = current->brother; //FUNC_LIST_OPT
-                    // if (current->child != NULL) {
-                    //     child = current->child; // FUNC DECL
-                    //     while (child != NULL) {//loop on FUNC DECL
-                    //         create_symbol_table(current);
-                    //         child = child->brother;
-                    //     }
-                    // }
+                    current = current->brother; //FUNC_LIST_OPT
+                    if (current->child != NULL) {
+                        child = current->child; // FUNC DECL
+                        while (child != NULL) {//loop on FUNC DECL
+                            create_symbol_table(current);
+                            child = child->brother;
+                        }
+                    }
                     
                     
                     print_func_node(func);
@@ -213,42 +188,42 @@ Phash_node new_id_node(char * _name, Class _class, int loc_oid){
     return node;
 }
 
-Pschema create_schema(Pnode p){// called on DOMAIN node
-    Pschema node;
-    switch (root->type) {
-        case T_NONTERMINAL:
-            switch (root->value.ival) {
-                case NDOMAIN:
+Pschema create_schema(Pnode root){// called on DOMAIN node
+    // Pschema node;
+    // switch (root->type) {
+    //     case T_NONTERMINAL:
+    //         switch (root->value.ival) {
+    //             case NDOMAIN:
                     
-                    break;
-                case NSTRUCT_DOMAIN:
+    //                 break;
+    //             case NSTRUCT_DOMAIN:
                     
-                    break;
-                case NVECTOR_DOMAIN:
+    //                 break;
+    //             case NVECTOR_DOMAIN:
                     
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case T_ID:
+    //                 break;
+    //             default:
+    //                 break;
+    //         }
+    //         break;
+    //     case T_ID:
             
-            break;
-        case T_ATOMIC_DOMAIN:
-            node = new_schema_node(
-            break;
-        default:
-            break;
-    }
+    //         break;
+    //     case T_ATOMIC_DOMAIN:
+    //         node = new_schema_node(
+    //         break;
+    //     default:
+    //         break;
+    // }
     
     return NULL;
 }
 
 Pschema new_schema_node(int _type, char * _id){
-    Pschema node = (Pschema) malloc(schema);
-    node->type = _type;
-    node->id = id;
-    return node;
+    // Pschema node = (Pschema) malloc(schema);
+    // node->type = _type;
+    // node->id = id;
+    // return node;
 }
 
 /*
