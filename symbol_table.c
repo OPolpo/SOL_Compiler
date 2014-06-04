@@ -1,4 +1,5 @@
 #include "symbol_table.h"
+#include "parser.h"
 
 int oid = 1;
 
@@ -189,41 +190,66 @@ Phash_node new_id_node(char * _name, Class _class, int loc_oid){
 }
 
 Pschema create_schema(Pnode root){// called on DOMAIN node
-    // Pschema node;
-    // switch (root->type) {
-    //     case T_NONTERMINAL:
-    //         switch (root->value.ival) {
-    //             case NDOMAIN:
-                    
-    //                 break;
-    //             case NSTRUCT_DOMAIN:
-                    
-    //                 break;
-    //             case NVECTOR_DOMAIN:
-                    
-    //                 break;
-    //             default:
-    //                 break;
-    //         }
-    //         break;
-    //     case T_ID:
-            
-    //         break;
-    //     case T_ATOMIC_DOMAIN:
-    //         node = new_schema_node(
-    //         break;
-    //     default:
-    //         break;
-    // }
-    
-    return NULL;
+    return create_domain_schema(root, NULL);
 }
 
-Pschema new_schema_node(int _type, char * _id){
-    // Pschema node = (Pschema) malloc(schema);
-    // node->type = _type;
-    // node->id = id;
-    // return node;
+Pschema create_domain_schema(Pnode domain, char * id){
+    Pnode dom_child = domain->child;
+    Pschema node;
+    switch (dom_child->type) {
+        case T_NONTERMINAL:
+            switch (dom_child->value.ival) {
+                case NSTRUCT_DOMAIN:
+                    node = new_schema_node(STRUCT);
+                    Pnode decl = dom_child->child;
+                    
+                    Pschema last = node->p1;
+                    while (decl != NULL) { //DECL
+                        Pnode decl_domain = decl->child->brother;
+                        Pnode id = decl->child->child;
+                        
+                        while (id != NULL) {
+                            if(last == NULL)
+                                node->p1 = create_domain_schema(decl_domain, id->value.sval);
+                            else
+                                last->p2 = create_domain_schema(decl_domain, id->value.sval);
+                            last = last->p2;
+                            id = id->brother;
+                        }
+                        decl = decl->brother;
+                    }
+                    break;
+                case NVECTOR_DOMAIN:
+                    node = new_schema_node(VECTOR);
+                    node->id = id;
+                    node->size = dom_child->child->value.ival;
+                    node->p1 = create_domain_schema(dom_child->child->brother, NULL);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case T_ID:
+            //eh bello...
+            break;
+        case T_ATOMIC_DOMAIN:
+            //CHAR, INT, REAL, STRING, BOOL
+            node = new_schema_node(dom_child->value.ival);
+            break;
+        default:
+            break;
+    }
+    return node;
+}
+
+Pschema new_schema_node(int _type){
+    Pschema node = (Pschema) malloc(sizeof(Schema));
+    node->type = _type;
+    return node;
+}
+
+Pschema new_struct_schema(Pnode s){
+    
 }
 
 /*

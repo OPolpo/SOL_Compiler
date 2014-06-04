@@ -1,5 +1,5 @@
 --test :P
-func tester2():int
+func tester2(prova: vector[10] of struct(a:int; b: vector[20] of vector[5] of real;);):int
 begin tester2
 	c = c and b;
 	c = c or b;
