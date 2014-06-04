@@ -213,9 +213,53 @@ Phash_node new_id_node(char * _name, Class _class, int loc_oid){
     return node;
 }
 
-Pschema create_schema(Pnode p){
+Pschema create_schema(Pnode p){// called on DOMAIN node
+    Pschema node;
+    switch (root->type) {
+        case T_NONTERMINAL:
+            switch (root->value.ival) {
+                case NDOMAIN:
+                    
+                    break;
+                case NSTRUCT_DOMAIN:
+                    
+                    break;
+                case NVECTOR_DOMAIN:
+                    
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case T_ID:
+            
+            break;
+        case T_ATOMIC_DOMAIN:
+            node = new_schema_node(
+            break;
+        default:
+            break;
+    }
+    
     return NULL;
 }
+
+Pschema new_schema_node(int _type, char * _id){
+    Pschema node = (Pschema) malloc(schema);
+    node->type = _type;
+    node->id = id;
+    return node;
+}
+
+/*
+ typedef struct sschema{
+ int type; //CHAR, INT, REAL, STRING, BOOL, STRUCT, VECTOR, ATTR
+ char * id; //field name
+ int size; //array size (type = VECTOR)
+ struct sschema *p1, *p2;
+ } Schema, * Pschema;
+ */
+
 // *
 //  typedef struct shash_node{
 //  char * name;

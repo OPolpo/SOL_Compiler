@@ -44,7 +44,7 @@ void print_func_node(Phash_node node){
     
     Formal * f = node->formal;
     while (f!= NULL) {
-        printf ("[%d] ", f->formal->oid);
+        printf ("[%d](%s) ", f->formal->oid, f->formal->name);
         f = f->next;
     }
     printf ("\n");
