@@ -24,11 +24,12 @@ Phash_node getNode(char * id, Phash_node * table){
         }
         node = node->next;
     }
+    return NULL;
 }
 
 Phash_node * new_hash_table(){
     Phash_node * table = (Phash_node *) malloc(TOT * sizeof(Phash_node));
-    memset(table, '\0', TOT * sizeof(Phash_node)); // NULL == '\0'
+    //memset(table, '\0', TOT * sizeof(Phash_node)); // NULL == '\0'
     return table;
 }
 
@@ -44,6 +45,7 @@ void print_func_node(Phash_node node){
     Formal * f = node->formal;
     while (f!= NULL) {
         printf ("[%d] ", f->formal->oid);
+        f = f->next;
     }
     printf ("\n");
 }

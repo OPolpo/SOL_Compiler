@@ -1,13 +1,12 @@
 #include "symbol_table.h"
 
 int oid = 1;
-int loc_oid = 1;
 
 
 Phash_node create_symbol_table(Pnode root, Phash_node * local_env){
     Pnode current, child;
     switch (root->type) {
-        case T_NONTERMINAL: {
+        case T_NONTERMINAL:
             switch (root->value.ival) {
                 case NPROGRAM:
                     create_symbol_table(root->child, local_env);
@@ -16,11 +15,13 @@ Phash_node create_symbol_table(Pnode root, Phash_node * local_env){
                     current = root->child; //ID
                     
                     Phash_node func = new_function_node(current->value.sval);
-                    func->locenv = new_hash_table();
-                    loc_oid = 1;
+                    Phash_node * loc = new_hash_table();
+                    func->locenv = loc;
+                    int loc_oid = 1;
                     
                     func->formals_num = 0;
                     current = current->brother; //DECL_LIST_OPT
+                    
                     if (current->child != NULL) {//handle parameters
                         child = current->child; //DECL
                         while (child != NULL) { //loop on DECL
@@ -29,20 +30,30 @@ Phash_node create_symbol_table(Pnode root, Phash_node * local_env){
                             
                             Pnode id = id_list->child;
                             Formal * next_formal = func->formal;
-                            while (id != NULL) { //loop on IDs
-                                Phash_node id_node = new_id_node(id->value.sval, CLPAR);
+                            Formal * current_formal;
+                            
+                            do { //loop on IDs
+                                Phash_node id_node = new_id_node(id->value.sval, CLPAR, loc_oid);
+                                loc_oid++;
                                 id_node->schema = domain_sch;
                                 insert(id_node, func->locenv);
                                 
-                                next_formal = (Formal *)malloc(sizeof(Formal));
-                                next_formal->formal = id_node;
-                                next_formal = next_formal->next;
+                                current_formal = (Formal *)malloc(sizeof(Formal));
+                                current_formal->formal = id_node;
+                                
+                                * next_formal = * current_formal;
+                                
+                                
+                                
+                                next_formal = current_formal->next;
+                                //next_formal=currrent_formal;
                                 
                                 func->formals_num++;//on single ID
                                 id = id->brother;
-                            }
-                            
+                            } while (id != NULL);
+                            child = child->brother; //next DECL
                         }
+                        
                     }
                     
                     current = current->brother; //DOMAIN
@@ -107,7 +118,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node * local_env){
                 default:
                     break;
             }
-        }
+            
             
             break;
         case T_ID:
@@ -148,14 +159,15 @@ Phash_node new_function_node(char * _name){
     node->oid = oid;
     oid++;
     node->class_node = CLFUNC;
+    return node;
 }
 
-Phash_node new_id_node(char * _name, Class _class){
+Phash_node new_id_node(char * _name, Class _class, int loc_oid){
     Phash_node node = (Phash_node) malloc (sizeof(Hash_node));
     node->name = _name;
     node->oid = loc_oid;
-    loc_oid++;
     node->class_node = _class;
+    return node;
 }
 
 Pschema create_schema(Pnode p){
