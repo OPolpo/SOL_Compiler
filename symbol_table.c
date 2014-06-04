@@ -24,18 +24,19 @@ void handle_function_part(Pnode current, Phash_node func, int loc_oid, Class par
     }
 }
 
-Phash_node create_symbol_table(Pnode root){
+Phash_node create_symbol_table(Pnode root, Phash_node father){
     Pnode current, child;
     switch (root->type) {
         case T_NONTERMINAL:
             switch (root->value.ival) {
                 case NPROGRAM:
-                    create_symbol_table(root->child);
+                    return create_symbol_table(root->child, father);
                     break;
                 case NFUNC_DECL:
                     current = root->child; //ID
                     
                     Phash_node func = new_function_node(current->value.sval);
+                    func->father = father;
                     Phash_node * loc = new_hash_table();
                     func->locenv = loc;
                     int loc_oid = 1;
@@ -93,7 +94,7 @@ Phash_node create_symbol_table(Pnode root){
                     if (current->child != NULL) {
                         child = current->child; // FUNC DECL
                         while (child != NULL) {//loop on FUNC DECL
-                            create_symbol_table(current);
+                            insert(create_symbol_table(current, func), func->locenv);
                             child = child->brother;
                         }
                     }
@@ -101,70 +102,16 @@ Phash_node create_symbol_table(Pnode root){
                     
                     print_func_node(func);
                     
-                    
+                    return func;
                     break;
-                case NDECL_LIST_OPT:
-                    
-                    break;
-                case NDECL:
-                    
-                    break;
-                case NID_LIST:
-                    
-                    break;
-                case NDOMAIN:
-                    
-                    break;
-                case NSTRUCT_DOMAIN:
-                    
-                    break;
-                case NVECTOR_DOMAIN:
-                    
-                    break;
-                case NTYPE_SECT_OPT:
-                    
-                    break;
-                case NVAR_SECT_OPT:
-                    
-                    break;
-                case NCONST_SECT_OPT:
-                    
-                    break;
-                case NFUNC_LIST_OPT:
-                    
-                    break;
-                    
                 default:
                     break;
             }
-            
-            
-            break;
-        case T_ID:
-            
-            break;
-        case T_ATOMIC_DOMAIN:
-            
-            break;
-        case T_CHARCONST:
-            
-            break;
-        case T_INTCONST:
-            
-            break;
-        case T_REALCONST:
-            
-            break;
-        case T_STRCONST:
-            
-            break;
-        case T_BOOLCONST:
-            
             break;
         default:
             break;
     }
-    
+    return NULL;
     /*
      if (root == NULL) {
      return Phash_node;
@@ -208,12 +155,17 @@ Pschema create_domain_schema(Pnode domain, char * id){
                         Pnode decl_domain = decl->child->brother;
                         Pnode id = decl->child->child;
                         
+                        
                         while (id != NULL) {
-                            if(last == NULL)
-                                node->p1 = create_domain_schema(decl_domain, id->value.sval);
-                            else
-                                last->p2 = create_domain_schema(decl_domain, id->value.sval);
-                            last = last->p2;
+                            Pschema to_add = create_domain_schema(decl_domain, id->value.sval);
+                            if(last == NULL){
+                                node->p1 = to_add;
+                                last = node->p1;
+                            }
+                            else{
+                                last->p2 = to_add;
+                                last = last->p2;
+                            }
                             id = id->brother;
                         }
                         decl = decl->brother;
@@ -246,10 +198,6 @@ Pschema new_schema_node(int _type){
     Pschema node = (Pschema) malloc(sizeof(Schema));
     node->type = _type;
     return node;
-}
-
-Pschema new_struct_schema(Pnode s){
-    
 }
 
 /*

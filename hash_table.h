@@ -35,6 +35,7 @@ typedef struct shash_node{
     struct shash_node ** locenv;
     int formals_num;
     Formal * formal;
+    struct shash_node * father;
     struct shash_node * next;
 } Hash_node, * Phash_node;
 
