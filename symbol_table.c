@@ -4,9 +4,9 @@
 int oid = 1;
 
 void handle_function_part(Pnode current, Phash_node func, int loc_oid, Class part_class){
-    if (current->child != NULL) {
+    if (current->child != NULL) { //?_SECT_OPT
         Pnode child;
-        child = current->child;
+        child = current->child; //DECL
         while (child != NULL) {
             Pnode id_list = child->child;
             Pschema domain_sch = create_schema(id_list->brother);
@@ -20,6 +20,8 @@ void handle_function_part(Pnode current, Phash_node func, int loc_oid, Class par
                 id = id->brother;
             }
             child = child->brother;
+            if (part_class == CLCONST)
+                child = child->brother;
         }
     }
 }
@@ -61,10 +63,14 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                                 Formal * to_add = (Formal *)malloc(sizeof(Formal));
                                 to_add->formal = id_node;
                                 
-                                if(last_formal==NULL)
+                                if(last_formal==NULL){
                                     func->formal=to_add;
-                                else
+                                    //printf("last_formal==NULL %d\n", func->formal);
+                                }
+                                else {
                                     last_formal->next=to_add;
+                                    //printf("last_formal!=NULL %d\n", id_node->oid);
+                                }
                                 last_formal = to_add;
                                 
                                 func->formals_num++;//on single ID
@@ -80,37 +86,73 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     
                     current = current->brother; //TYPE_SECT_OPT
                     handle_function_part(current, func, loc_oid, CLTYPE);
-
+                    
                     
                     current = current->brother; //VAR_SECT_OPT
                     handle_function_part(current, func, loc_oid, CLVAR);
-
+                    
                     
                     current = current->brother; //CONST_SECT_OPT
                     handle_function_part(current, func, loc_oid, CLCONST);
-
                     
+                    print_func_node(func);
+                    /*
                     current = current->brother; //FUNC_LIST_OPT
                     if (current->child != NULL) {
                         child = current->child; // FUNC DECL
                         while (child != NULL) {//loop on FUNC DECL
-                            insert(create_symbol_table(current, func), func->locenv);
+                            
+                            insert(create_symbol_table(child, func), func->locenv);
                             child = child->brother;
                         }
-                    }
+                    }*/
                     
                     
-                    print_func_node(func);
+                    
                     
                     return func;
                     break;
+                case NDECL_LIST_OPT:
+                    printf("0");
+                    break;
+                case NDECL:
+                    printf("1");
+                    break;
+                case NID_LIST:
+                    printf("2");
+                    break;
+                case NDOMAIN:
+                    printf("3");
+                    break;
+                case NSTRUCT_DOMAIN:
+                    printf("4");
+                    break;
+                case NVECTOR_DOMAIN:
+                    printf("5");
+                    break;
+                case NTYPE_SECT_OPT:
+                    printf("6");
+                    break;
+                case NVAR_SECT_OPT:
+                    printf("7");
+                    break;
+                case NCONST_SECT_OPT:
+                    printf("8");
+                    break;
+                case NFUNC_LIST_OPT:
+                    printf("9");
+                    break;
+                    
                 default:
                     break;
             }
+            
+            
             break;
         default:
             break;
     }
+    printf("something wrong occurred\n");
     return NULL;
     /*
      if (root == NULL) {
@@ -137,7 +179,8 @@ Phash_node new_id_node(char * _name, Class _class, int loc_oid){
 }
 
 Pschema create_schema(Pnode root){// called on DOMAIN node
-    return create_domain_schema(root, NULL);
+    //return create_domain_schema(root, NULL);
+    return NULL;
 }
 
 Pschema create_domain_schema(Pnode domain, char * id){
@@ -160,12 +203,13 @@ Pschema create_domain_schema(Pnode domain, char * id){
                             Pschema to_add = create_domain_schema(decl_domain, id->value.sval);
                             if(last == NULL){
                                 node->p1 = to_add;
-                                last = node->p1;
+                                //last = node->p1;
                             }
                             else{
                                 last->p2 = to_add;
-                                last = last->p2;
+                                //last = last->p2;
                             }
+                            last = to_add;
                             id = id->brother;
                         }
                         decl = decl->brother;

@@ -166,5 +166,5 @@ void treeprint(Pnode root, char* father_indent) {
         }
         treeprint(p, my_indent);
     }
-    free(my_indent);
+    //free(my_indent);
 }
