@@ -24,33 +24,30 @@ Phash_node create_symbol_table(Pnode root, Phash_node * local_env){
                     
                     if (current->child != NULL) {//handle parameters
                         child = current->child; //DECL
+                        Formal * last_formal = func->formal;
                         while (child != NULL) { //loop on DECL
                             Pnode id_list = child->child;
                             Pschema domain_sch = create_schema(id_list->brother);
                             
                             Pnode id = id_list->child;
-                            Formal * next_formal = func->formal;
-                            Formal * current_formal;
-                            
-                            do { //loop on IDs
+                            while (id != NULL){ //loop on IDs
                                 Phash_node id_node = new_id_node(id->value.sval, CLPAR, loc_oid);
                                 loc_oid++;
                                 id_node->schema = domain_sch;
                                 insert(id_node, func->locenv);
                                 
-                                current_formal = (Formal *)malloc(sizeof(Formal));
-                                current_formal->formal = id_node;
+                                Formal * to_add = (Formal *)malloc(sizeof(Formal));
+                                to_add->formal = id_node;
                                 
-                                * next_formal = * current_formal;
-                                
-                                
-                                
-                                next_formal = current_formal->next;
-                                //next_formal=currrent_formal;
+                                if(last_formal==NULL)
+                                    func->formal=to_add;
+                                else
+                                    last_formal->next=to_add;
+                                last_formal = to_add;
                                 
                                 func->formals_num++;//on single ID
                                 id = id->brother;
-                            } while (id != NULL);
+                            };
                             child = child->brother; //next DECL
                         }
                         
