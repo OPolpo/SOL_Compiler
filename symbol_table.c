@@ -82,7 +82,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     }
                     
                     current = current->brother; //DOMAIN
-                    func->schema = create_schema(current);
+                    func->schema = create_domain_schema(current,NULL);
                     
                     current = current->brother; //TYPE_SECT_OPT
                     handle_function_part(current, func, loc_oid, CLTYPE);
@@ -94,6 +94,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     handle_function_part(current, func, loc_oid, CLCONST);
                     
                     print_func_node(func);
+                    printSchema(func->schema,"");
                     
                     current = current->brother; //FUNC_LIST_OPT
                     if (current->child != NULL) {
@@ -107,7 +108,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     
                     
                     
-                    printSchema(func->schema,"");
+                    
                     return func;
                     break;
                 case NDECL_LIST_OPT:
@@ -282,7 +283,7 @@ void printSchema(Pschema root, char* father_indent){
         //     printf(" %s [ - ] [ - ]", "ATTR");
         //     break;
         default:
-            printf("ERROR");
+            printf("ERROR (maybe ID)");
             break;    
     }
     
