@@ -87,16 +87,14 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     current = current->brother; //TYPE_SECT_OPT
                     handle_function_part(current, func, loc_oid, CLTYPE);
                     
-                    
                     current = current->brother; //VAR_SECT_OPT
                     handle_function_part(current, func, loc_oid, CLVAR);
-                    
                     
                     current = current->brother; //CONST_SECT_OPT
                     handle_function_part(current, func, loc_oid, CLCONST);
                     
                     print_func_node(func);
-                    /*
+                    
                     current = current->brother; //FUNC_LIST_OPT
                     if (current->child != NULL) {
                         child = current->child; // FUNC DECL
@@ -105,11 +103,11 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                             insert(create_symbol_table(child, func), func->locenv);
                             child = child->brother;
                         }
-                    }*/
+                    }
                     
                     
                     
-                    
+                    printSchema(func->schema,"");
                     return func;
                     break;
                 case NDECL_LIST_OPT:
@@ -246,6 +244,7 @@ Pschema new_schema_node(int _type){
 
 void printSchema(Pschema root, char* father_indent){
     if(root==NULL) return;
+
     int i;
     Pschema p;
 
