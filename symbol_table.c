@@ -60,7 +60,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                                 id_node->schema = domain_sch;
                                 insert(id_node, func->locenv);
                                 
-                                Formal * to_add = (Formal *)malloc(sizeof(Formal));
+                                Formal * to_add = (Formal *)calloc(1,sizeof(Formal));
                                 to_add->formal = id_node;
                                 
                                 if(last_formal==NULL){
@@ -160,7 +160,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
 }
 
 Phash_node new_function_node(char * _name){
-    Phash_node node = (Phash_node) malloc (sizeof(Hash_node));
+    Phash_node node = (Phash_node) calloc (1,sizeof(Hash_node));
     node->name = _name;
     node->oid = oid;
     oid++;
@@ -169,7 +169,7 @@ Phash_node new_function_node(char * _name){
 }
 
 Phash_node new_id_node(char * _name, Class _class, int loc_oid){
-    Phash_node node = (Phash_node) malloc (sizeof(Hash_node));
+    Phash_node node = (Phash_node) calloc (1,sizeof(Hash_node));
     node->name = _name;
     node->oid = loc_oid;
     node->class_node = _class;
@@ -237,7 +237,7 @@ Pschema create_domain_schema(Pnode domain, char * id){
 }
 
 Pschema new_schema_node(int _type){
-    Pschema node = (Pschema) malloc(sizeof(Schema));
+    Pschema node = (Pschema) calloc(1,sizeof(Schema));
     node->type = _type;
     return node;
 }
@@ -249,7 +249,7 @@ void printSchema(Pschema root, char* father_indent){
     Pschema p;
 
     //--Indent Stuff
-    char* my_indent = malloc(sizeof(char)*1000);
+    char* my_indent = calloc(1000,sizeof(char));
     my_indent[0]=0;
     strcpy(my_indent, father_indent);
     strcat(my_indent,"   |");

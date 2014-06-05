@@ -63,7 +63,7 @@ void treeprint(Pnode root, char* father_indent) {
     int i;
     Pnode p;
 
-    char* my_indent = malloc(sizeof(char)*1000);
+    char* my_indent = calloc(1000,sizeof(char));
     my_indent[0]=0;
     strcpy(my_indent, father_indent);
     strcat(my_indent,"   |");
@@ -166,5 +166,5 @@ void treeprint(Pnode root, char* father_indent) {
         }
         treeprint(p, my_indent);
     }
-    //free(my_indent);
+    free(my_indent);
 }

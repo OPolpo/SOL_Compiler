@@ -28,8 +28,9 @@ Phash_node getNode(char * id, Phash_node * table){
 }
 
 Phash_node * new_hash_table(){
-    Phash_node * table = (Phash_node *) malloc(TOT * sizeof(Phash_node));
+    //Phash_node * table = (Phash_node *) malloc(TOT * sizeof(Phash_node));
     //memset(table, '\0', TOT * sizeof(Phash_node)); // NULL == '\0'
+    Phash_node * table = (Phash_node *) calloc(TOT, sizeof(Phash_node));
     return table;
 }
 
