@@ -244,6 +244,62 @@ Pschema new_schema_node(int _type){
     return node;
 }
 
+void printSchema(Pschema root, char* father_indent){
+    if(root==NULL) return;
+    int i;
+    Pschema p;
+
+    //--Indent Stuff
+    char* my_indent = malloc(sizeof(char)*1000);
+    my_indent[0]=0;
+    strcpy(my_indent, father_indent);
+    strcat(my_indent,"   |");
+    printf("%s-", my_indent);
+
+    //--PRINTING SINGLE NODE
+    switch(root->type){
+        case VECTOR:
+            printf("%s [ - ] [ %d ]", "VECTOR", root->size);
+            break;
+        case STRUCT:
+            printf("%s [ - ] [ - ]", "STRUCT");
+            break;
+        case CHAR:
+            printf("%s [ %s ] [ - ]", "CHAR", root->id);
+            break;
+        case INT:
+            printf("%s [ %s ] [ - ]", "INT", root->id);
+            break;
+         case REAL:
+            printf("%s [ %s ] [ - ]", "REAL", root->id);
+            break;
+        case STRING:
+            printf("%s [ %s ] [ - ]", "STRING", root->id);
+            break;
+        case BOOL:
+            printf("%s [ %s ] [ - ]", "BOOL", root->id);
+            break;
+        // case ATTR:
+        //     printf(" %s [ - ] [ - ]", "ATTR");
+        //     break;
+        default:
+            printf("ERROR");
+            break;    
+    }
+    
+    //--OTHER INDENT AND RECURSION AND BROTHER CICLE
+    printf("\n");
+    for(p=root->p1; p != NULL; p = p->p2){
+        if(root->p2 == NULL){
+            my_indent[strlen(my_indent)-4]=0;
+            strcat(my_indent,"    ");
+        }
+        printSchema(p, my_indent);
+    }
+    free(my_indent);
+}
+
+
 /*
  typedef struct sschema{
  int type; //CHAR, INT, REAL, STRING, BOOL, STRUCT, VECTOR, ATTR
