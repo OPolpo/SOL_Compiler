@@ -9,7 +9,7 @@ void handle_function_part(Pnode current, Phash_node func, int loc_oid, Class par
         child = current->child; //DECL
         while (child != NULL) {
             Pnode id_list = child->child;
-            Pschema domain_sch = create_schema(id_list->brother);
+            Pschema domain_sch = create_schema(id_list->brother, func, NULL);
             
             Pnode id = id_list->child;
             while (id != NULL){
@@ -51,7 +51,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                         Formal * last_formal = func->formal;
                         while (child != NULL) { //loop on DECL
                             Pnode id_list = child->child;
-                            Pschema domain_sch = create_schema(id_list->brother);
+                            Pschema domain_sch = create_schema(id_list->brother, func, NULL);
                             
                             Pnode id = id_list->child;
                             while (id != NULL){ //loop on IDs
@@ -82,7 +82,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     }
                     
                     current = current->brother; //DOMAIN
-                    func->schema = create_domain_schema(current,NULL);
+                    func->schema = create_schema(current, func->father, NULL);
                     
                     current = current->brother; //TYPE_SECT_OPT
                     handle_function_part(current, func, loc_oid, CLTYPE);
@@ -177,19 +177,17 @@ Phash_node new_id_node(char * _name, Class _class, int loc_oid){
     return node;
 }
 
-Pschema create_schema(Pnode root){// called on DOMAIN node
-    //return create_domain_schema(root, NULL);
-    return NULL;
-}
-
-Pschema create_domain_schema(Pnode domain, char * id){
+Pschema create_schema(Pnode domain, Phash_node func, char * id){
+    //func: function node of the local environment
     Pnode dom_child = domain->child;
     Pschema node;
+    Phash_node type_decl;
     switch (dom_child->type) {
         case T_NONTERMINAL:
             switch (dom_child->value.ival) {
                 case NSTRUCT_DOMAIN:
                     node = new_schema_node(STRUCT);
+                    node->id = id;
                     Pnode decl = dom_child->child;
                     
                     Pschema last = node->p1;
@@ -199,7 +197,7 @@ Pschema create_domain_schema(Pnode domain, char * id){
                         
                         
                         while (id != NULL) {
-                            Pschema to_add = create_domain_schema(decl_domain, id->value.sval);
+                            Pschema to_add = create_schema(decl_domain, func, id->value.sval);
                             if(last == NULL){
                                 node->p1 = to_add;
                                 //last = node->p1;
@@ -218,18 +216,27 @@ Pschema create_domain_schema(Pnode domain, char * id){
                     node = new_schema_node(VECTOR);
                     node->id = id;
                     node->size = dom_child->child->value.ival;
-                    node->p1 = create_domain_schema(dom_child->child->brother, NULL);
+                    node->p1 = create_schema(dom_child->child->brother, func, NULL);
                     break;
                 default:
                     break;
             }
             break;
         case T_ID:
-            //eh bello...
+            while (func != NULL) {
+                type_decl = getNode(dom_child->value.sval, func->locenv);
+                if (type_decl != NULL){
+                    node = type_decl->schema;
+                    break;
+                }
+                func = func->father;
+            }
+            if (type_decl == NULL) printf("ERRORE type not found: %s\n", dom_child->value.sval);
             break;
         case T_ATOMIC_DOMAIN:
             //CHAR, INT, REAL, STRING, BOOL
             node = new_schema_node(dom_child->value.ival);
+            node->id = id;
             break;
         default:
             break;
@@ -259,10 +266,10 @@ void printSchema(Pschema root, char* father_indent){
     //--PRINTING SINGLE NODE
     switch(root->type){
         case VECTOR:
-            printf("%s [ - ] [ %d ]", "VECTOR", root->size);
+            printf("%s [ %s ] [ %d ]", "VECTOR", root->id, root->size);
             break;
         case STRUCT:
-            printf("%s [ - ] [ - ]", "STRUCT");
+            printf("%s [ %s ] [ - ]", "STRUCT", root->id);
             break;
         case CHAR:
             printf("%s [ %s ] [ - ]", "CHAR", root->id);
@@ -283,7 +290,7 @@ void printSchema(Pschema root, char* father_indent){
         //     printf(" %s [ - ] [ - ]", "ATTR");
         //     break;
         default:
-            printf("ERROR (maybe ID)");
+            printf("ERROR (maybe ID)\n");
             break;    
     }
     

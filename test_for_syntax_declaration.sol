@@ -1,8 +1,9 @@
-func prog(a,x: int; b: string; c: struct(nome,cognome: string; anno:int;); d:PI; e: vector [4] of char;): int
+func prog(a,x: int; b: string; c: struct(nome,cognome: string; anno:int;); d:real; e: vector [4] of char;): int
 	type	TO1: int; 
 			T2: string;
 			T3, T4: T2;
 			T5: vector [10] of T3;
+			typeint: struct(nome,cognome: string; anno:int; a: struct(b,c:int;););
 	var i, j: int; 
 		z: typeint;
 		x, y: real;
