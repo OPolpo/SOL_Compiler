@@ -260,8 +260,12 @@ void printSchema(Pschema root, char* father_indent){
     char* my_indent = calloc(1000,sizeof(char));
     my_indent[0]=0;
     strcpy(my_indent, father_indent);
-    strcat(my_indent,"   |");
-    printf("%s-", my_indent);
+
+    if(root->p2)
+        strcat(my_indent,"    ├");
+    else
+        strcat(my_indent,"    └");
+    printf("%s─", my_indent);
 
     //--PRINTING SINGLE NODE
     switch(root->type){
@@ -297,6 +301,8 @@ void printSchema(Pschema root, char* father_indent){
     //--OTHER INDENT AND RECURSION AND BROTHER CICLE
     printf("\n");
     for(p=root->p1; p != NULL; p = p->p2){
+        my_indent[strlen(my_indent)-4]=0;
+        strcat(my_indent," |  ");
         if(root->p2 == NULL){
             my_indent[strlen(my_indent)-4]=0;
             strcat(my_indent,"    ");

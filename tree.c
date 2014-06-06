@@ -66,8 +66,12 @@ void treeprint(Pnode root, char* father_indent) {
     char* my_indent = calloc(1000,sizeof(char));
     my_indent[0]=0;
     strcpy(my_indent, father_indent);
-    strcat(my_indent,"   |");
-    printf("%s-%s", my_indent, (root->type == T_NONTERMINAL ? tabnonterm[root->value.ival] : tabtypes[root->type]));
+    if(root->brother)
+        strcat(my_indent,"    ├");
+    else
+        strcat(my_indent,"    └");
+
+    printf("%s─%s", my_indent, (root->type == T_NONTERMINAL ? tabnonterm[root->value.ival] : tabtypes[root->type]));
     if(root->type == T_ID || root->type == T_STRCONST)
         printf(" (%s)", root->value.sval);
     else if(root->type == T_ATOMIC_DOMAIN)
@@ -160,6 +164,8 @@ void treeprint(Pnode root, char* father_indent) {
     
     printf("\n");
     for(p=root->child; p != NULL; p = p->brother){
+        my_indent[strlen(my_indent)-4]=0;
+        strcat(my_indent," |  ");
         if(root->brother == NULL){
             my_indent[strlen(my_indent)-4]=0;
             strcat(my_indent,"    ");
