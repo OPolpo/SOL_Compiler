@@ -50,7 +50,7 @@ void print_func_node(Phash_node node){
         f = f->next;
     }
     if(node->father)
-        printf(" F_oid: %d\n", node->father->oid);
+        printf(" F_oid: %d", node->father->oid);
     printf ("\n");
 }
 

@@ -9,7 +9,7 @@ void handle_function_part(Pnode current, Phash_node func, int loc_oid, Class par
         child = current->child; //DECL
         while (child != NULL) {
             Pnode id_list = child->child;
-            Pschema domain_sch = create_schema(id_list->brother, func, NULL);
+            Pschema domain_sch = create_schema(id_list->brother, func);
             
             Pnode id = id_list->child;
             while (id != NULL){
@@ -51,7 +51,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                         Formal * last_formal = func->formal;
                         while (child != NULL) { //loop on DECL
                             Pnode id_list = child->child;
-                            Pschema domain_sch = create_schema(id_list->brother, func, NULL);
+                            Pschema domain_sch = create_schema(id_list->brother, func);
                             
                             Pnode id = id_list->child;
                             while (id != NULL){ //loop on IDs
@@ -82,7 +82,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     }
                     
                     current = current->brother; //DOMAIN
-                    func->schema = create_schema(current, func->father, NULL);
+                    func->schema = create_schema(current, func->father);
                     
                     current = current->brother; //TYPE_SECT_OPT
                     handle_function_part(current, func, loc_oid, CLTYPE);
@@ -177,7 +177,7 @@ Phash_node new_id_node(char * _name, Class _class, int loc_oid){
     return node;
 }
 
-Pschema create_schema(Pnode domain, Phash_node func, char * id){
+Pschema create_schema(Pnode domain, Phash_node func){
     //func: function node of the local environment
     Pnode dom_child = domain->child;
     Pschema node;
@@ -187,7 +187,7 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
             switch (dom_child->value.ival) {
                 case NSTRUCT_DOMAIN:
                     node = new_schema_node(STRUCT);
-                    node->id = id;
+                    //node->id = id;
                     Pnode decl = dom_child->child;
                     
                     Pschema last = node->p1;
@@ -197,7 +197,10 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                         
                         
                         while (id != NULL) {
-                            Pschema to_add = create_schema(decl_domain, func, id->value.sval);
+                            //Pschema to_add = create_schema(decl_domain, func, id->value.sval);
+                            Pschema to_add = new_schema_node(ATTR); //maybe ATTR doesn't exist
+                            to_add->id = id->value.sval;
+                            
                             if(last == NULL){
                                 node->p1 = to_add;
                                 //last = node->p1;
@@ -207,6 +210,7 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                                 //last = last->p2;
                             }
                             last = to_add;
+                            to_add->p1 = create_schema(decl_domain, func);
                             id = id->brother;
                         }
                         decl = decl->brother;
@@ -214,9 +218,9 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                     break;
                 case NVECTOR_DOMAIN:
                     node = new_schema_node(VECTOR);
-                    node->id = id;
+                    //node->id = id;
                     node->size = dom_child->child->value.ival;
-                    node->p1 = create_schema(dom_child->child->brother, func, NULL);
+                    node->p1 = create_schema(dom_child->child->brother, func);
                     break;
                 default:
                     break;
@@ -236,7 +240,7 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
         case T_ATOMIC_DOMAIN:
             //CHAR, INT, REAL, STRING, BOOL
             node = new_schema_node(dom_child->value.ival);
-            node->id = id;
+            //node->id = id;
             break;
         default:
             break;
@@ -286,9 +290,9 @@ void printSchema(Pschema root, char* father_indent){
         case BOOL:
             printf("%s [ %s ] [ - ]", "BOOL", root->id);
             break;
-        // case ATTR:
-        //     printf(" %s [ - ] [ - ]", "ATTR");
-        //     break;
+         case ATTR:
+             printf(" %s [ %s ] [ - ]", "ATTR", root->id);
+             break;
         default:
             printf("ERROR (maybe ID)\n");
             break;    

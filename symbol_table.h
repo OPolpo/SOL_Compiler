@@ -11,5 +11,5 @@ Phash_node new_id_node(char * _name, Class _class, int loc_id);
 Pschema new_schema_node(int _type);
 void printSchema(Pschema root, char* father_indent);
 
-Pschema create_schema(Pnode domain, Phash_node func, char * id);
+Pschema create_schema(Pnode domain, Phash_node func);
 #endif
