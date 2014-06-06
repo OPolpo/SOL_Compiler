@@ -1,0 +1,13 @@
+Project
+sent as a zip
+to be compiled on linux
+
+ 1. SOL description
+ tutorial and formal specification
+ opt: simple examples
+ mand: a complete program that runs
+
+ 2. Compler description
+ architecture + data structures
+
+ 3. Interpreter description
