@@ -94,7 +94,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     handle_function_part(current, func, &loc_oid, CLCONST);
                     
                     print_func_node(func);
-                    printSchema(func->schema,"");
+                    printSchema(func->schema," ");
                     print_hash_content(func->locenv);
                     
                     current = current->brother; //FUNC_LIST_OPT
@@ -315,6 +315,23 @@ void printSchema(Pschema root, char* father_indent){
     free(my_indent);
 }
 
+void print_hash_content(Phash_node * table){
+    int i;
+    Phash_node temp;
+    printf("-------------local environment\n");
+    for (i=0; i<TOT; i++){
+        temp = table[i];
+        while (temp != NULL) {
+            printf("%3d. ", i);
+            print_generic_node(temp);
+            if(temp->schema != NULL){
+                printSchema(temp->schema, "   ");
+            }
+            temp = temp->next;
+        }
+    }
+    printf("-------------end\n\n");
+}
 
 /*
  typedef struct sschema{

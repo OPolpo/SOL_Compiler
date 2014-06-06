@@ -12,4 +12,7 @@ Pschema new_schema_node(int _type);
 void printSchema(Pschema root, char* father_indent);
 
 Pschema create_schema(Pnode domain, Phash_node func, char * id);
+
+void print_hash_content(Phash_node * table);
+
 #endif

@@ -46,6 +46,5 @@ Phash_node * new_hash_table();
 void print_func_node(Phash_node node);
 
 void print_generic_node(Phash_node node);
-void print_hash_content(Phash_node * table);
 
 #endif

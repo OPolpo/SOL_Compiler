@@ -79,20 +79,7 @@ void print_generic_node(Phash_node node){
     printf ("\n");
 }
 
-void print_hash_content(Phash_node * table){
-    int i;
-    Phash_node temp;
-    printf("-------------start\n");
-    for (i=0; i<TOT; i++){
-        temp = table[i];
-        while (temp != NULL) {
-            printf("(%3d) ", i);
-            print_generic_node(temp);
-            temp = temp->next;
-        }
-    }
-    printf("-------------end\n");
-}
+
 
 /*
  typedef struct shash_node{
