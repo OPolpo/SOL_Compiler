@@ -49,6 +49,8 @@ void print_func_node(Phash_node node){
         printf ("(%s) ", f->formal->name);
         f = f->next;
     }
+    if(node->father)
+        printf(" F_oid: %d\n", node->father->oid);
     printf ("\n");
 }
 
