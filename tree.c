@@ -67,9 +67,11 @@ void treeprint(Pnode root, char* father_indent) {
     my_indent[0]=0;
     strcpy(my_indent, father_indent);
     if(root->brother)
-        strcat(my_indent,"    ├");
+        //strcat(my_indent,"    ├");
+        strcat(my_indent,"├");
     else
-        strcat(my_indent,"    └");
+        //strcat(my_indent,"    └");
+        strcat(my_indent,"└");
 
     printf("%s─%s", my_indent, (root->type == T_NONTERMINAL ? tabnonterm[root->value.ival] : tabtypes[root->type]));
     if(root->type == T_ID || root->type == T_STRCONST)

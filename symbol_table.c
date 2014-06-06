@@ -263,9 +263,11 @@ void printSchema(Pschema root, char* father_indent){
     strcpy(my_indent, father_indent);
 
     if(root->p2)
-        strcat(my_indent,"    ├");
+        //strcat(my_indent,"    ├");
+        strcat(my_indent,"├");
     else
-        strcat(my_indent,"    └");
+        //strcat(my_indent,"    └");
+        strcat(my_indent,"└");
     printf("%s─", my_indent);
 
     //--PRINTING SINGLE NODE
