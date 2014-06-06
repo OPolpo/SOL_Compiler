@@ -3,7 +3,7 @@
 
 int oid = 1;
 
-void handle_function_part(Pnode current, Phash_node func, int loc_oid, Class part_class){
+void handle_function_part(Pnode current, Phash_node func, int * loc_oid, Class part_class){
     if (current->child != NULL) { //?_SECT_OPT
         Pnode child;
         child = current->child; //DECL
@@ -13,8 +13,8 @@ void handle_function_part(Pnode current, Phash_node func, int loc_oid, Class par
             
             Pnode id = id_list->child;
             while (id != NULL){
-                Phash_node id_node = new_id_node(id->value.sval, part_class, loc_oid);
-                loc_oid++;
+                Phash_node id_node = new_id_node(id->value.sval, part_class, *loc_oid);
+                (*loc_oid)++;
                 id_node->schema = domain_sch;
                 insert(id_node, func->locenv);
                 id = id->brother;
@@ -85,16 +85,17 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     func->schema = create_schema(current, func->father, NULL);
                     
                     current = current->brother; //TYPE_SECT_OPT
-                    handle_function_part(current, func, loc_oid, CLTYPE);
+                    handle_function_part(current, func, &loc_oid, CLTYPE);
                     
                     current = current->brother; //VAR_SECT_OPT
-                    handle_function_part(current, func, loc_oid, CLVAR);
+                    handle_function_part(current, func, &loc_oid, CLVAR);
                     
                     current = current->brother; //CONST_SECT_OPT
-                    handle_function_part(current, func, loc_oid, CLCONST);
+                    handle_function_part(current, func, &loc_oid, CLCONST);
                     
                     print_func_node(func);
                     printSchema(func->schema,"");
+                    print_hash_content(func->locenv);
                     
                     current = current->brother; //FUNC_LIST_OPT
                     if (current->child != NULL) {

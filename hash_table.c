@@ -50,8 +50,48 @@ void print_func_node(Phash_node node){
         f = f->next;
     }
     if(node->father)
-        printf(" F_oid: %d\n", node->father->oid);
+        printf(" F_oid: %d", node->father->oid);
     printf ("\n");
+}
+
+void print_generic_node(Phash_node node){
+    printf("[%d] %s | ", node->oid, node->name);
+
+    switch (node->class_node) {
+        case CLTYPE:
+            printf("TYPE ");
+            break;
+        case CLVAR:
+            printf("VAR ");
+            break;
+        case CLCONST:
+            printf("CONST ");
+            break;
+        case CLPAR:
+            printf("PAR ");
+            break;
+        default:
+            //function... TODO merge with print_func_node OR not?
+            break;
+    }
+    (node->schema != NULL)? printf("ok schema |"): printf("no schema |");
+
+    printf ("\n");
+}
+
+void print_hash_content(Phash_node * table){
+    int i;
+    Phash_node temp;
+    printf("-------------start\n");
+    for (i=0; i<TOT; i++){
+        temp = table[i];
+        while (temp != NULL) {
+            printf("(%3d) ", i);
+            print_generic_node(temp);
+            temp = temp->next;
+        }
+    }
+    printf("-------------end\n");
 }
 
 /*
