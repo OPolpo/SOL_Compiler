@@ -2,11 +2,11 @@
 #include "hash_table.h"
 
 int hash (char* id){
-	int i, h = 0; 
-	for(i = 0; id[i] != '\0'; i++){
-		h = ((h << SHIFT) + id[i]) % TOT;
-	}
-	return h;
+    int i, h = 0; 
+    for(i = 0; id[i] != '\0'; i++){
+        h = ((h << SHIFT) + id[i]) % TOT;
+    }
+    return h;
 }
 
 void insert(Phash_node p, Phash_node * table){

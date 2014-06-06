@@ -22,9 +22,9 @@ typedef struct sformalsnode{
 
 typedef struct sschema{
     int type; //CHAR, INT, REAL, STRING, BOOL, STRUCT, VECTOR, ATTR
-	char * id; //field name
-	int size; //array size (type = VECTOR)
-	struct sschema *p1, *p2;
+    char * id; //field name
+    int size; //array size (type = VECTOR)
+    struct sschema *p1, *p2;
 } Schema, * Pschema;
 
 typedef struct shash_node{
