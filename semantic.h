@@ -30,7 +30,7 @@ int func_decl(Pnode root);
 int decl_list_opt();
 int decl();
 int id_list();
-int domain();
+int domain(Pnode root, Sem_type * stype);
 int struct_domain();
 int vector_domain();
 int type_sect_opt();
