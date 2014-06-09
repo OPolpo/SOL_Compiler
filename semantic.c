@@ -1,4 +1,5 @@
 #include "semantic.h"
+#include "parser.h"
 char error_msg[100];
 
 typedef enum{
@@ -20,7 +21,6 @@ char* tabsem_types[]{
 	"SEM_VECTOR",
 	"SEM_STRUCT"
 };
-
 
 
 int program(Pnode root){
@@ -92,7 +92,7 @@ int stat(Pnode root){
 int assign_stat(Pnode root){
 
 }
-int left_hand_side(Pnode root, Sem_type type){
+int left_hand_side(Pnode root, Sem_type * type){
 
 }
 int fielding(Pnode root){
@@ -150,12 +150,12 @@ int logic_expr(Pnode root, Sem_type * stype){
 	Pnode expr1 = root->child;
 	Pnode expr2 = root->child->brother;
 	Sem_type expr1_type, expr2_type;
-	expr1_ok = expr(expr1, &expr1_type);
+	int expr1_ok = expr(expr1, &expr1_type);
 	if(expr1_type != SEM_BOOL)
-		semantic_error("Type mismatch, expected BOOL\n");
-	expr2_ok = expr(expr2, &expr2_type);
+		semantic_error("Type error, expected BOOL\n");
+	int expr2_ok = expr(expr2, &expr2_type);
 	if(expr2_type != SEM_BOOL)
-		semantic_error("Type mismatch, expected BOOL\n");
+		semantic_error("Type error, expected BOOL\n");
 	*stype = SEM_BOOL;
 	return expr1_ok && expr2_ok;
 }
@@ -163,28 +163,35 @@ int rel_expr(Pnode root, Sem_type * stype){
 	Pnode expr1 = root->child;
 	Pnode expr2 = root->child->brother;
 	Sem_type expr1_type, expr2_type;
-	expr1_ok = expr(expr1, &expr1_type);
-	expr2_ok = expr(expr2, &expr2_type);
+	int expr1_ok = expr(expr1, &expr1_type);
+	int expr2_ok = expr(expr2, &expr2_type);
 	int type_ok;
 	switch(root->qualifier){
 		case EQ:
 		case NE:
 			type_ok = expr1->type == expr2->type;
+            if(!type_ok)
+                semantic_error("Type mismatch in relational expression\n");
 			break;
 		case '>':
 		case GE:
 		case '<':
 		case LE:
+            type_ok = (expr1->type == SEM_INT || expr1->type == SEM_CHAR || expr1->type == SEM_REAL || expr1->type == SEM_STRING);
+            if (!type_ok) {
+                semantic_error("Type error in relational expression, expected INT, CHAR, REAL or STRING\n");
+            }
+            type_ok = type_ok && (expr1->type == expr2->type);
+            if(!type_ok)
+                semantic_error("Type mismatch in relational expression\n");
 			break;
 		case IN:
+            type_ok = (expr1_type);//TO find vector[...] of type(expr1) .. or type2
 			break;
 		default:
 			semantic_error("Some weird qualification in relational expression\n");
 	}
-
-
-	if(expr2_type != SEM_BOOL)
-		semantic_error("Type mismatch, expected BOOL\n");
+    
 	*stype = SEM_BOOL;
 	return expr1_ok && expr2_ok && type_ok;
 }
@@ -210,25 +217,25 @@ int neg_expr(Pnode root){
 	return expr_ok;
 
 }
-int wr_expr(Pnode root){
+int wr_expr(Pnode root, Sem_type * stype){
 
 }
-int rd_expr(Pnode root){
+int rd_expr(Pnode root, Sem_type * stype){
 
 }
-int instance_expr(Pnode root){
+int instance_expr(Pnode root, Sem_type * stype){
 
 }
-int func_call(Pnode root){
+int func_call(Pnode root, Sem_type * type){
 
 }
-int cond_expr(Pnode root){
+int cond_expr(Pnode root, Sem_type * type){
 
 }
 int elsif_expr_list_opt(Pnode root){
 
 }
-int built_in_call(Pnode root){
+int built_in_call(Pnode root, Sem_type * type){
 
 }
 
@@ -236,19 +243,19 @@ int expr(Pnode root, Sem_type * stype){
 	int expr_ok;
 	switch(root->type){
 		case T_CHARCONST:
-			stype = SEM_CHAR;
+			*stype = SEM_CHAR;
 			break;
 		case T_INTCONST:
-			stype = SEM_INT;
+			*stype = SEM_INT;
 			break;
 		case T_REALCONST:
-			stype = SEM_REAL;
+			*stype = SEM_REAL;
 			break;
 		case T_STRCONST:
-			stype = SEM_STRING;
+			*stype = SEM_STRING;
 			break;
 		case T_BOOLCONST:
-			stype = SEM_BOOL;
+			*stype = SEM_BOOL;
 			break;
 		case T_NONTERMINAL:
 		switch(root->value.ival){
@@ -295,4 +302,7 @@ int expr(Pnode root, Sem_type * stype){
 	return expr_ok;
 }
 
-
+void semantic_error(char * msg ){
+    printf("Semantic error: %s", msg);
+    exit(EXIT_FAILURE);
+}

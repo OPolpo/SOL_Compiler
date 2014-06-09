@@ -3,6 +3,18 @@
 
 #include "def.h"
 
+typedef enum{
+	SEM_CHAR,
+	SEM_INT,
+	SEM_REAL,
+	SEM_STRING,
+	SEM_BOOL,
+	SEM_VECTOR,
+	SEM_STRUCT
+} Sem_type;
+
+
+
 int program(Pnode root);
 int func_decl(Pnode root);
 int decl_list_opt();
@@ -31,15 +43,18 @@ int return_stat();
 int read_stat();
 int specifier_opt();
 int write_stat();
-int math_expr();
-int logic_expr();
-int rel_expr();
-int neg_expr();
-int wr_expr();
-int rd_expr();
-int instance_expr();
+int math_expr(Pnode root, Sem_type * stype);
+int logic_expr(Pnode root, Sem_type * stype);
+int rel_expr(Pnode root, Sem_type * stype);
+int neg_expr(Pnode root, Sem_type * stype);
+int wr_expr(Pnode root, Sem_type * stype);
+int rd_expr(Pnode root, Sem_type * stype);
+int instance_expr(Pnode root, Sem_type * stype);
 int func_call();
-int cond_expr();
+int cond_expr(Pnode root, Sem_type * stype);
 int elsif_expr_list_opt();
-int built_in_call();
+int built_in_call(Pnode root, Sem_type * stype);
+
+void semantic_error(char * msg);
+int expr(Pnode root, Sem_type * stype);
 #endif
