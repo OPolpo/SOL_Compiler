@@ -34,4 +34,4 @@ parser.h: parser.y def.h
 	bison -d -o parser.c parser.y
 
 clean: 
-	rm lex.c lex.o parser.c parser.h tree.o
+	rm lex.c *.o parser.c parser.h

@@ -1,5 +1,5 @@
 #include "semantic.h"
-#include "parser.h"
+
 char error_msg[100];
 
 
@@ -9,7 +9,7 @@ int program(Pnode root){
 int func_decl(Pnode root){
 	Pnode id = root->child;
 	Pnode current = id->brother;
-    Sem_type * stype;
+    Pschema stype;
     
 	int decl_list_opt_ok = decl_list_opt(current);
 	current = current->brother;
@@ -41,7 +41,7 @@ int decl(Pnode root){
 int id_list(Pnode root){
 
 }
-int domain(Pnode root, Sem_type * stype){
+int domain(Pnode root, Pschema stype){
 
 }
 int struct_domain(Pnode root){
@@ -74,7 +74,7 @@ int stat(Pnode root){
 int assign_stat(Pnode root){
 
 }
-int left_hand_side(Pnode root, Sem_type * type){
+int left_hand_side(Pnode root, Pschema type){
 
 }
 int fielding(Pnode root){
@@ -106,15 +106,15 @@ int read_stat(Pnode root){
 }
 int specifier_opt(Pnode specifier_opt){ // NULL or STRING
     Pnode specifier = specifier_opt->child;
-    Sem_type type_spec;
+    Pschema type_spec = new_schema_node(-1);
     int ok;
     int spec_ok = (specifier == NULL);
     if (!spec_ok) {
-        ok = expr(specifier->child, &type_spec);
-        spec_ok = (type_spec == SEM_STRING);
+        ok = expr(specifier->child, type_spec);
+        spec_ok = (type_spec->type == STRING);
     }
     if (!spec_ok) {
-        semantic_error("Type error, specifier in wr/write/rd/read call must be of type STRING");
+        semantic_error("Type error, specifier in wr/write/rd/read call must be a STRING or NULL");
     }
     return ok && spec_ok;
 }
@@ -122,43 +122,49 @@ int specifier_opt(Pnode specifier_opt){ // NULL or STRING
 int write_stat(Pnode root){
 
 }
-int math_expr(Pnode root, Sem_type * stype){
+int math_expr(Pnode root, Pschema stype){
 	Pnode expr1 = root->child;
 	Pnode expr2 = root->child->brother;
-	Sem_type expr1_type, expr2_type;
+	Pschema expr1_type = new_schema_node(-1);
+	Pschema expr2_type = new_schema_node(-1);
 	
-	int expr1_ok = expr(expr1, &expr1_type);
-	if(expr1_type != SEM_INT || expr1_type != SEM_REAL){
-		sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", tabsem_types[expr1_type]);
+	int expr1_ok = expr(expr1, expr1_type);
+	if(expr1_type->type != INT || expr1_type->type != REAL){
+		//sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", tabsem_types[expr1_type]);
+		sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", "to_do");
 		semantic_error(error_msg);
 	}
-	int expr2_ok = expr(expr2, &expr2_type);
-	if(expr2_type != expr1_type){
-		sprintf(error_msg,"Type mismatch, expected %s instead %s\n", tabsem_types[expr1_type],tabsem_types[expr2_type]);
+	int expr2_ok = expr(expr2, expr2_type);
+	if(expr2_type->type != expr1_type->type){
+		//sprintf(error_msg,"Type mismatch, expected %s instead %s\n", tabsem_types[expr1_type],tabsem_types[expr2_type]);
+		sprintf(error_msg,"Type mismatch, expected %s instead %s\n", "to_do", "to_do");
 		semantic_error(error_msg);
 	}
-	*stype = expr1_type;
+	stype->type = expr1_type->type;
 	return expr1_ok && expr2_ok;
 }
-int logic_expr(Pnode root, Sem_type * stype){
+int logic_expr(Pnode root, Pschema stype){
 	Pnode expr1 = root->child;
 	Pnode expr2 = root->child->brother;
-	Sem_type expr1_type, expr2_type;
-	int expr1_ok = expr(expr1, &expr1_type);
-	if(expr1_type != SEM_BOOL)
+	Pschema expr1_type = new_schema_node(-1);
+	Pschema expr2_type = new_schema_node(-1);
+
+	int expr1_ok = expr(expr1, expr1_type);
+	if(expr1_type->type != BOOL)
 		semantic_error("Type error, expected BOOL\n");
-	int expr2_ok = expr(expr2, &expr2_type);
-	if(expr2_type != SEM_BOOL)
+	int expr2_ok = expr(expr2, expr2_type);
+	if(expr2_type->type != BOOL)
 		semantic_error("Type error, expected BOOL\n");
-	*stype = SEM_BOOL;
+	stype->type = BOOL;
 	return expr1_ok && expr2_ok;
 }
-int rel_expr(Pnode root, Sem_type * stype){
+int rel_expr(Pnode root, Pschema stype){
 	Pnode expr1 = root->child;
 	Pnode expr2 = root->child->brother;
-	Sem_type expr1_type, expr2_type;
-	int expr1_ok = expr(expr1, &expr1_type);
-	int expr2_ok = expr(expr2, &expr2_type);
+	Pschema expr1_type = new_schema_node(-1);
+	Pschema expr2_type = new_schema_node(-1);
+	int expr1_ok = expr(expr1, expr1_type);
+	int expr2_ok = expr(expr2, expr2_type);
 	int type_ok;
 	switch(root->qualifier){
 		case EQ:
@@ -171,7 +177,7 @@ int rel_expr(Pnode root, Sem_type * stype){
 		case GE:
 		case '<':
 		case LE:
-            type_ok = (expr1->type == SEM_INT || expr1->type == SEM_CHAR || expr1->type == SEM_REAL || expr1->type == SEM_STRING);
+            type_ok = (expr1_type->type == INT || expr1_type->type == CHAR || expr1_type->type == REAL || expr1_type->type == STRING);
             if (!type_ok) {
                 semantic_error("Type error in relational expression, expected INT, CHAR, REAL or STRING\n");
             }
@@ -180,37 +186,39 @@ int rel_expr(Pnode root, Sem_type * stype){
                 semantic_error("Type mismatch in relational expression\n");
 			break;
 		case IN:
-            type_ok = (expr1_type);//TO find vector[...] of type(expr1) .. or type2
+            type_ok = (expr1_type->type);//TO find vector[...] of type(expr1) .. or type2
 			break;
 		default:
 			semantic_error("Some weird qualification in relational expression\n");
 	}
     
-	*stype = SEM_BOOL;
+	stype->type = BOOL;
 	return expr1_ok && expr2_ok && type_ok;
 }
-int neg_expr(Pnode root, Sem_type * stype){
-	Sem_type expr_type;
-	int expr_ok = expr(root->child, &expr_type);
+int neg_expr(Pnode root, Pschema stype){
+	Pschema expr_type = new_schema_node(-1);
+	int expr_ok = expr(root->child, expr_type);
 	switch(root->qualifier){
 		case '-':
-			if(expr_type != SEM_INT || expr_type != SEM_REAL){
-				sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", tabsem_types[expr_type]);
+			if(expr_type->type != INT || expr_type->type != REAL){
+				//sprintf(error_msg,"Type error, expected INT | REAL instead of %s \n", tabsem_types[expr_type]);//
+				sprintf(error_msg,"Type error, expected INT | REAL instead of %s \n", "to_do");
 				semantic_error(error_msg);
 			}
-			*stype = expr_type;
+			stype->type = expr_type->type;
 		break;
 		case NOT:
-			if(expr_type != SEM_BOOL){
-				sprintf(error_msg,"Type error, expected BOOL instead %s \n", tabsem_types[expr_type]);
+			if(expr_type->type != BOOL){
+				//sprintf(error_msg,"Type error, expected BOOL instead of %s \n", tabsem_types[expr_type]);//
+				sprintf(error_msg,"Type error, expected BOOL instead of %s \n", "to_do");
 				semantic_error(error_msg);
 			}
-			*stype = SEM_BOOL;
+			stype->type = BOOL;
 		break;
 	}
 	return expr_ok;
 }
-int wr_expr(Pnode root, Sem_type * stype){
+int wr_expr(Pnode root, Pschema stype){
     int ok = specifier_opt(root->child);
     int expr_ok;
     if (ok) {
@@ -218,7 +226,7 @@ int wr_expr(Pnode root, Sem_type * stype){
     }
     return ok && expr_ok;
 }
-int rd_expr(Pnode root, Sem_type * stype){
+int rd_expr(Pnode root, Pschema stype){
     int ok = specifier_opt(root->child);
     int dom_ok;
     if (ok) {
@@ -226,7 +234,7 @@ int rd_expr(Pnode root, Sem_type * stype){
     }
     return ok && dom_ok;
 }
-int instance_expr(Pnode root, Sem_type * stype){/*
+int instance_expr(Pnode root, Pschema stype){/*
 	//Sem_type expr_type;
 	int expr_ok = expr(root->child, &expr_type);
 	switch(root->qualifier){
@@ -243,36 +251,37 @@ int instance_expr(Pnode root, Sem_type * stype){/*
 	}
 	return expr_ok;*/
 }
-int func_call(Pnode root, Sem_type * type){
+int func_call(Pnode root, Pschema stype){
 
 }
-int cond_expr(Pnode root, Sem_type * type){
+int cond_expr(Pnode root, Pschema stype){
 
 }
 int elsif_expr_list_opt(Pnode root){
 
 }
-int built_in_call(Pnode root, Sem_type * type){
+int built_in_call(Pnode root, Pschema stype){
 
 }
 
-int expr(Pnode root, Sem_type * stype){
+int expr(Pnode root, Pschema stype){
 	int expr_ok;
+
 	switch(root->type){
 		case T_CHARCONST:
-			*stype = SEM_CHAR;
+			stype->type = CHAR;
 			break;
 		case T_INTCONST:
-			*stype = SEM_INT;
+			stype->type = INT;
 			break;
 		case T_REALCONST:
-			*stype = SEM_REAL;
+			stype->type = REAL;
 			break;
 		case T_STRCONST:
-			*stype = SEM_STRING;
+			stype->type = STRING;
 			break;
 		case T_BOOLCONST:
-			*stype = SEM_BOOL;
+			stype->type = BOOL;
 			break;
 		case T_NONTERMINAL:
 		switch(root->value.ival){

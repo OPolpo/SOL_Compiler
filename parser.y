@@ -292,7 +292,6 @@ dynamic_output : WR specifier_opt {$$ = nontermnode(NWR_EXPR);
 
 int main(){
 	int result;
-	  
 	yyin = stdin;
 	if((result = yyparse()) == 0){
 		treeprint(root, " ");
