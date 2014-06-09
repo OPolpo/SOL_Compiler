@@ -9,9 +9,11 @@ int program(Pnode root){
 int func_decl(Pnode root){
 	Pnode id = root->child;
 	Pnode current = id->brother;
+    Sem_type * stype;
+    
 	int decl_list_opt_ok = decl_list_opt(current);
 	current = current->brother;
-	int domain_ok = domain(current);
+	int domain_ok = domain(current, stype);
 	current = current->brother;
 	int type_sect_opt_ok = type_sect_opt(current);
 	current = current->brother;
@@ -39,7 +41,7 @@ int decl(Pnode root){
 int id_list(Pnode root){
 
 }
-int domain(Pnode root){
+int domain(Pnode root, Sem_type * stype){
 
 }
 int struct_domain(Pnode root){
@@ -106,7 +108,7 @@ int specifier_opt(Pnode specifier_opt){ // NULL or STRING
     Pnode specifier = specifier_opt->child;
     Sem_type type_spec;
     int ok;
-    spec_ok = (specifier == NULL);
+    int spec_ok = (specifier == NULL);
     if (!spec_ok) {
         ok = expr(specifier->child, &type_spec);
         spec_ok = (type_spec == SEM_STRING);
@@ -224,7 +226,7 @@ int rd_expr(Pnode root, Sem_type * stype){
     }
     return ok && dom_ok;
 }
-int instance_expr(Pnode root, Sem_type * stype){
+int instance_expr(Pnode root, Sem_type * stype){/*
 	//Sem_type expr_type;
 	int expr_ok = expr(root->child, &expr_type);
 	switch(root->qualifier){
@@ -239,7 +241,7 @@ int instance_expr(Pnode root, Sem_type * stype){
 			*stype = SEM_BOOL;
 		break;
 	}
-	return expr_ok;
+	return expr_ok;*/
 }
 int func_call(Pnode root, Sem_type * type){
 
