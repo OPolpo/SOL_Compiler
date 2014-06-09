@@ -3,10 +3,10 @@
 char error_msg[100];
 
 
-int program(Pnode root){
-	return func_decl(root->child);
+int program(Pnode root, Phash_node loc_env){
+	return func_decl(root->child, loc_env);
 }
-int func_decl(Pnode root){
+int func_decl(Pnode root, Phash_node loc_env){
 	Pnode id = root->child;
 	Pnode current = id->brother;
     Pschema stype;
@@ -26,7 +26,7 @@ int func_decl(Pnode root){
 	int func_body_ok = func_body(current);
 
 }
-int decl_list_opt(Pnode root){
+int decl_list_opt(Pnode root, Phash_node loc_env){
 	Pnode current = root->child;
 	int decl_list_opt_ok = 1;
 	while(current != NULL){
@@ -35,73 +35,94 @@ int decl_list_opt(Pnode root){
 	}
 	return decl_list_opt_ok;
 }
-int decl(Pnode root){
+int decl(Pnode root, Phash_node loc_env){
     
 }
-int id_list(Pnode root){
+int id_list(Pnode root, Phash_node loc_env){
     
 }
-int domain(Pnode root, Pschema stype){
+int domain(Pnode root, Phash_node loc_env, Pschema stype){
     
 }
-int struct_domain(Pnode root){
+int struct_domain(Pnode root, Phash_node loc_env){
     
 }
-int vector_domain(Pnode root){
+int vector_domain(Pnode root, Phash_node loc_env){
     
 }
-int type_sect_opt(Pnode root){
+int type_sect_opt(Pnode root, Phash_node loc_env){
     
 }
-int var_sect_opt(Pnode root){
+int var_sect_opt(Pnode root, Phash_node loc_env){
     
 }
-int const_sect_opt(Pnode root){
+int const_sect_opt(Pnode root, Phash_node loc_env){
     
 }
-int func_list_opt(Pnode root){
+int func_list_opt(Pnode root, Phash_node loc_env){
     
 }
-int func_body(Pnode root){
+int func_body(Pnode root, Phash_node loc_env){
     
 }
-int stat_list(Pnode root){
+int stat_list(Pnode root, Phash_node loc_env){
     
 }
-int stat(Pnode root){
+int stat(Pnode root, Phash_node loc_env){
     
 }
-int assign_stat(Pnode root){
+int assign_stat(Pnode root, Phash_node loc_env){
     
 }
-int left_hand_side(Pnode root, Pschema type){
+int left_hand_side(Pnode root, Phash_node loc_env, Pschema type){
+    int lhs_ok;
+    switch (root->type) {
+        case T_ID:
+            
+            break;
+        case T_NONTERMINAL:
+            switch (root->value.ival) {
+                case NFIELDING:
+                    lhs_ok = fielding(root->child, type);//TODO
+                    break;
+                case NINDEXING:
+                    lhs_ok = indexing(root->child, type);//TODO
+                    break;
+                default:
+                    semantic_error("Some weird nonterminal node in lhs\n");
+                    break;
+            }
+            break;
+        default:
+            semantic_error("Some weird terminal node in lhs\n");
+            break;
+    }
+}
+int fielding(Pnode root, Phash_node loc_env){
     
 }
-int fielding(Pnode root){
+int indexing(Pnode root, Phash_node loc_env){
     
 }
-int indexing(Pnode root){
+int if_stat(Pnode root, Phash_node loc_env){
     
 }
-int if_stat(Pnode root){
+int elsif_stat_list_opt(Pnode root, Phash_node loc_env){
     
 }
-int elsif_stat_list_opt(Pnode root){
+int while_stat(Pnode root, Phash_node loc_env){
     
 }
-int while_stat(Pnode root){
+int for_stat(Pnode root, Phash_node loc_env){
     
 }
-int for_stat(Pnode root){
+int foreach_stat(Pnode root, Phash_node loc_env){
     
 }
-int foreach_stat(Pnode root){
+int return_stat(Pnode root, Phash_node loc_env){
     
 }
-int return_stat(Pnode root){
-    
-}
-int read_stat(Pnode root){
+int read_stat(Pnode root, Phash_node loc_env){
     
 }
 int specifier_opt(Pnode specifier_opt){ // NULL or STRING
@@ -119,10 +140,10 @@ int specifier_opt(Pnode specifier_opt){ // NULL or STRING
     return ok && spec_ok;
 }
 
-int write_stat(Pnode root){
+int write_stat(Pnode root, Phash_node loc_env){
     
 }
-int math_expr(Pnode root, Pschema stype){
+int math_expr(Pnode root, Phash_node loc_env, Pschema stype){
 	Pnode expr1 = root->child;
 	Pnode expr2 = root->child->brother;
 	Pschema expr1_type = new_schema_node(-1);
@@ -143,7 +164,7 @@ int math_expr(Pnode root, Pschema stype){
 	stype->type = expr1_type->type;
 	return expr1_ok && expr2_ok;
 }
-int logic_expr(Pnode root, Pschema stype){
+int logic_expr(Pnode root, Phash_node loc_env, Pschema stype){
 	Pnode expr1 = root->child;
 	Pnode expr2 = root->child->brother;
 	Pschema expr1_type = new_schema_node(-1);
@@ -158,7 +179,7 @@ int logic_expr(Pnode root, Pschema stype){
 	stype->type = BOOL;
 	return expr1_ok && expr2_ok;
 }
-int rel_expr(Pnode root, Pschema stype){
+int rel_expr(Pnode root, Phash_node loc_env, Pschema stype){
 	Pnode expr1 = root->child;
 	Pnode expr2 = root->child->brother;
 	Pschema expr1_type = new_schema_node(-1);
@@ -197,7 +218,7 @@ int rel_expr(Pnode root, Pschema stype){
 	stype->type = BOOL;
 	return expr1_ok && expr2_ok && type_ok;
 }
-int neg_expr(Pnode root, Pschema stype){
+int neg_expr(Pnode root, Phash_node loc_env, Pschema stype){
 	Pschema expr_type = new_schema_node(-1);
 	int expr_ok = expr(root->child, expr_type);
 	switch(root->qualifier){
@@ -220,7 +241,7 @@ int neg_expr(Pnode root, Pschema stype){
 	}
 	return expr_ok;
 }
-int wr_expr(Pnode root, Pschema stype){
+int wr_expr(Pnode root, Phash_node loc_env, Pschema stype){
     int ok = specifier_opt(root->child);
     int expr_ok;
     if (ok) {
@@ -228,7 +249,7 @@ int wr_expr(Pnode root, Pschema stype){
     }
     return ok && expr_ok;
 }
-int rd_expr(Pnode root, Pschema stype){
+int rd_expr(Pnode root, Phash_node loc_env, Pschema stype){
     int ok = specifier_opt(root->child);
     int dom_ok;
     if (ok) {
@@ -236,7 +257,7 @@ int rd_expr(Pnode root, Pschema stype){
     }
     return ok && dom_ok;
 }
-int instance_expr(Pnode root, Pschema stype){
+int instance_expr(Pnode root, Phash_node loc_env, Pschema stype){
 	int expr_ok;
 	int count = 0;
 	Pschema current_schema = new_schema_node(-1); //allocate schema
@@ -283,20 +304,20 @@ int instance_expr(Pnode root, Pschema stype){
 	}
 	return expr_ok;
 }
-int func_call(Pnode root, Pschema stype){
+int func_call(Pnode root, Phash_node loc_env, Pschema stype){
     
 }
-int cond_expr(Pnode root, Pschema stype){
+int cond_expr(Pnode root, Phash_node loc_env, Pschema stype){
     
 }
-int elsif_expr_list_opt(Pnode root){
+int elsif_expr_list_opt(Pnode root, Phash_node loc_env){
     
 }
-int built_in_call(Pnode root, Pschema stype){
+int built_in_call(Pnode root, Phash_node loc_env, Pschema stype){
     
 }
 
-int expr(Pnode root, Pschema stype){
+int expr(Pnode root, Phash_node loc_env, Pschema stype){
 	int expr_ok;
     
 	switch(root->type){
