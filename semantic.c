@@ -1,4 +1,5 @@
 #include "semantic.h"
+char error_msg[100];
 
 typedef enum{
 	SEM_CHAR,
@@ -9,6 +10,17 @@ typedef enum{
 	SEM_VECTOR,
 	SEM_STRUCT
 } Sem_type;
+
+char* tabsem_types[]{
+	"SEM_CHAR",
+	"SEM_INT",
+	"SEM_REAL",
+	"SEM_STRING",
+	"SEM_BOOL",	
+	"SEM_VECTOR",
+	"SEM_STRUCT"
+};
+
 
 
 int program(Pnode root){
@@ -116,8 +128,23 @@ int specifier_opt(Pnode root){
 int write_stat(Pnode root){
 
 }
-int math_expr(Pnode root){
-
+int math_expr(Pnode root, Sem_type * stype){
+	Pnode expr1 = root->child;
+	Pnode expr2 = root->child->brother;
+	Sem_type expr1_type, expr2_type;
+	
+	expr1_ok = expr(expr1, &expr1_type);
+	if(expr1_type != SEM_INT || expr1_type != SEM_REAL){
+		sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", tabsem_types[expr1_type]);
+		semantic_error(error_msg);
+	}
+	expr2_ok = expr(expr2, &expr2_type);
+	if(expr2_type != expr1_type){
+		sprintf(error_msg,"Type mismatch, expected %s instead %s\n", tabsem_types[expr1_type],tabsem_types[expr2_type]);
+		semantic_error(error_msg);
+	}
+	*stype = expr1_type;
+	return expr1_ok && expr2_ok;
 }
 int logic_expr(Pnode root, Sem_type * stype){
 	Pnode expr1 = root->child;
@@ -162,6 +189,25 @@ int rel_expr(Pnode root, Sem_type * stype){
 	return expr1_ok && expr2_ok && type_ok;
 }
 int neg_expr(Pnode root){
+	Sem_type expr_type;
+	int expr_ok = expr(root->child, &expr_type);
+	switch(root->qualifier){
+		case '-':
+			if(expr_type != SEM_INT || expr_type != SEM_REAL){
+				sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", tabsem_types[expr_type]);
+				semantic_error(error_msg);
+			}
+			*stype = expr_type;
+		break;
+		case NOT:
+			if(expr_type != SEM_BOOL){
+				sprintf(error_msg,"Type error, expected BOOL instead %s \n", tabsem_types[expr_type]);
+				semantic_error(error_msg);
+			}
+			*stype = SEM_BOOL;
+		break;
+	}
+	return expr_ok;
 
 }
 int wr_expr(Pnode root){
