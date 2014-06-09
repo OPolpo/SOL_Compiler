@@ -14,6 +14,16 @@ typedef enum{
 } Sem_type;
 
 
+char* tabsem_types[] ={
+	"SEM_CHAR",
+	"SEM_INT",
+	"SEM_REAL",
+	"SEM_STRING",
+	"SEM_BOOL",	
+	"SEM_VECTOR",
+	"SEM_STRUCT"
+};
+
 
 int program(Pnode root);
 int func_decl(Pnode root);

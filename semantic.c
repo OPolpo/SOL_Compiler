@@ -2,26 +2,6 @@
 #include "parser.h"
 char error_msg[100];
 
-typedef enum{
-	SEM_CHAR,
-	SEM_INT,
-	SEM_REAL,
-	SEM_STRING,
-	SEM_BOOL,	
-	SEM_VECTOR,
-	SEM_STRUCT
-} Sem_type;
-
-char* tabsem_types[]{
-	"SEM_CHAR",
-	"SEM_INT",
-	"SEM_REAL",
-	"SEM_STRING",
-	"SEM_BOOL",	
-	"SEM_VECTOR",
-	"SEM_STRUCT"
-};
-
 
 int program(Pnode root){
 	return func_decl(root->child);
@@ -51,7 +31,7 @@ int decl_list_opt(Pnode root){
 		decl_list_opt_ok = decl_list_opt_ok && decl(current);
 		current = current->brother;
 	}
-	return current;
+	return decl_list_opt_ok;
 }
 int decl(Pnode root){
 
@@ -133,12 +113,12 @@ int math_expr(Pnode root, Sem_type * stype){
 	Pnode expr2 = root->child->brother;
 	Sem_type expr1_type, expr2_type;
 	
-	expr1_ok = expr(expr1, &expr1_type);
+	int expr1_ok = expr(expr1, &expr1_type);
 	if(expr1_type != SEM_INT || expr1_type != SEM_REAL){
 		sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", tabsem_types[expr1_type]);
 		semantic_error(error_msg);
 	}
-	expr2_ok = expr(expr2, &expr2_type);
+	int expr2_ok = expr(expr2, &expr2_type);
 	if(expr2_type != expr1_type){
 		sprintf(error_msg,"Type mismatch, expected %s instead %s\n", tabsem_types[expr1_type],tabsem_types[expr2_type]);
 		semantic_error(error_msg);
@@ -195,7 +175,7 @@ int rel_expr(Pnode root, Sem_type * stype){
 	*stype = SEM_BOOL;
 	return expr1_ok && expr2_ok && type_ok;
 }
-int neg_expr(Pnode root){
+int neg_expr(Pnode root, Sem_type * stype){
 	Sem_type expr_type;
 	int expr_ok = expr(root->child, &expr_type);
 	switch(root->qualifier){
