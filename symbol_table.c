@@ -232,7 +232,7 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                 }
                 func = func->father;
             }
-            if (type_decl == NULL) printf("ERRORE type not found: %s\n", dom_child->value.sval);
+            if (type_decl == NULL) printf("ERROR type not found: %s\n", dom_child->value.sval);
             break;
         case T_ATOMIC_DOMAIN:
             //CHAR, INT, REAL, STRING, BOOL
@@ -251,17 +251,56 @@ Pschema new_schema_node(int _type){
     return node;
 }
 
+int are_compatible(Pschema a, Pschema b){
+    Pschema a_child;
+    int ok;
+    switch (a->type) {//CHAR, INT, REAL, STRING, BOOL, STRUCT, VECTOR
+        case CHAR:
+        case INT:
+        case REAL:
+        case BOOL:
+        case STRING:
+            return (a->type == b->type);
+            break;
+        case STRUCT:
+            if (b->type == STRUCT) {
+                Pschema a_child = a->p1;
+                Pschema b_child = b->p1;
+                while (a_child != NULL && b_child != NULL) {
+                    ok = are_compatible(a_child, b_child);
+                    a_child = a_child->p2;
+                    b_child = b_child->p2;
+                    if(!ok)
+                        return 0; //FALSE
+                }
+                if (a_child != b_child) {
+                    return 0; //FALSE
+                }
+            }
+            break;
+        case VECTOR:
+            if (a->size != b->size) {
+                return 0; //FALSE
+            }
+            return are_compatible(a->p1, b->p1);
+        default:
+            printf("");
+            break;
+    }
+    
+}
+
 void printSchema(Pschema root, char* father_indent){
     if(root==NULL) return;
-
+    
     int i;
     Pschema p;
-
+    
     //--Indent Stuff
     char* my_indent = calloc(1000,sizeof(char));
     my_indent[0]=0;
     strcpy(my_indent, father_indent);
-
+    
     if(root->p2)
         //strcat(my_indent,"    ├");
         strcat(my_indent,"├");
@@ -269,7 +308,7 @@ void printSchema(Pschema root, char* father_indent){
         //strcat(my_indent,"    └");
         strcat(my_indent,"└");
     printf("%s─", my_indent);
-
+    
     //--PRINTING SINGLE NODE
     switch(root->type){
         case VECTOR:
@@ -284,7 +323,7 @@ void printSchema(Pschema root, char* father_indent){
         case INT:
             printf("%s [ %s ] [ - ]", "INT", root->id);
             break;
-         case REAL:
+        case REAL:
             printf("%s [ %s ] [ - ]", "REAL", root->id);
             break;
         case STRING:
@@ -293,12 +332,12 @@ void printSchema(Pschema root, char* father_indent){
         case BOOL:
             printf("%s [ %s ] [ - ]", "BOOL", root->id);
             break;
-        // case ATTR:
-        //     printf(" %s [ - ] [ - ]", "ATTR");
-        //     break;
+            // case ATTR:
+            //     printf(" %s [ - ] [ - ]", "ATTR");
+            //     break;
         default:
             printf("ERROR (maybe ID)\n");
-            break;    
+            break;
     }
     
     //--OTHER INDENT AND RECURSION AND BROTHER CICLE

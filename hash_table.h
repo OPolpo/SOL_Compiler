@@ -21,7 +21,7 @@ typedef struct sformalsnode{
 } Formal;
 
 typedef struct sschema{
-    int type; //CHAR, INT, REAL, STRING, BOOL, STRUCT, VECTOR, ATTR
+    int type; //CHAR, INT, REAL, STRING, BOOL, STRUCT, VECTOR (ATTR no more)
     char * id; //field name
     int size; //array size (type = VECTOR)
     struct sschema *p1, *p2;
