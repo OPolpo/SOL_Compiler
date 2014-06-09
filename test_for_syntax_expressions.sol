@@ -7,7 +7,7 @@ begin tester2
 	m = a and b or c > 4;
 	o = 3+2*1;
 	o = 3*2+1;
-	k = - i;
+
 	return -pippo88878y65cytrdxctrctrct7;
 	return p();
 	return ppp(ll);
@@ -24,4 +24,7 @@ begin tester2
 		a = b-c;
 	endif;
 
+		k = - i;
+	g = -2;
+	f = -(4+3-2);
 end tester2

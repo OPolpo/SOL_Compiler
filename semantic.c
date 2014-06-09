@@ -122,9 +122,21 @@ int return_stat(Pnode root){
 int read_stat(Pnode root){
 
 }
-int specifier_opt(Pnode root){
-
+int specifier_opt(Pnode specifier_opt){ // NULL or STRING
+    Pnode specifier = specifier_opt->child;
+    Sem_type type_spec;
+    int ok;
+    spec_ok = (specifier == NULL);
+    if (!spec_ok) {
+        ok = expr(specifier->child, &type_spec);
+        spec_ok = (type_spec == SEM_STRING);
+    }
+    if (!spec_ok) {
+        semantic_error("Type error, specifier in wr/write/rd/read call must be of type STRING");
+    }
+    return ok && spec_ok;
 }
+
 int write_stat(Pnode root){
 
 }
@@ -218,10 +230,20 @@ int neg_expr(Pnode root){
 
 }
 int wr_expr(Pnode root, Sem_type * stype){
-
+    int ok = specifier_opt(root->child);
+    int expr_ok;
+    if (ok) {
+        expr_ok = expr(root->child->brother, stype);
+    }
+    return ok && expr_ok;
 }
 int rd_expr(Pnode root, Sem_type * stype){
-
+    int ok = specifier_opt(root->child);
+    int dom_ok;
+    if (ok) {
+        dom_ok = domain(root->child->brother, stype);
+    }
+    return ok && dom_ok;
 }
 int instance_expr(Pnode root, Sem_type * stype){
 
