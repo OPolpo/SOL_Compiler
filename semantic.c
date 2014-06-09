@@ -234,22 +234,52 @@ int rd_expr(Pnode root, Pschema stype){
     }
     return ok && dom_ok;
 }
-int instance_expr(Pnode root, Pschema stype){/*
-	//Sem_type expr_type;
-	int expr_ok = expr(root->child, &expr_type);
+int instance_expr(Pnode root, Pschema stype){
+	int expr_ok;
+	int count = 0;
+	Pschema current_schema = new_schema_node(-1); //allocate schema
+	Pnode current_node;
 	switch(root->qualifier){
 		case STRUCT:
-			*stype = expr_type;
+			stype->type = STRUCT;
+			
+			current_node = root->child; //first element of struct
+			
+			expr_ok = expr(current_node, current_schema); //eval first child's schema
+			stype->p1 = current_schema; // attach to root's schema the schema of first child
+			current_node = current_node->brother; //switch to the firse brother
+
+			while (current_node){//cicle for the other brother
+				Pschema next = new_schema_node(-1);
+				expr_ok = expr(current_node, next);
+				current_schema->p2 = next;
+				current_schema = next;
+				current_node = current_node->brother;
+			}
 		break;
 		case VECTOR:
-			if(expr_type != SEM_BOOL){
-				sprintf(error_msg,"Type error, expected BOOL instead %s \n", tabsem_types[expr_type]);
-				semantic_error(error_msg);
+			stype->type = VECTOR;
+			
+			current_node = root->child;
+			
+			expr_ok = expr(current_node, current_schema);
+			current_node = current_node->brother;
+			count++;
+			while (current_node){
+				Pschema next = new_schema_node(-1);
+				expr_ok = expr_ok && expr(current_node, next);
+				if(!are_compatible(next,current_schema)){
+					semantic_error("vector type error");
+					break;
+				}
+				current_node = current_node->brother;
+				count++;
 			}
-			*stype = SEM_BOOL;
+			stype->size = count;
+			stype->p1 = current_schema;
 		break;
 	}
-	return expr_ok;*/
+	return expr_ok;
 }
 int func_call(Pnode root, Pschema stype){
 
