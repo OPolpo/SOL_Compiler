@@ -354,3 +354,8 @@ void print_hash_content(Phash_node * table){
 //  struct shash_node * next;
 //  } Hash_node, * Phash_node;
 //  *
+
+void semantic_error(char * error ){
+    printf("Semantic error: %s", error);
+    exit(EXIT_FAILURE);
+}

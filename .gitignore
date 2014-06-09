@@ -3,3 +3,4 @@ lex.c
 parser.c
 parser.h
 prova
+test_stupid.sol
