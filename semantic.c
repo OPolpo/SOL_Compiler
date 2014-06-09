@@ -181,12 +181,14 @@ int rel_expr(Pnode root, Pschema stype){
             if (!type_ok) {
                 semantic_error("Type error in relational expression, expected INT, CHAR, REAL or STRING\n");
             }
-            type_ok = type_ok && (expr1->type == expr2->type);
+            type_ok = type_ok && (expr1_type->type == expr2_type->type);
             if(!type_ok)
                 semantic_error("Type mismatch in relational expression\n");
 			break;
 		case IN:
-            type_ok = (expr1_type->type);//TO find vector[...] of type(expr1) .. or type2
+            if (expr2_type->type == VECTOR) {
+                type_ok = are_compatible(expr1_type, expr2_type->p1 );
+            }
 			break;
 		default:
 			semantic_error("Some weird qualification in relational expression\n");
