@@ -138,10 +138,11 @@ int rel_expr(Pnode root, Sem_type * stype){
 	Sem_type expr1_type, expr2_type;
 	expr1_ok = expr(expr1, &expr1_type);
 	expr2_ok = expr(expr2, &expr2_type);
+	int type_ok;
 	switch(root->qualifier){
 		case EQ:
 		case NE:
-
+			type_ok = expr1->type == expr2->type;
 			break;
 		case '>':
 		case GE:
@@ -158,7 +159,7 @@ int rel_expr(Pnode root, Sem_type * stype){
 	if(expr2_type != SEM_BOOL)
 		semantic_error("Type mismatch, expected BOOL\n");
 	*stype = SEM_BOOL;
-	return expr1_ok && expr2_ok;
+	return expr1_ok && expr2_ok && type_ok;
 }
 int neg_expr(Pnode root){
 
