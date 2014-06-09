@@ -287,6 +287,11 @@ int func_call(Pnode root, Pschema stype){
     
 }
 int cond_expr(Pnode root, Pschema stype){
+	Pschema expr1_type = new_schema_node(-1);
+	int expr1_ok = expr(root->child, expr2_type);
+	if (expr1_type->type!=BOOL){
+		semantic_error("error");
+	}
     
 }
 int elsif_expr_list_opt(Pnode root){
