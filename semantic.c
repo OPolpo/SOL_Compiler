@@ -228,14 +228,10 @@ int instance_expr(Pnode root, Sem_type * stype){
 	//Sem_type expr_type;
 	int expr_ok = expr(root->child, &expr_type);
 	switch(root->qualifier){
-		case '-':
-			if(expr_type != SEM_INT || expr_type != SEM_REAL){
-				sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", tabsem_types[expr_type]);
-				semantic_error(error_msg);
-			}
+		case STRUCT:
 			*stype = expr_type;
 		break;
-		case NOT:
+		case VECTOR:
 			if(expr_type != SEM_BOOL){
 				sprintf(error_msg,"Type error, expected BOOL instead %s \n", tabsem_types[expr_type]);
 				semantic_error(error_msg);
