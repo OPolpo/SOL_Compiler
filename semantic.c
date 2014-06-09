@@ -195,7 +195,6 @@ int neg_expr(Pnode root, Sem_type * stype){
 		break;
 	}
 	return expr_ok;
-
 }
 int wr_expr(Pnode root, Sem_type * stype){
 
@@ -204,7 +203,25 @@ int rd_expr(Pnode root, Sem_type * stype){
 
 }
 int instance_expr(Pnode root, Sem_type * stype){
-
+	//Sem_type expr_type;
+	int expr_ok = expr(root->child, &expr_type);
+	switch(root->qualifier){
+		case '-':
+			if(expr_type != SEM_INT || expr_type != SEM_REAL){
+				sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", tabsem_types[expr_type]);
+				semantic_error(error_msg);
+			}
+			*stype = expr_type;
+		break;
+		case NOT:
+			if(expr_type != SEM_BOOL){
+				sprintf(error_msg,"Type error, expected BOOL instead %s \n", tabsem_types[expr_type]);
+				semantic_error(error_msg);
+			}
+			*stype = SEM_BOOL;
+		break;
+	}
+	return expr_ok;
 }
 int func_call(Pnode root, Sem_type * type){
 
