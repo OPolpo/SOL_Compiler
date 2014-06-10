@@ -59,7 +59,8 @@ begin tester2
 
 	m = sum(v);
 	a = if b>c then b+c elsif b==c+1 then b-c else a+1 endif;
-
+	a = if b>c then b+c else a+1 endif;
+	a = if b>c then b+c elsif b==c+1 then b-c elsif b==d+1 then b-d elsif b==e+1 then b-e else a+1 endif;
 	if a==b then
 		t = r;
 	elsif a>b then

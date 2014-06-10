@@ -65,7 +65,7 @@ int rd_expr(Pnode root, Phash_node f_loc_env, Pschema stype);
 int instance_expr(Pnode root, Phash_node f_loc_env, Pschema stype);
 int func_call(Pnode root, Phash_node f_loc_env, Pschema stype);
 int cond_expr(Pnode root, Phash_node f_loc_env, Pschema stype);
-int elsif_expr_list_opt(Pnode root, Phash_node f_loc_env);
+int elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema stype);
 int built_in_call(Pnode root, Phash_node f_loc_env, Pschema stype);
 
 int expr(Pnode root, Phash_node f_loc_env, Pschema stype);
