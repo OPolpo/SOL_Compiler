@@ -295,7 +295,8 @@ int main(){
 	yyin = stdin;
 	if((result = yyparse()) == 0){
 		treeprint(root, " ");
-		create_symbol_table(root, NULL);
+		Phash_node symtab = create_symbol_table(root, NULL);
+        program(root, symtab, 0);
 	}
 	return(result);
 }
