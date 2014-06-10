@@ -312,8 +312,8 @@ int return_stat(Pnode root, Phash_node f_loc_env){
 int read_stat(Pnode root, Phash_node f_loc_env){
     
 }
-int specifier_opt(Pnode specifier_opt, Phash_node f_loc_env){ // NULL or STRING
-    Pnode specifier = specifier_opt->child;
+int specifier_opt(Pnode root, Phash_node f_loc_env){ // NULL or STRING
+    Pnode specifier = root->child;
     Pschema type_spec = new_schema_node(-1);
     int ok;
     int spec_ok = (specifier == NULL);
