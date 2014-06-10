@@ -201,9 +201,49 @@ int indexing(Pnode root, Phash_node f_loc_env, Pschema stype){
 }
 int if_stat(Pnode root, Phash_node f_loc_env){
     
+	Pnode main_expr_node = root->child;
+	Pnode if_stat_list_node = main_expr_node->brother;
+	Pnode elsif_stat_list_opt_node = if_stat_list_node->brother;
+	Pnode else_stat_list_node = elsif_stat_list_opt_node->brother;
+
+	//check contraint on conditional clause
+	Pschema main_expr_type = new_schema_node(-1);;
+	int main_expr_ok = expr(main_expr_node, f_loc_env, main_expr_type);
+
+	if (main_expr_type->type!=BOOL){
+		semantic_error("Type Error, expected BOOL in conditional clause\n");
+	}
+
+	int if_stat_list_ok = stat_list(if_stat_list_node, f_loc_env);
+
+	int else_stat_list_ok = stat_list(else_stat_list_node, f_loc_env);
+
+	int elsif_stat_list_opt_ok = elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env);
+
+	return main_expr_ok && if_stat_list_ok && elsif_stat_list_opt_ok && else_stat_list_ok;
 }
 int elsif_stat_list_opt(Pnode root, Phash_node f_loc_env){
-    
+    if (root->child == NULL){
+		return 1;
+	}
+
+	Pnode main_expr_node = root->child;
+	Pnode stat_list_node = main_expr_node->brother;
+	Pnode elsif_stat_list_opt_node = stat_list_node->brother;
+
+	//check contraint on conditional clause
+    Pschema main_expr_type = new_schema_node(-1);;
+    int main_expr_ok = expr(main_expr_node, f_loc_env, main_expr_type);
+
+    if (main_expr_type->type!=BOOL){
+		semantic_error("Type Error, expected BOOL in conditional clause\n");
+	}
+
+    int stat_list_ok = stat_list(stat_list_node, f_loc_env);
+
+    int elsif_stat_list_opt_ok = elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env);
+	
+	return main_expr_ok && stat_list_ok && elsif_stat_list_opt_ok;
 }
 int while_stat(Pnode root, Phash_node f_loc_env){
     
@@ -407,14 +447,14 @@ int func_call(Pnode root, Phash_node f_loc_env, Pschema stype){
 
 int cond_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 
-	Pnode main_expr = root->child;
-	Pnode first_expr = main_expr->brother;
-	Pnode elsif_expr = first_expr->brother;
-	Pnode else_expr = elsif_expr->brother;
+	Pnode main_expr_node = root->child;
+	Pnode first_expr_node = main_expr_node->brother;
+	Pnode elsif_expr_node = first_expr_node->brother;
+	Pnode else_expr_node = elsif_expr_node->brother;
 
 	//check contraint on conditional clause
 	Pschema main_expr_type = new_schema_node(-1);;
-	int main_expr_ok = expr(main_expr, f_loc_env, main_expr_type);
+	int main_expr_ok = expr(main_expr_node, f_loc_env, main_expr_type);
 
 	if (main_expr_type->type!=BOOL){
 		semantic_error("Type Error, expected BOOL in conditional clause\n");
@@ -422,10 +462,10 @@ int cond_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 
 	//check contraint on first and last alternative
 	Pschema first_expr_type = stype;
-	int first_expr_ok = expr(first_expr, f_loc_env, first_expr_type);
+	int first_expr_ok = expr(first_expr_node, f_loc_env, first_expr_type);
 
 	Pschema else_expr_type = new_schema_node(-1);
-	int else_expr_ok = expr(else_expr, f_loc_env, else_expr_type);
+	int else_expr_ok = expr(else_expr_node, f_loc_env, else_expr_type);
 
 	if (!are_compatible(first_expr_type, else_expr_type)){
 		semantic_error("Type error, alternatives are of different type\n");
@@ -433,7 +473,7 @@ int cond_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 
 	//check contraint on elsif part
 	Pschema elsif_expr_type = new_schema_node(-1);
-	int elsif_expr_ok = elsif_expr_list_opt(elsif_expr, f_loc_env, elsif_expr_type);
+	int elsif_expr_ok = elsif_expr_list_opt(elsif_expr_node, f_loc_env, elsif_expr_type);
 	
 	if (elsif_expr_type != NULL && !are_compatible(first_expr_type, elsif_expr_type)){
 		semantic_error("Type error, alternatives are of different type\n");
@@ -475,6 +515,24 @@ int elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema stype){
 
 }
 int built_in_call(Pnode root, Phash_node f_loc_env, Pschema stype){
+	Pschema built_in_call_type = new_schema_node(-1);
+	int built_in_call_ok = expr(root->child, f_loc_env, built_in_call_type);
+
+	switch(root->qualifier){
+		case TOINT:
+			if(built_in_call_type->type != REAL){
+				semantic_error("Type error, expected REAL");
+			}
+			stype->type = INT;
+		break;
+		case TOREAL:
+			if(built_in_call_type->type != INT){
+				semantic_error("Type error, expected INT");
+			}
+			stype->type = REAL;
+		break;
+	}
+	return built_in_call_ok;
     
 }
 
