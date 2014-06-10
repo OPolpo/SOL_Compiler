@@ -314,7 +314,7 @@ int instance_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 				Pschema next = new_schema_node(-1);
 				expr_ok = expr_ok && expr(current_node, f_loc_env, next);
 				if(!are_compatible(next,current_schema)){
-					semantic_error("vector type error");
+					semantic_error("Type Error, Vector type are non uniform");
 					break;
 				}
 				current_node = current_node->brother;
@@ -329,14 +329,45 @@ int instance_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 int func_call(Pnode root, Phash_node f_loc_env, Pschema stype){
     
 }
+
 int cond_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
-	Pschema expr1_type = new_schema_node(-1);
-	int expr1_ok = expr(root->child, f_loc_env, expr1_type);
-	if (expr1_type->type!=BOOL){
-		semantic_error("error");
+	Pnode main_expr = root->child;
+	Pnode first_expr = main_expr->brother;
+	Pnode elsif_expr = first_expr->brother;
+	Pnode else_expr = elsif_expr->brother;
+
+	Pschema main_expr_type = stype;
+	int main_expr_ok = expr(main_expr, f_loc_env, main_expr_type);
+
+	Pschema first_expr_type = new_schema_node(-1);
+	int first_expr_ok = expr(first_expr, f_loc_env, first_expr_type);
+
+	Pschema else_expr_type = new_schema_node(-1);
+	int else_expr_ok = expr(else_expr, f_loc_env, else_expr_type);
+
+	if (main_expr_type->type!=BOOL){
+		semantic_error("Type Error, expected BOOL in conditional clausole");
 	}
+
+	if (!are_compatible(first_expr_type,else_expr_type){
+		semantic_error("type error, alternative are of different type");
+	}
+
+	int elsif_expr_ok;
+	Pnode current_node = elsif_expr->child;
+	while(current_node){
+		Pschema current_schema = new_schema_node(-1);
+		elsif_expr_ok = elsif_expr_ok && expr(current_node, current_schema);
+		if(!are_compatible(current_schema->type,first_expr_type){
+			semantic_error("ype error, alternative are of different type");
+		}
+		current_node=current_node->brother
+	}
+	return main_expr_ok && first_expr_ok && elsif_expr_ok && else_expr_ok;
+
     
 }
+
 int elsif_expr_list_opt(Pnode root, Phash_node f_loc_env){
     
 }
