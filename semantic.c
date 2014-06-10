@@ -349,7 +349,7 @@ int cond_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 		semantic_error("Type Error, expected BOOL in conditional clausole");
 	}
 
-	if (!are_compatible(first_expr_type,else_expr_type){
+	if (!are_compatible(first_expr_type,else_expr_type)){
 		semantic_error("type error, alternative are of different type");
 	}
 
@@ -357,11 +357,11 @@ int cond_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 	Pnode current_node = elsif_expr->child;
 	while(current_node){
 		Pschema current_schema = new_schema_node(-1);
-		elsif_expr_ok = elsif_expr_ok && expr(current_node, current_schema);
-		if(!are_compatible(current_schema->type,first_expr_type){
+		elsif_expr_ok = elsif_expr_ok && expr(current_node, f_loc_env, current_schema);
+		if(!are_compatible(current_schema,first_expr_type)){
 			semantic_error("ype error, alternative are of different type");
 		}
-		current_node=current_node->brother
+		current_node=current_node->brother;
 	}
 	return main_expr_ok && first_expr_ok && elsif_expr_ok && else_expr_ok;
 
