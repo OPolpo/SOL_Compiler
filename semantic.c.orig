@@ -319,12 +319,16 @@ int instance_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 int func_call(Pnode root, Phash_node f_loc_env, Pschema stype){
     
 }
+<<<<<<< HEAD
+int cond_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
+=======
 int cond_expr(Pnode root, Phash_node loc_env, Pschema stype){
 	Pschema expr1_type = new_schema_node(-1);
 	int expr1_ok = expr(root->child, expr2_type);
 	if (expr1_type->type!=BOOL){
 		semantic_error("error");
 	}
+>>>>>>> FETCH_HEAD
     
 }
 int elsif_expr_list_opt(Pnode root, Phash_node f_loc_env){
