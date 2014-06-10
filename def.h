@@ -69,6 +69,7 @@ typedef struct snode{
 	Typenode type;
 	Value value;
     int qualifier;
+    int row;
 	struct snode *child, *brother;
 } Node, * Pnode;
 

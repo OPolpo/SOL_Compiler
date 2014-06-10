@@ -62,6 +62,7 @@ Pnode newnode(Typenode tnode){
   Pnode p = malloc(sizeof(Node));
   p->type = tnode;
   p->child = p->brother = NULL;
+  p->row = line;
   return(p);
 }
 %}
