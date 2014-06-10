@@ -674,7 +674,7 @@ int expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 	return expr_ok;
 }
 
-void semantic_error(Pnode node, char * msg){
-    fprintf(stderr, "Row: %d Semantic error: %s", node->row, msg);
+void semantic_error(char * msg ){
+    fprintf(stderr, "Semantic error: %s", msg);
     exit(EXIT_FAILURE);
 }

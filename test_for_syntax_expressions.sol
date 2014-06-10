@@ -1,10 +1,11 @@
 --test :P
 func tester2(prova: vector[10] of struct(a:int; b: vector[20] of vector[5] of real;);):int
+var c,d: bool;
 begin tester2
-	c = c and b;
-	c = c or b;
-	c =( c == b) and v!= c; 
-	m = a and b or c > 4;
+	c = c and (b[1][1] == 2.0);
+	c = c or (b[1][1] <= 2.0);
+	c = (c == d) and (d!= c); 
+	m = c and d or a > 4;
 	o = 3+2*1;
 	o = 3*2+1;
 
