@@ -86,9 +86,10 @@ int assign_stat(Pnode root, Phash_node f_loc_env){
 int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema stype){
     Phash_node h_node;
     int lhs_ok;
-    switch (root->type) {
+    Pnode child = root->child;
+    switch (child->type) {
         case T_ID:
-            h_node = find_visible_node(root->value.sval, f_loc_env);
+            h_node = find_visible_node(child->value.sval, f_loc_env);
             if (h_node == NULL) {
                 lhs_ok = 0;
                 semantic_error("Use of not visible ID\n");
@@ -101,12 +102,12 @@ int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema stype){
             stype = h_node->schema; //TODO check about malloc...
             break;
         case T_NONTERMINAL:
-            switch (root->value.ival) {
+            switch (child->value.ival) {
                 case NFIELDING:
-                    lhs_ok = fielding(root->child, f_loc_env, stype);//TODO
+                    lhs_ok = fielding(child, f_loc_env, stype);//TODO
                     break;
                 case NINDEXING:
-                    lhs_ok = indexing(root->child, f_loc_env, stype);//TODO
+                    lhs_ok = indexing(child, f_loc_env, stype);//TODO
                     break;
                 default:
                     semantic_error("Some weird nonterminal node in lhs\n");
@@ -119,7 +120,32 @@ int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema stype){
     }
 }
 int fielding(Pnode root, Phash_node f_loc_env, Pschema stype){
+    int ok_field;
+    Pnode lhs_node = root->child;
+    Pschema lhs_type = new_schema_node(-1);
     
+    ok_field = left_hand_side(lhs_node, f_loc_env, lhs_type);
+    ok_field = ok_field && (lhs_type->type == STRUCT);
+    if (!ok_field) {
+        semantic_error("Type error, cannot use . on a lhs that is not a STRUCT");
+    }
+    //lhs is a STRUCT
+    Pnode id_node = lhs_node->brother;
+    //lhs.id must exist... so check lhs children
+    Pschema lhs_attr = lhs_type->p1;
+    int found = 0;
+    while (found==0 && lhs_attr != NULL) {
+        if (strcmp(id_node->value.sval, lhs_attr->id)==0) {
+            stype = lhs_attr->p1;
+            found =1;
+        }
+        lhs_attr = lhs_attr->p2;
+    }
+    ok_field = ok_field && found;
+    if (!found) {
+        semantic_error("Semantic error, trying to access a non-existent field");
+    }
+    return ok_field;
 }
 int indexing(Pnode root, Phash_node f_loc_env, Pschema stype){
     
