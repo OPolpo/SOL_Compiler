@@ -138,11 +138,32 @@ int stat(Pnode root, Phash_node f_loc_env){
             semantic_error("Some weird nonterminal node in lhs\n");
             break;
     }
+    return ok;
 }
 int assign_stat(Pnode root, Phash_node f_loc_env){
+    Pnode lhs_node = root->child;
+    Pnode expr_node = lhs_node->brother;
+    int ok = 1;
     
+    Pschema lhs_schema;
+    Class lhs_class; //maybe is not allocated...
+    Pschema expr_schema = new_schema_node(-1);
+    
+    ok = ok && left_hand_side(lhs_node, f_loc_env, lhs_schema, &lhs_class);
+    ok = ok && (lhs_class == CLVAR || lhs_class == CLPAR); //not a CONST
+    if (!ok) {
+        semantic_error("Semantic error, cannot assign value to a CONST\n");
+    }
+    
+    ok = ok && expr(expr_node, f_loc_env, expr_schema);
+    
+    ok = ok && are_compatible(lhs_schema, expr_schema);
+    if (!ok) {
+        semantic_error("Type error in ASSIGNMENT, type must be compatible\n");
+    }
+    return ok;
 }
-int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema stype){//to be called on a SCHEMA not mallocated
+int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema stype, Class * lhs_class){//to be called on a SCHEMA not mallocated
     Phash_node h_node;
     int lhs_ok;
     Pnode child = root->child;
@@ -158,15 +179,16 @@ int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema stype){//to be call
             if (!lhs_ok) {
                 semantic_error("An lhs cannot be a function or a constant name\n");
             }
+            *lhs_class = h_node->class_node;
             stype = h_node->schema; //TODO check about malloc...
             break;
         case T_NONTERMINAL:
             switch (child->value.ival) {
                 case NFIELDING:
-                    lhs_ok = fielding(child, f_loc_env, stype);//TODO
+                    lhs_ok = fielding(child, f_loc_env, stype, lhs_class);//TODO
                     break;
                 case NINDEXING:
-                    lhs_ok = indexing(child, f_loc_env, stype);//TODO
+                    lhs_ok = indexing(child, f_loc_env, stype, lhs_class);//TODO
                     break;
                 default:
                     semantic_error("Some weird nonterminal node in lhs\n");
@@ -178,13 +200,13 @@ int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema stype){//to be call
             break;
     }
 }
-int fielding(Pnode root, Phash_node f_loc_env, Pschema stype){
+int fielding(Pnode root, Phash_node f_loc_env, Pschema stype, Class * lhs_class){
     int ok_field;
     Pnode lhs_node = root->child;
     // Pschema lhs_type = new_schema_node(-1);
     Pschema lhs_type = stype;
     
-    ok_field = left_hand_side(lhs_node, f_loc_env, lhs_type);
+    ok_field = left_hand_side(lhs_node, f_loc_env, lhs_type, lhs_class);
     ok_field = ok_field && (lhs_type->type == STRUCT);
     if (!ok_field) {
         semantic_error("Type error, cannot use . on a lhs that is not a STRUCT");
@@ -207,13 +229,13 @@ int fielding(Pnode root, Phash_node f_loc_env, Pschema stype){
     }
     return ok_field;
 }
-int indexing(Pnode root, Phash_node f_loc_env, Pschema stype){
+int indexing(Pnode root, Phash_node f_loc_env, Pschema stype, Class * lhs_class){
     int ok_index;
     Pnode lhs_node = root->child;
     Pnode index_node = lhs_node->brother;
     
     Pschema lhs_type = stype;
-    ok_index = left_hand_side(lhs_node, f_loc_env, lhs_type);
+    ok_index = left_hand_side(lhs_node, f_loc_env, lhs_type, lhs_class);
     ok_index = ok_index && (lhs_type->type == VECTOR);
     if (!ok_index) {
         semantic_error("Semantic error, cannot index a non-VECTOR");
@@ -510,6 +532,7 @@ int built_in_call(Pnode root, Phash_node f_loc_env, Pschema stype){
 
 int expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 	int expr_ok;
+    Class not_used;
     
 	switch(root->type){
 		case T_CHARCONST:
@@ -530,7 +553,7 @@ int expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 		case T_NONTERMINAL:
             switch(root->value.ival){
                 case NLEFT_HAND_SIDE:
-                    expr_ok = left_hand_side(root, f_loc_env, stype);
+                    expr_ok = left_hand_side(root, f_loc_env, stype, &not_used);
                     break;
                 case NMATH_EXPR:
                     expr_ok = math_expr(root, f_loc_env, stype);
