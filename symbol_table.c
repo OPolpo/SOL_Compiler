@@ -254,6 +254,9 @@ Pschema new_schema_node(int _type){
 int are_compatible(Pschema a, Pschema b){
     Pschema a_child;
     int ok;
+    if (a == NULL || b == NULL) {
+        return 0;
+    }
     switch (a->type) {//CHAR, INT, REAL, STRING, BOOL, STRUCT, VECTOR
         case CHAR:
         case INT:

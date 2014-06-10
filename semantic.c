@@ -69,7 +69,7 @@ int const_sect_opt(Pnode root, Phash_node f_loc_env){
     
 }
 int func_list_opt(Pnode root, Phash_node f_loc_env){
-    int ok = 1;
+    int ok = 1;/*
     Pnode func_decl_node = root->child;
     if (func_decl_node == NULL) {
         return ok;
@@ -77,16 +77,15 @@ int func_list_opt(Pnode root, Phash_node f_loc_env){
     while (func_decl_node != NULL) {
         ok = ok && func_decl(func_decl_node, f_loc_env, 1);
         func_decl_node = func_decl_node->brother;
-    }
+    }*/
     return ok;
-    
 }
 int func_body(Pnode root, Phash_node f_loc_env){
     Pnode id1 = root->child;
     Pnode stat_list_node = id1->brother;
-    Pnode id2 = stat_list->brother;
+    Pnode id2 = stat_list_node->brother;
     int ok = 1;
-    
+    /*
     ok = (strcmp(f_loc_env->name, id1->value.sval) == 0);
     if (!ok) {
         semantic_error("Function ID different from ID in function body BEGIN\n");
@@ -95,11 +94,17 @@ int func_body(Pnode root, Phash_node f_loc_env){
     ok = ok && (strcmp(id1->value.sval, id2->value.sval) == 0);
     if (!ok) {
         semantic_error("Function ID different from ID in function body END\n");
-    }
+    }*/
     return ok;
 }
 int stat_list(Pnode root, Phash_node f_loc_env){
-    
+    Pnode stat_node = root->child;
+    int ok = 1;/*
+    while (stat_node != NULL) {
+        ok = ok && stat(stat_node, f_loc_env);
+        stat_node = stat_node->brother;
+    }*/
+    return ok;
 }
 int stat(Pnode root, Phash_node f_loc_env){
     
