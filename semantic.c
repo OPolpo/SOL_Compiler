@@ -33,7 +33,7 @@ int func_decl(Pnode root, Phash_node f_loc_env, int not_first){
 	current = current->brother;
 	int func_body_ok = func_body(current, new_f_loc_env);
     //check id
-
+    
 }
 int decl_list_opt(Pnode root, Phash_node f_loc_env){
 	Pnode current = root->child;
@@ -107,7 +107,37 @@ int stat_list(Pnode root, Phash_node f_loc_env){
     return ok;
 }
 int stat(Pnode root, Phash_node f_loc_env){
-    
+    int ok;
+    Pnode child = root->child;
+    switch (child->value.ival) {//always a NONTERMINAL
+        case NASSIGN_STAT:
+            ok = assign_stat(child, f_loc_env);
+            break;
+        case NIF_STAT:
+            ok = if_stat(child, f_loc_env);
+            break;
+        case NWHILE_STAT:
+            ok = while_stat(child, f_loc_env);
+            break;
+        case NFOR_STAT:
+            ok = for_stat(child, f_loc_env);
+            break;
+        case NFOREACH_STAT:
+            ok = foreach_stat(child, f_loc_env);
+            break;
+        case NRETURN_STAT:
+            ok = return_stat(child, f_loc_env);
+            break;
+        case NREAD_STAT:
+            ok = read_stat(child, f_loc_env);
+            break;
+        case NWRITE_STAT:
+            ok = write_stat(child, f_loc_env);
+            break;
+        default:
+            semantic_error("Some weird nonterminal node in lhs\n");
+            break;
+    }
 }
 int assign_stat(Pnode root, Phash_node f_loc_env){
     
@@ -368,7 +398,7 @@ int instance_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 			expr_ok = expr(current_node, f_loc_env, current_schema); //eval first child's schema
 			stype->p1 = current_schema; // attach to root's schema the schema of first child
 			current_node = current_node->brother; //switch to the firse brother
-
+            
 			while (current_node){//cicle for the other brother
 				Pschema next = new_schema_node(-1);
 				expr_ok = expr(current_node, f_loc_env, next);
@@ -376,7 +406,7 @@ int instance_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 				current_schema = next;
 				current_node = current_node->brother;
 			}
-		break;
+            break;
 		case VECTOR:
 			stype->type = VECTOR;
 			
@@ -397,7 +427,7 @@ int instance_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 			}
 			stype->size = count;
 			stype->p1 = current_schema;
-		break;
+            break;
 	}
 	return expr_ok;
 }
@@ -406,31 +436,31 @@ int func_call(Pnode root, Phash_node f_loc_env, Pschema stype){
 }
 
 int cond_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
-
+    
 	Pnode main_expr = root->child;
 	Pnode first_expr = main_expr->brother;
 	Pnode elsif_expr = first_expr->brother;
 	Pnode else_expr = elsif_expr->brother;
-
+    
 	//check contraint on conditional clause
 	Pschema main_expr_type = new_schema_node(-1);;
 	int main_expr_ok = expr(main_expr, f_loc_env, main_expr_type);
-
+    
 	if (main_expr_type->type!=BOOL){
 		semantic_error("Type Error, expected BOOL in conditional clause\n");
 	}
-
+    
 	//check contraint on first and last alternative
 	Pschema first_expr_type = stype;
 	int first_expr_ok = expr(first_expr, f_loc_env, first_expr_type);
-
+    
 	Pschema else_expr_type = new_schema_node(-1);
 	int else_expr_ok = expr(else_expr, f_loc_env, else_expr_type);
-
+    
 	if (!are_compatible(first_expr_type, else_expr_type)){
 		semantic_error("Type error, alternatives are of different type\n");
 	}
-
+    
 	//check contraint on elsif part
 	Pschema elsif_expr_type = new_schema_node(-1);
 	int elsif_expr_ok = elsif_expr_list_opt(elsif_expr, f_loc_env, elsif_expr_type);
@@ -438,7 +468,7 @@ int cond_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 	if (elsif_expr_type != NULL && !are_compatible(first_expr_type, elsif_expr_type)){
 		semantic_error("Type error, alternatives are of different type\n");
 	}
-
+    
 	return main_expr_ok && first_expr_ok && elsif_expr_ok && else_expr_ok;
 }
 
@@ -447,32 +477,32 @@ int elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema stype){
 		stype = NULL;
 		return 1;
 	}
-
+    
 	Pnode main_expr = root->child;
 	Pnode expr1 = main_expr->brother;
 	Pnode elsif_expr = expr1->brother;
-
+    
 	//check contraint on conditional clause
     Pschema main_expr_type = new_schema_node(-1);;
     int main_expr_ok = expr(main_expr, f_loc_env, main_expr_type);
-
+    
     if (main_expr_type->type!=BOOL){
 		semantic_error("Type Error, expected BOOL in conditional clause\n");
 	}
-
+    
 	//check contraint on first and other elsif alternative recursively
     Pschema expr1_type = stype;
     int expr1_ok = expr(expr1, f_loc_env, expr1_type);
-
+    
     Pschema elsif_expr_type = new_schema_node(-1);
     int elsif_expr_ok = elsif_expr_list_opt(elsif_expr, f_loc_env, elsif_expr_type);
 	
 	if (elsif_expr_type != NULL && !are_compatible(expr1_type, elsif_expr_type)){
 		semantic_error("type error, alternatives are of different type\n");
 	}
-
+    
 	return main_expr_ok && expr1_ok && elsif_expr_ok;
-
+    
 }
 int built_in_call(Pnode root, Phash_node f_loc_env, Pschema stype){
     
