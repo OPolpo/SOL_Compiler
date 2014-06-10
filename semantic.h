@@ -69,5 +69,5 @@ int elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema stype);
 int built_in_call(Pnode root, Phash_node f_loc_env, Pschema stype);
 
 int expr(Pnode root, Phash_node f_loc_env, Pschema stype);
-void semantic_error(char * msg );
+void semantic_error(Pnode node, char * msg);
 #endif
