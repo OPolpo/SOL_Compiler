@@ -4,7 +4,7 @@ char error_msg[100];
 
 
 int program(Pnode root, Phash_node f_loc_env, int not_first){
-	return func_decl(root->child, f_loc_env, int not_first);
+	return func_decl(root->child, f_loc_env, not_first);
 }
 int func_decl(Pnode root, Phash_node f_loc_env, int not_first){
 	Pnode id = root->child;
@@ -14,7 +14,7 @@ int func_decl(Pnode root, Phash_node f_loc_env, int not_first){
     Phash_node new_f_loc_env;
     
     if (not_first) {
-        new_f_loc_env = getNode(id->value.sval, f_loc_env->loc_env);
+        new_f_loc_env = getNode(id->value.sval, f_loc_env->locenv);
     }
     else
         new_f_loc_env = f_loc_env;
@@ -22,7 +22,7 @@ int func_decl(Pnode root, Phash_node f_loc_env, int not_first){
     
 	int decl_list_opt_ok = decl_list_opt(current, new_f_loc_env);
 	current = current->brother;
-	int domain_ok = domain(current, stype, new_f_loc_env);
+	int domain_ok = domain(current, new_f_loc_env, stype);
 	current = current->brother;
 	int type_sect_opt_ok = type_sect_opt(current, new_f_loc_env);
 	current = current->brother;
@@ -108,10 +108,10 @@ int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema type){
             break;
     }
 }
-int fielding(Pnode root, Phash_node f_loc_env){
+int fielding(Pnode root, Phash_node f_loc_env, Pschema type){
     
 }
-int indexing(Pnode root, Phash_node f_loc_env){
+int indexing(Pnode root, Phash_node f_loc_env, Pschema type){
     
 }
 int if_stat(Pnode root, Phash_node f_loc_env){
@@ -319,9 +319,9 @@ int instance_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 int func_call(Pnode root, Phash_node f_loc_env, Pschema stype){
     
 }
-int cond_expr(Pnode root, Phash_node loc_env, Pschema stype){
+int cond_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 	Pschema expr1_type = new_schema_node(-1);
-	int expr1_ok = expr(root->child, expr2_type);
+	int expr1_ok = expr(root->child, f_loc_env, expr1_type);
 	if (expr1_type->type!=BOOL){
 		semantic_error("error");
 	}
