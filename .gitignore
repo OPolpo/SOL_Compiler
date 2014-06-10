@@ -4,3 +4,5 @@ parser.c
 parser.h
 prova
 test_stupid.sol
+
+*.orig
