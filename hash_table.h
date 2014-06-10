@@ -49,4 +49,7 @@ void print_func_node(Phash_node node);
 
 void print_generic_node(Phash_node node);
 
+void printSchema(Pschema root, char* father_indent);
+void print_hash_content(Phash_node * table);
+
 #endif

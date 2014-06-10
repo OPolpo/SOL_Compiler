@@ -149,7 +149,7 @@ int assign_stat(Pnode root, Phash_node f_loc_env){
     Class lhs_class; //maybe is not allocated...
     Pschema expr_schema = new_schema_node(-1);
     
-    ok = ok && left_hand_side(lhs_node, f_loc_env, lhs_schema, &lhs_class);
+    ok = ok && left_hand_side(lhs_node, f_loc_env, &lhs_schema, &lhs_class);
     ok = ok && (lhs_class == CLVAR || lhs_class == CLPAR); //not a CONST
     if (!ok) {
         semantic_error(root, "Semantic error, cannot assign value to a CONST\n");//to_do
@@ -158,17 +158,26 @@ int assign_stat(Pnode root, Phash_node f_loc_env){
     ok = ok && expr(expr_node, f_loc_env, expr_schema);
     
     ok = ok && are_compatible(lhs_schema, expr_schema);
+    
+    printf("\nlhs_schema\n");
+    printSchema(lhs_schema, " ");
+    
+    printf("\nexpr\n");
+    printSchema(expr_schema, " ");
     if (!ok) {
         semantic_error(root, "Type error in ASSIGNMENT, type must be compatible\n");//to_do
     }
     return ok;
 }
-int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema stype, Class * lhs_class){//to be called on a SCHEMA not mallocated
+int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_class){//to be called on a SCHEMA not mallocated
     Phash_node h_node;
     int lhs_ok;
     Pnode child = root->child;
+    
+    printf("lhs: ");
     switch (child->type) {
         case T_ID:
+            printf("\nid %s\n", child->value.sval);
             h_node = find_visible_node(child->value.sval, f_loc_env);
             if (h_node == NULL) {
                 lhs_ok = 0;
@@ -180,15 +189,24 @@ int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema stype, Class * lhs_
                 semantic_error(child, "An lhs cannot be a function or a constant name\n");
             }
             *lhs_class = h_node->class_node;
-            stype = h_node->schema; //TODO check about malloc...
+            
+            printf("\n prima %d \n",(stype));
+            
+            *stype = h_node->schema; //TODO check about malloc...
+            
+            printf("\nid schema %d \n",(h_node->schema));
             break;
         case T_NONTERMINAL:
             switch (child->value.ival) {
                 case NFIELDING:
+                    printf("field ");
                     lhs_ok = fielding(child, f_loc_env, stype, lhs_class);//TODO
+                    printSchema(*stype, " ");
                     break;
                 case NINDEXING:
+                    printf("index ");
                     lhs_ok = indexing(child, f_loc_env, stype, lhs_class);//TODO
+                    printSchema(*stype, " ");
                     break;
                 default:
                     semantic_error(child, "Some weird nonterminal node in lhs\n");
@@ -199,56 +217,69 @@ int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema stype, Class * lhs_
             semantic_error(child, "Some weird terminal node in lhs\n");
             break;
     }
+    return lhs_ok;
 }
-int fielding(Pnode root, Phash_node f_loc_env, Pschema stype, Class * lhs_class){
+int fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_class){
     int ok_field;
     Pnode lhs_node = root->child;
     // Pschema lhs_type = new_schema_node(-1);
-    Pschema lhs_type = stype;
+    Pschema lhs_type = *stype;
     
-    ok_field = left_hand_side(lhs_node, f_loc_env, lhs_type, lhs_class);
+    ok_field = left_hand_side(lhs_node, f_loc_env, &lhs_type, lhs_class);
+    
+    printf("\n lhs_type\n");
+    printSchema(lhs_type, " ");
+    
     ok_field = ok_field && (lhs_type->type == STRUCT);
     if (!ok_field) {
-        semantic_error(root, "Type error, cannot use . on a lhs that is not a STRUCT");//to_do
+        semantic_error(root, "Type error, cannot use . on a lhs that is not a STRUCT\n");//to_do
     }
     //lhs is a STRUCT
     Pnode id_node = lhs_node->brother;
     //lhs.id must exist... so check lhs children
     Pschema lhs_attr = lhs_type->p1;
+    printSchema(lhs_attr, " ");
     int found = 0;
     while (found==0 && lhs_attr != NULL) {
         if (strcmp(id_node->value.sval, lhs_attr->id)==0) {
-            stype = lhs_attr->p1;
+            *stype = lhs_attr;
             found = 1;
         }
         lhs_attr = lhs_attr->p2;
     }
     ok_field = ok_field && found;
     if (!found) {
-        semantic_error(root, "Semantic error, trying to access a non-existent field");//to_do
+        semantic_error(root, "Semantic error, trying to access a non-existent field\n");//to_do
     }
     return ok_field;
 }
-int indexing(Pnode root, Phash_node f_loc_env, Pschema stype, Class * lhs_class){
+int indexing(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_class){
     int ok_index;
     Pnode lhs_node = root->child;
     Pnode index_node = lhs_node->brother;
     
-    Pschema lhs_type = stype;
-    ok_index = left_hand_side(lhs_node, f_loc_env, lhs_type, lhs_class);
+    Pschema lhs_type = *stype;
+    printf("\n1 %d \n",(lhs_type));
+
+    ok_index = left_hand_side(lhs_node, f_loc_env, &lhs_type, lhs_class);
+
+    printf("\n2 %d \n",(lhs_type));
+    printf("\n lhs_type\n");
+    printSchema(lhs_type, " ");
+    
     ok_index = ok_index && (lhs_type->type == VECTOR);
     if (!ok_index) {
-        semantic_error(root, "Semantic error, cannot index a non-VECTOR");//to_do
+        semantic_error(root, "Semantic error, cannot index a non-VECTOR\n");//to_do
     }
     
     Pschema index_type = new_schema_node(-1);
     ok_index = ok_index && expr(index_node, f_loc_env, index_type);
     ok_index = ok_index && (index_type->type == INT);
     if (!ok_index) {
-        semantic_error(root, "Semantic error, index must be of type INT");//to_do
+        semantic_error(root, "Semantic error, index must be of type INT\n");//to_do
     }
     
-    stype = lhs_type->p1;
+    *stype = lhs_type->p1;
     return ok_index;
 }
 int if_stat(Pnode root, Phash_node f_loc_env){
@@ -403,10 +434,10 @@ int logic_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
     
 	int expr1_ok = expr(expr1, f_loc_env, expr1_type);
 	if(expr1_type->type != BOOL)
-		semantic_error(expr1, "Type error, expected BOOL\n");
+		semantic_error(expr1, "Type error, expected BOOL in LOGIC-EXPR\n");
 	int expr2_ok = expr(expr2, f_loc_env, expr2_type);
 	if(expr2_type->type != BOOL)
-		semantic_error(expr2, "Type error, expected BOOL\n");
+		semantic_error(expr2, "Type error, expected BOOL in LOGIC-EXPR\n");
 	stype->type = BOOL;
 	return expr1_ok && expr2_ok;
 }
@@ -466,7 +497,7 @@ int neg_expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 		case NOT:
 			if(expr_type->type != BOOL){
 				//sprintf(error_msg,"Type error, expected BOOL instead of %s \n", tabsem_types[expr_type]);//
-				sprintf(error_msg,"Type error, expected BOOL");
+				sprintf(error_msg,"Type error, expected BOOL in NEG-EXPR");
 				semantic_error(root->child, error_msg);
 			}
 			stype->type = BOOL;
@@ -656,7 +687,9 @@ int expr(Pnode root, Phash_node f_loc_env, Pschema stype){
 		case T_NONTERMINAL:
             switch(root->value.ival){
                 case NLEFT_HAND_SIDE:
-                    expr_ok = left_hand_side(root, f_loc_env, stype, &not_used);
+                    expr_ok = left_hand_side(root, f_loc_env, &stype, &not_used);
+                    printf("\nin the expr\n");
+                    printSchema(stype, " ");
                     break;
                 case NMATH_EXPR:
                     expr_ok = math_expr(root, f_loc_env, stype);

@@ -1,5 +1,6 @@
 //http://en.wikipedia.org/wiki/List_of_prime_numbers
 #include "hash_table.h"
+#include "parser.h"
 
 int hash (char* id){
     int i, h = 0; 
@@ -32,8 +33,12 @@ Phash_node find_visible_node(char * id, Phash_node func_node){
     printf("looking for: %s\n", id);
     while (f != NULL) {
         print_func_node(f);
+        print_hash_content(f->locenv);
+        
         Phash_node node = getNode(id, f->locenv);
         if (node != NULL) {
+            print_generic_node(node);
+            printSchema(node->schema, " ");
             return node;
         }
         f = f->father;
@@ -64,7 +69,9 @@ void print_func_node(Phash_node node){
         f = f->next;
     }
     if(node->father)
-        printf(" F_oid: %d", node->father->oid);
+        printf(" | F_oid: %d", node->father->oid);
+    else
+        printf(" | F_oid: NULL");
     printf ("\n");
 }
 
@@ -91,6 +98,89 @@ void print_generic_node(Phash_node node){
     (node->schema != NULL)? printf("ok schema |"): printf("no schema |");
 
     printf ("\n");
+}
+
+
+void printSchema(Pschema root, char* father_indent){
+    if(root==NULL) return;
+    
+    int i;
+    Pschema p;
+    
+    //--Indent Stuff
+    char* my_indent = calloc(1000,sizeof(char));
+    my_indent[0]=0;
+    strcpy(my_indent, father_indent);
+    
+    if(root->p2)
+        //strcat(my_indent,"    ├");
+        strcat(my_indent,"├");
+    else
+        //strcat(my_indent,"    └");
+        strcat(my_indent,"└");
+    printf("%s─", my_indent);
+    
+    //--PRINTING SINGLE NODE
+    switch(root->type){
+        case VECTOR:
+            printf("%s [ %s ] [ %d ]", "VECTOR", root->id, root->size);
+            break;
+        case STRUCT:
+            printf("%s [ %s ] [ - ]", "STRUCT", root->id);
+            break;
+        case CHAR:
+            printf("%s [ %s ] [ - ]", "CHAR", root->id);
+            break;
+        case INT:
+            printf("%s [ %s ] [ - ]", "INT", root->id);
+            break;
+        case REAL:
+            printf("%s [ %s ] [ - ]", "REAL", root->id);
+            break;
+        case STRING:
+            printf("%s [ %s ] [ - ]", "STRING", root->id);
+            break;
+        case BOOL:
+            printf("%s [ %s ] [ - ]", "BOOL", root->id);
+            break;
+            // case ATTR:
+            //     printf(" %s [ - ] [ - ]", "ATTR");
+            //     break;
+        default:
+            printf("ERROR\n");
+            break;
+    }
+    
+    //--OTHER INDENT AND RECURSION AND BROTHER CICLE
+    printf("\n");
+    for(p=root->p1; p != NULL; p = p->p2){
+        my_indent[strlen(my_indent)-4]=0;
+        strcat(my_indent," |  ");
+        if(root->p2 == NULL){
+            my_indent[strlen(my_indent)-4]=0;
+            strcat(my_indent,"    ");
+        }
+        printSchema(p, my_indent);
+    }
+    free(my_indent);
+}
+
+void print_hash_content(Phash_node * table){
+    int i;
+    Phash_node temp;
+    printf("-------------local environment\n");
+    for (i=0; i<TOT; i++){
+        temp = table[i];
+        while (temp != NULL) {
+            printf("%3d. ", i);
+            print_generic_node(temp);
+            if(temp->schema != NULL){
+                printSchema(temp->schema, "   ");
+            }
+            temp = temp->next;
+        }
+    }
+    printf("-------------end\n\n");
 }
 
 
