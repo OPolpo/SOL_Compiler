@@ -13,9 +13,8 @@ int func_decl(Pnode root, Phash_node f_loc_env, int not_first){
     
     Phash_node new_f_loc_env;
     
-    if (not_first) {
+    if (not_first)
         new_f_loc_env = getNode(id->value.sval, f_loc_env->locenv);
-    }
     else
         new_f_loc_env = f_loc_env;
     
@@ -84,19 +83,30 @@ int stat(Pnode root, Phash_node f_loc_env){
 int assign_stat(Pnode root, Phash_node f_loc_env){
     
 }
-int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema type){
+int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema stype){
+    Phash_node h_node;
     int lhs_ok;
     switch (root->type) {
         case T_ID:
-            
+            h_node = find_visible_node(root->value.sval, f_loc_env);
+            if (h_node == NULL) {
+                lhs_ok = 0;
+                semantic_error("Use of not visible ID\n");
+                //semantic_error("Use of not visible ID %s\n", root->value.sval);
+            }
+            lhs_ok = (h_node->class_node == CLVAR || h_node->class_node == CLPAR || h_node->class_node == CLCONST);
+            if (!lhs_ok) {
+                semantic_error("An lhs cannot be a function or a constant name\n");
+            }
+            stype = h_node->schema; //TODO check about malloc...
             break;
         case T_NONTERMINAL:
             switch (root->value.ival) {
                 case NFIELDING:
-                    lhs_ok = fielding(root->child, f_loc_env, type);//TODO
+                    lhs_ok = fielding(root->child, f_loc_env, stype);//TODO
                     break;
                 case NINDEXING:
-                    lhs_ok = indexing(root->child, f_loc_env, type);//TODO
+                    lhs_ok = indexing(root->child, f_loc_env, stype);//TODO
                     break;
                 default:
                     semantic_error("Some weird nonterminal node in lhs\n");
@@ -108,10 +118,10 @@ int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema type){
             break;
     }
 }
-int fielding(Pnode root, Phash_node f_loc_env, Pschema type){
+int fielding(Pnode root, Phash_node f_loc_env, Pschema stype){
     
 }
-int indexing(Pnode root, Phash_node f_loc_env, Pschema type){
+int indexing(Pnode root, Phash_node f_loc_env, Pschema stype){
     
 }
 int if_stat(Pnode root, Phash_node f_loc_env){

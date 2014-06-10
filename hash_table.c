@@ -27,6 +27,17 @@ Phash_node getNode(char * id, Phash_node * table){
     return NULL;
 }
 
+Phash_node find_visible_node(char * id, Phash_node func_node){
+    Phash_node node = getNode(id, func_node->locenv);
+    while (func_node != NULL) {
+        if (node != NULL) {
+            return node;
+        }
+        func_node = func_node->father;
+    }
+    return NULL;
+}
+
 Phash_node * new_hash_table(){
     //Phash_node * table = (Phash_node *) malloc(TOT * sizeof(Phash_node));
     //memset(table, '\0', TOT * sizeof(Phash_node)); // NULL == '\0'
