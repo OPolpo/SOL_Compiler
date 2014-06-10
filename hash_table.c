@@ -28,12 +28,13 @@ Phash_node getNode(char * id, Phash_node * table){
 }
 
 Phash_node find_visible_node(char * id, Phash_node func_node){
-    Phash_node node = getNode(id, func_node->locenv);
+    Phash_node f = func_node;
     while (func_node != NULL) {
+        Phash_node node = getNode(id, f->locenv);
         if (node != NULL) {
             return node;
         }
-        func_node = func_node->father;
+        f = f->father;
     }
     return NULL;
 }
