@@ -51,7 +51,52 @@ int id_list(Pnode root, Phash_node f_loc_env){
     
 }
 int domain(Pnode root, Phash_node f_loc_env, Pschema * stype){
+    printf("\n## in domain\n");
+    /*
+    int ok = 1;
+    Pnode dom_node = root->child;
+    Phash_node h_node;
+    Pschema s_node;
+    switch (dom_node->type) {
+        case T_ATOMIC_DOMAIN:
+            printf("\n## atomic domain\n");
+            s_node = new_schema_node(dom_node->value.ival);
+            stype = &s_node;
+            break;
+        case T_ID:
+            printf("\n## id domain\n");
+            h_node = find_visible_node(dom_node->value.sval, f_loc_env);
+            ok = ok && (h_node != NULL);
+            if (!ok) {
+                semantic_error(dom_node, "Type error, type not defined or not visible\n");
+            }
+            *stype = h_node->schema;
+            break;
+        case T_NONTERMINAL:
+            printf("\n## nonterm domain\n");
+            switch (dom_node->value.ival) {
+                case NSTRUCT_DOMAIN:
+                    create_schema()
+                    break;
+                case NVECTOR_DOMAIN:
+                    
+                    break;
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }*/
     
+    printf("\n## domain...\n");
+    Pschema sch = create_schema(root, f_loc_env, NULL);
+    print_sch(sch);
+    stype = &sch;
+    print_sch(*stype);
+    
+    printf("%d: in domain\n ",stype);
+    return 1;
 }
 int struct_domain(Pnode root, Phash_node f_loc_env){
     
@@ -167,10 +212,10 @@ int assign_stat(Pnode root, Phash_node f_loc_env){
     
     ok = ok && are_compatible(lhs_schema, expr_schema);
     
-    //printf("\n##lhs_schema\n");
+    printf("\n##lhs_schema\n");
     printSchema(lhs_schema, " ");
     
-    //printf("\n##expr\n");
+    printf("\n##expr\n");
     printSchema(expr_schema, " ");
     if (!ok) {
         semantic_error(root, "Type error in ASSIGNMENT, type must be compatible\n");//to_do
@@ -402,15 +447,17 @@ int read_stat(Pnode root, Phash_node f_loc_env){
 int specifier_opt(Pnode root, Phash_node f_loc_env){ // NULL or STRING
     Pnode specifier = root->child;
     Pschema type_spec = new_schema_node(-1);
-    int ok;
+    int ok = 1;
     int spec_ok = (specifier == NULL);
     if (!spec_ok) {
         ok = expr(specifier->child, f_loc_env, &type_spec);
         spec_ok = (type_spec->type == STRING);
     }
+    
     if (!spec_ok) {
         semantic_error(specifier, "Type error, specifier in wr/write/rd/read call must be a STRING or NULL");//to_do
     }
+    printf("##%d %d\n", ok, spec_ok);
     return ok && spec_ok;
 }
 
@@ -538,9 +585,12 @@ int wr_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 }
 int rd_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
     int ok = specifier_opt(root->child, f_loc_env);
+    printf("\n## dopo specifier_opt\n");
     int dom_ok;
     if (ok) {
+        printf("\n## xpecifier_opt è ok \n");
         dom_ok = domain(root->child->brother, f_loc_env, stype);
+        print_sch(*stype);
     }
     return ok && dom_ok;
 }

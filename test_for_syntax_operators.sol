@@ -29,7 +29,8 @@ begin fact
 end fact
 func exread(): int
 type Vect: vector [100] of int;
-var name: string; v1, v2: Vect;
+var name: string; 
+	v1, v2: Vect;
 begin exread
 	v1 = rd Vect;
 	v2 = reverse(rd [name] Vect);

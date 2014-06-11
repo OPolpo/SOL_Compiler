@@ -246,7 +246,7 @@ factor : unary_op factor {$$ = $1; $1->child = $2;}
 unary_op : '-' {$$ = nontermnode(NNEG_EXPR); $$->qualifier = '-';}
 		 | NOT {$$ = nontermnode(NNEG_EXPR); $$->qualifier = NOT;}
 		 | dynamic_output
-atomic_const : CHARCONST {$$ = iconstnode();} 
+atomic_const : CHARCONST {$$ = cconstnode();}
 			 | INTCONST  {$$ = iconstnode();}
 			 | REALCONST {$$ = rconstnode();}
 			 | STRCONST  {$$ = sconstnode();}

@@ -9,6 +9,7 @@ func prog(a,x: int; b: string; c: struct(nome,cognome: string; anno:int;); d:rea
 		x, y: real;
 		s, t: T5;
 		a: vector [100] of int;
+		r: real;
 	const 	MAX: int = 100;
 			name: T2 = "alpha";
 			VECT: vector [5] of real = vector(2.0, 3.12, 4.67, 1.1, 23.0);
@@ -36,7 +37,7 @@ func prog(a,x: int; b: string; c: struct(nome,cognome: string; anno:int;); d:rea
 		people: vector [4] of struct(name, surname: string; birth: int;);
 
 		ok:bool; 
-	begin f1 
+	begin f2
 		person = struct("John", "Smith", 1987);
 		book = struct(struct("Carl Gustav", "Jung"), "Man and his symbols", struct("ETA", 1992));
 		numbers= vector (1,2,3,4,5,6,7,8,9,0);
@@ -48,12 +49,9 @@ func prog(a,x: int; b: string; c: struct(nome,cognome: string; anno:int;); d:rea
 						struct("Louis", "Green", 1998), 
 						struct("Ann", "Black", 2001));
 		ok = person.name == "John";
-	end f1
+	end f2
 	
 begin prog 
-	
-book = struct(struct("Carl Gustav", "Jung"), "Man and his symbols",
-struct("ETA", 1992));
 	x = toreal(i+j)*(r-toreal(i));
 	j = toint(x+y-1.25);
 end prog
