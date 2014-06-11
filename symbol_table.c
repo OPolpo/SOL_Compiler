@@ -9,7 +9,9 @@ void handle_function_part(Pnode current, Phash_node func, int * loc_oid, Class p
         child = current->child; //DECL
         while (child != NULL) {
             Pnode id_list = child->child;
-            Pschema domain_sch = create_schema(id_list->brother, func, NULL);
+            Pschema * s;
+            create_schema(id_list->brother, func, s, NULL);
+            Pschema domain_sch = *s;
             
             Pnode id = id_list->child;
             while (id != NULL){
@@ -51,7 +53,9 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                         Formal * last_formal = func->formal;
                         while (child != NULL) { //loop on DECL
                             Pnode id_list = child->child;
-                            Pschema domain_sch = create_schema(id_list->brother, func, NULL);
+                            Pschema * s;
+                            create_schema(id_list->brother, func, s, NULL);
+                            Pschema domain_sch = *s;
                             
                             Pnode id = id_list->child;
                             while (id != NULL){ //loop on IDs
@@ -82,7 +86,9 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     }
                     
                     current = current->brother; //DOMAIN
-                    func->schema = create_schema(current, func->father, NULL);
+                    Pschema * s;
+                    create_schema(current, func->father, s, NULL);
+                    func->schema = *s;
                     
                     current = current->brother; //TYPE_SECT_OPT
                     handle_function_part(current, func, &loc_oid, CLTYPE);
@@ -178,7 +184,7 @@ Phash_node new_id_node(char * _name, Class _class, int loc_oid){
     return node;
 }
 
-Pschema create_schema(Pnode domain, Phash_node func, char * id){
+void create_schema(Pnode domain, Phash_node func, Pschema * schema, char * id){
     //func: function node of the local environment
     Pnode dom_child = domain->child;
     Pschema node;
@@ -198,16 +204,17 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                         
                         
                         while (id != NULL) {
-                            Pschema to_add = create_schema(decl_domain, func, id->value.sval);
+                            Pschema * to_add;
+                            create_schema(decl_domain, func, to_add, id->value.sval);
                             if(last == NULL){
-                                node->p1 = to_add;
+                                node->p1 = *to_add;
                                 //last = node->p1;
                             }
                             else{
-                                last->p2 = to_add;
+                                last->p2 = *to_add;
                                 //last = last->p2;
                             }
-                            last = to_add;
+                            last = *to_add;
                             id = id->brother;
                         }
                         decl = decl->brother;
@@ -217,7 +224,9 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                     node = new_schema_node(VECTOR);
                     node->id = id;
                     node->size = dom_child->child->value.ival;
-                    node->p1 = create_schema(dom_child->child->brother, func, NULL);
+                    Pschema * s;
+                    create_schema(dom_child->child->brother, func, s, NULL);
+                    node->p1 = *s;
                     break;
                 default:
                     break;
@@ -242,7 +251,7 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
         default:
             break;
     }
-    return node;
+    *schema = node;
 }
 
 Pschema new_schema_node(int _type){

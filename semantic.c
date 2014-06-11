@@ -90,10 +90,11 @@ int domain(Pnode root, Phash_node f_loc_env, Pschema * stype){
     }*/
     
     printf("\n## domain...\n");
-    Pschema sch = create_schema(root, f_loc_env, NULL);
-    print_sch(sch);
-    stype = &sch;
-    print_sch(*stype);
+    Pschema * sch;
+    create_schema(root, f_loc_env, sch, NULL);
+    print_sch(*sch);
+    stype = sch;
+    //print_sch(*stype);
     
     printf("%d: in domain\n ",stype);
     return 1;
