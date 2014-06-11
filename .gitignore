@@ -6,3 +6,9 @@ prova
 test_stupid.sol
 
 *.orig
+
+*.xcworkspacedata
+
+*.xccheckout
+
+*.xcuserstate
