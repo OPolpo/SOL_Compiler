@@ -4,11 +4,5 @@ parser.c
 parser.h
 prova
 test_stupid.sol
-
 *.orig
-
-*.xcworkspacedata
-
-*.xccheckout
-
-*.xcuserstate
+SOL_compiler/SOL_compiler.xcodeproj/*
