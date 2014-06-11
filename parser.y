@@ -167,17 +167,21 @@ indexing : left_hand_side '[' expr ']' {$$ = nontermnode(NINDEXING);
 if_stat : IF expr THEN stat_list elsif_stat_list_opt else_stat_opt ENDIF {$$ = nontermnode(NIF_STAT);
 	/*	  $1  $2  $3	$4				$5				$6*/
 																		  $$->child = $2;
-																		  $2->brother = $4;
-																		  $4->brother = $5;
+																		  $2->brother = nontermnode(NSTAT_LIST);
+                                                                          $2->brother->child = $4;
+                                                                          $2->brother->brother = $5;
+                                                                          //find a way to make it optional
 																		  $5->brother = $6;
 																	  }
 elsif_stat_list_opt : ELSIF expr THEN stat_list elsif_stat_list_opt {$$ = nontermnode(NELSIF_STAT_LIST_OPT);
 																	 $$->child = $2;
-																	 $2->brother = $4;
-																	 $4->brother = $5;}
+																	 $2->brother = nontermnode(NSTAT_LIST);
+                                                                     $2->brother->child = $4;
+																	 $2->brother->brother = $5;}
 				 	| /** eps **/ {$$ = nontermnode(NELSIF_STAT_LIST_OPT);}
-else_stat_opt : ELSE stat_list {$$ = $2;}
-			  | /** eps **/
+else_stat_opt : ELSE stat_list {$$ = nontermnode(NSTAT_LIST);
+                                $$->child = $2;}
+              | /** eps **/{$$ = NULL;}
 while_stat : WHILE expr DO stat_list ENDWHILE {$$ = nontermnode(NWHILE_STAT);
 											   $$->child = $2;
 											   $2->brother = $4;}
@@ -297,6 +301,8 @@ int main(){
 	if((result = yyparse()) == 0){
 		treeprint(root, " ");
 		Phash_node symtab = create_symbol_table(root, NULL);
+        
+        printf("## START\n");
         program(root, symtab, 0);
 	}
 	return(result);

@@ -91,8 +91,9 @@ int func_body(Pnode root, Phash_node f_loc_env){
         semantic_error(id1, "Function ID different from ID in function body BEGIN\n");
     }
     ok = ok && stat_list(stat_list_node, f_loc_env);
-    ok = ok && (strcmp(id1->value.sval, id2->value.sval) == 0);
+    ok = /*ok &&*/ (strcmp(id1->value.sval, id2->value.sval) == 0);
     if (!ok) {
+        printf("##%s %s\n\n",id1->value.sval, id2->value.sval);
         semantic_error(id2, "Function ID different from ID in function body END\n");
     }
     return ok;
@@ -101,6 +102,8 @@ int stat_list(Pnode root, Phash_node f_loc_env){
     Pnode stat_node = root->child;
     int ok = 1;
     while (stat_node != NULL) {
+        printf("\n## stat_list %d\n", root->value.ival);
+        printf("\n## stat %d\n", stat_node->value.ival);
         ok = ok && stat(stat_node, f_loc_env);
         stat_node = stat_node->brother;
     }
@@ -109,8 +112,12 @@ int stat_list(Pnode root, Phash_node f_loc_env){
 int stat(Pnode root, Phash_node f_loc_env){
     int ok;
     Pnode child = root->child;
+    printf("\n## root %d\n", root->value.ival);
+    printf("\n##%d\n", child->value.ival);
+    
     switch (child->value.ival) {//always a NONTERMINAL
         case NASSIGN_STAT:
+            printf("\n##assign %d\n", child->value.ival);
             ok = assign_stat(child, f_loc_env);
             break;
         case NIF_STAT:
@@ -135,7 +142,8 @@ int stat(Pnode root, Phash_node f_loc_env){
             ok = write_stat(child, f_loc_env);
             break;
         default:
-            semantic_error(child, "Some weird nonterminal node in lhs\n");
+            printf("\n##%d\n", child->value.ival);
+            semantic_error(child, "Some weird nonterminal node in stat\n");
             break;
     }
     return ok;
@@ -159,10 +167,10 @@ int assign_stat(Pnode root, Phash_node f_loc_env){
     
     ok = ok && are_compatible(lhs_schema, expr_schema);
     
-    printf("\n##lhs_schema\n");
+    //printf("\n##lhs_schema\n");
     printSchema(lhs_schema, " ");
     
-    printf("\n##expr\n");
+    //printf("\n##expr\n");
     printSchema(expr_schema, " ");
     if (!ok) {
         semantic_error(root, "Type error in ASSIGNMENT, type must be compatible\n");//to_do
@@ -174,10 +182,10 @@ int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lh
     int lhs_ok;
     Pnode child = root->child;
     
-    printf("\n##lhs: ");
+    //printf("\n##lhs: ");
     switch (child->type) {
         case T_ID:
-            printf("\n##id %s\n", child->value.sval);
+            //printf("\n##id %s\n", child->value.sval);
             h_node = find_visible_node(child->value.sval, f_loc_env);
             if (h_node == NULL) {
                 lhs_ok = 0;
@@ -190,21 +198,21 @@ int left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lh
             }
             *lhs_class = h_node->class_node;
             
-            printf("\n## prima %d \n",(stype));
+            //printf("\n## prima %d \n",(stype));
             
             *stype = h_node->schema; //TODO check about malloc...
             
-            printf("\n##id schema %d \n",(h_node->schema));
+            //printf("\n##id schema %d \n",(h_node->schema));
             break;
         case T_NONTERMINAL:
             switch (child->value.ival) {
                 case NFIELDING:
-                    printf("##field ");
+                    //printf("##field ");
                     lhs_ok = fielding(child, f_loc_env, stype, lhs_class);//TODO
                     printSchema(*stype, " ");
                     break;
                 case NINDEXING:
-                    printf("##index ");
+                    //printf("##index ");
                     lhs_ok = indexing(child, f_loc_env, stype, lhs_class);//TODO
                     printSchema(*stype, " ");
                     break;
@@ -227,7 +235,7 @@ int fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_clas
     
     ok_field = left_hand_side(lhs_node, f_loc_env, &lhs_type, lhs_class);
     
-    printf("\n## lhs_type\n");
+    //printf("\n## lhs_type\n");
     printSchema(lhs_type, " ");
     
     ok_field = ok_field && (lhs_type->type == STRUCT);
@@ -259,12 +267,12 @@ int indexing(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_clas
     Pnode index_node = lhs_node->brother;
     
     Pschema lhs_type = *stype;
-    printf("\n##1 %d \n",(lhs_type));
+    //printf("\n##1 %d \n",(lhs_type));
 
     ok_index = left_hand_side(lhs_node, f_loc_env, &lhs_type, lhs_class);
 
-    printf("\n##2 %d \n",(lhs_type));
-    printf("\n## lhs_type\n");
+    //printf("\n##2 %d \n",(lhs_type));
+    //printf("\n## lhs_type\n");
     printSchema(lhs_type, " ");
     
     ok_index = ok_index && (lhs_type->type == VECTOR);
@@ -287,9 +295,9 @@ int if_stat(Pnode root, Phash_node f_loc_env){
 	Pnode main_expr_node = root->child;
 	Pnode if_stat_list_node = main_expr_node->brother;
 	Pnode elsif_stat_list_opt_node = if_stat_list_node->brother;
-	Pnode else_stat_list_node = elsif_stat_list_opt_node->brother;
+	Pnode else_stat_list_node = elsif_stat_list_opt_node->brother;//can be NULL
     
-	//check contraint on conditional clause
+	//check constraint on conditional clause
 	Pschema main_expr_type = new_schema_node(-1);;
 	int main_expr_ok = expr(main_expr_node, f_loc_env, &main_expr_type);
     
@@ -297,9 +305,13 @@ int if_stat(Pnode root, Phash_node f_loc_env){
 		semantic_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
 	}
     
-	int if_stat_list_ok = stat_list(if_stat_list_node, f_loc_env);
+	printf("\nif_stat_list_node ##%d\n", if_stat_list_node->value.ival);
+    int if_stat_list_ok = stat_list(if_stat_list_node, f_loc_env);
     
-	int else_stat_list_ok = stat_list(else_stat_list_node, f_loc_env);
+    int else_stat_list_ok = 1;
+    if (else_stat_list_node) {
+        else_stat_list_ok = stat_list(else_stat_list_node, f_loc_env);
+    }
     
 	int elsif_stat_list_opt_ok = elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env);
     
@@ -412,13 +424,19 @@ int math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	Pschema expr2_type = new_schema_node(-1);
 	
 	int expr1_ok = expr(expr1, f_loc_env, &expr1_type);
-	if(expr1_type->type != INT || expr1_type->type != REAL){
+	if(expr1_type->type != INT && expr1_type->type != REAL){
+        
+        printf("\n## expr1 math_expr\n");
+        printSchema(expr1_type," ");
+
 		//sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", tabsem_types[expr1_type]);
 		sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", "to_do");
 		semantic_error(expr1, error_msg);
 	}
 	int expr2_ok = expr(expr2, f_loc_env, &expr2_type);
 	if(expr2_type->type != expr1_type->type){
+        printf("\n## expr2 math_expr\n");
+        printSchema(expr2_type," ");
 		//sprintf(error_msg,"Type mismatch, expected %s instead %s\n", tabsem_types[expr1_type],tabsem_types[expr2_type]);
 		sprintf(error_msg,"Type mismatch, expected %s instead %s\n", "to_do", "to_do");
 		semantic_error(expr2, error_msg);
@@ -448,11 +466,16 @@ int rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	Pschema expr2_type = new_schema_node(-1);
 	int expr1_ok = expr(expr1, f_loc_env, &expr1_type);
 	int expr2_ok = expr(expr2, f_loc_env, &expr2_type);
+    
+    printf("\n## expr1\n");
+    printSchema(expr1_type, " ");
+    printf("\n## expr2\n");
+    printSchema(expr2_type, " ");
 	int type_ok;
 	switch(root->qualifier){
 		case EQ:
 		case NE:
-			type_ok = expr1->type == expr2->type;
+			type_ok = (expr1_type->type == expr2_type->type);
             if(!type_ok)
                 semantic_error(root, "Type mismatch in relational expression\n");//to_do
 			break;
@@ -674,6 +697,7 @@ int expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 			break;
 		case T_INTCONST:
 			(*stype)->type = INT;
+            printf("## @@ %d", INT);
 			break;
 		case T_REALCONST:
 			(*stype)->type = REAL;

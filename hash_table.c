@@ -132,6 +132,7 @@ void printSchema(Pschema root, char* father_indent){
             printf("%s [ %s ] [ - ]", "CHAR", root->id);
             break;
         case INT:
+            //printf("\n## %d\n",INT);
             printf("%s [ %s ] [ - ]", "INT", root->id);
             break;
         case REAL:
@@ -165,6 +166,11 @@ void printSchema(Pschema root, char* father_indent){
     free(my_indent);
 }
 
+void print_sch(Pschema root){
+    printSchema(root, " ");
+    printf("\n");
+}
+
 void print_hash_content(Phash_node * table){
     int i;
     Phash_node temp;
@@ -180,7 +186,7 @@ void print_hash_content(Phash_node * table){
             temp = temp->next;
         }
     }
-    printf("-------------end\n\n");
+    printf("-------------end\n");
 }
 
 
