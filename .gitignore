@@ -5,4 +5,4 @@ parser.h
 prova
 test_stupid.sol
 *.orig
-SOL_compiler/SOL_compiler.xcodeproj/*
+SOL_compiler/*
