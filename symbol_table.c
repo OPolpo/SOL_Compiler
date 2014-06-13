@@ -240,6 +240,7 @@ int are_compatible(Pschema a, Pschema b){
                 }
                 return 1;
             }
+            return 0;
             break;
         case VECTOR:
             if (a->size != b->size) {
@@ -251,5 +252,5 @@ int are_compatible(Pschema a, Pschema b){
             return 0;
             break;
     }
-    return 0;
+    //return 0;
 }

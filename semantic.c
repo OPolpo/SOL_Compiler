@@ -44,7 +44,6 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first){
 	int func_list_opt_ok = sem_func_list_opt(current, new_f_loc_env);
 	current = current->brother;
 	int func_body_ok = sem_func_body(current, new_f_loc_env);
-    //check id
     
     return decl_list_opt_ok && domain_ok && type_sect_opt_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
 }
@@ -251,6 +250,7 @@ int sem_func_body(Pnode root, Phash_node f_loc_env){
     Pnode stat_list_node = id1->brother;
     Pnode id2 = stat_list_node->brother;
     int ok = 1;
+    
     
     ok = (strcmp(f_loc_env->name, id1->value.sval) == 0);
     if (!ok) {
