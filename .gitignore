@@ -6,5 +6,4 @@ prova
 test_stupid.sol
 *.orig
 SOL_compiler/*
-
-SOL_compilers/SOL_compilers/main.c
+SOL_compilers/*
