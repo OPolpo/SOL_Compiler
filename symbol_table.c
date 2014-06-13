@@ -106,59 +106,19 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                             child = child->brother;
                         }
                     }
-                    
-                    
-                    
-                    
                     return func;
                     break;
-                case NDECL_LIST_OPT:
-                    printf("0");
-                    break;
-                case NDECL:
-                    printf("1");
-                    break;
-                case NID_LIST:
-                    printf("2");
-                    break;
-                case NDOMAIN:
-                    printf("3");
-                    break;
-                case NSTRUCT_DOMAIN:
-                    printf("4");
-                    break;
-                case NVECTOR_DOMAIN:
-                    printf("5");
-                    break;
-                case NTYPE_SECT_OPT:
-                    printf("6");
-                    break;
-                case NVAR_SECT_OPT:
-                    printf("7");
-                    break;
-                case NCONST_SECT_OPT:
-                    printf("8");
-                    break;
-                case NFUNC_LIST_OPT:
-                    printf("9");
-                    break;
-                    
                 default:
+                    printf("ERROR: create_symbol_table called on wrong nonterminal\n");
                     break;
             }
-            
-            
             break;
         default:
+            printf("ERROR: create_symbol_table called on a terminal\n");
             break;
     }
-    printf("something wrong occurred\n");
+    printf("ERROR: something wrong occurred in create_symbol_table\n");
     return NULL;
-    /*
-     if (root == NULL) {
-     return Phash_node;
-     }
-     */
 }
 
 Phash_node new_function_node(char * _name){
@@ -182,7 +142,7 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
     //func: function node of the local environment
     Pnode dom_child = domain->child;
     Pschema node;
-    Phash_node type_decl;
+    Phash_node type_decl = NULL;
     switch (dom_child->type) {
         case T_NONTERMINAL:
             switch (dom_child->value.ival) {
@@ -252,7 +212,6 @@ Pschema new_schema_node(int _type){
 }
 
 int are_compatible(Pschema a, Pschema b){
-    Pschema a_child;
     int ok;
     if (a == NULL || b == NULL) {
         return 0;
@@ -290,29 +249,5 @@ int are_compatible(Pschema a, Pschema b){
             printf("");
             break;
     }
-    
+    return 0;
 }
-
-
-/*
- typedef struct sschema{
- int type; //CHAR, INT, REAL, STRING, BOOL, STRUCT, VECTOR, ATTR
- char * id; //field name
- int size; //array size (type = VECTOR)
- struct sschema *p1, *p2;
- } Schema, * Pschema;
- */
-
-// *
-//  typedef struct shash_node{
-//  char * name;
-//  int oid;
-//  Class class_node; //TYPE, VAR, CONST, FUNC, PAR
-//  Schema * schema;
-//  struct shash_node ** locenv;
-//  int formals_num;
-//  Formal * formal;
-//  struct shash_node * next;
-//  } Hash_node, * Phash_node;
-//  *
-

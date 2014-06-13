@@ -303,7 +303,7 @@ int main(){
 		Phash_node symtab = create_symbol_table(root, NULL);
         
         printf("## START\n");
-        program(root, symtab, 0);
+        sem_program(root, symtab, 0);
 	}
 	return(result);
 }
