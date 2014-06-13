@@ -2,6 +2,7 @@
 #include "def.h"
 #include "tree.h"
 #include "symbol_table.h"
+#include "semantic.h"
 
 #define YYSTYPE Pnode
 extern char *yytext;
@@ -264,8 +265,8 @@ vector_construction : VECTOR '(' expr_list ')' {$$ = nontermnode(NINSTANCE_EXPR)
 func_call : ID {$$ = idnode();} '(' expr_list_opt ')' {$$ = nontermnode(NFUNC_CALL);
 													   $$->child = $2;
 													   $2->brother = $4;}
-expr_list_opt : expr_list 
-			  | /** eps **/
+expr_list_opt : expr_list
+              | /** eps **/ {$$ = NULL;}
 cond_expr : IF expr THEN expr elsif_expr_list_opt ELSE expr ENDIF {$$ = nontermnode(NCOND_EXPR);
 																   $$->child = $2;
 																   $2->brother = $4;

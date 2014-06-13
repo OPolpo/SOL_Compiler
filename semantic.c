@@ -1,4 +1,7 @@
 #include "semantic.h"
+#include "parser.h"
+
+#define VERBOSE 1
 
 char error_msg[100];
 
@@ -649,7 +652,44 @@ int sem_instance_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	return expr_ok;
 }
 int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype){
+#if VERBOSE
+    printf("@@ in sem_func_call\n");
+#endif
+    Pnode id_node = root->child;
+    Pnode param_node = id_node->brother;
+    int id_ok, expr_ok = 1, param_ok = 0;
     
+    Phash_node h_id_node = find_visible_node(id_node->value.sval, f_loc_env);
+    id_ok = (h_id_node != NULL);
+    
+    if (!id_ok) {
+        sem_error(id_node, "Call of not visibile FUNC\n");
+    }
+#if VERBOSE
+    print_func_node(h_id_node);
+#endif
+    Formal * current_formal = h_id_node->formal;
+    Pschema current_schema;
+    
+    while (param_node != NULL && current_formal != NULL) {
+        current_schema = new_schema_node(-1);
+        expr_ok = expr_ok && sem_expr(param_node, f_loc_env, &current_schema);
+        
+        param_ok = are_compatible(current_schema, current_formal->formal->schema);
+        if(!param_ok)
+            break;
+        
+        param_node = param_node->brother;
+        current_formal = current_formal->next;
+    }
+    param_ok = param_ok && (param_node == NULL && current_formal == NULL);
+    if (!param_ok) {
+        sem_error(id_node, "Formal parameter must be compatible with actual parameter in function call\n");
+    }
+    
+    printf("\n## do errore\n");
+    
+    return id_ok && expr_ok && param_ok;
 }
 
 int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
@@ -813,6 +853,9 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 }
 
 void sem_error(Pnode node, char * msg){
-    fprintf(stderr, "Row: %d Semantic error: %s", node->row, msg);
+    if (node == NULL)
+        fprintf(stderr, "[NODE IS NULL] Semantic error: %s", msg);
+    else
+        fprintf(stderr, "Row: %d Semantic error: %s", node->row, msg);
     exit(EXIT_FAILURE);
 }

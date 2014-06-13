@@ -2,7 +2,6 @@
 #define _semantic_h
 
 #include "def.h"
-#include "parser.h"
 #include "hash_table.h"
 #include "symbol_table.h"
 
