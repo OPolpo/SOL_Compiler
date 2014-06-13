@@ -250,39 +250,46 @@ int sem_func_body(Pnode root, Phash_node f_loc_env){
     Pnode stat_list_node = id1->brother;
     Pnode id2 = stat_list_node->brother;
     int ok = 1;
+    int return_ok = 0;
     
     
     ok = (strcmp(f_loc_env->name, id1->value.sval) == 0);
     if (!ok) {
         sem_error(id1, "Function ID different from ID in function body BEGIN\n");
     }
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &return_ok);
+    
     ok = /*ok &&*/ (strcmp(id1->value.sval, id2->value.sval) == 0);
     if (!ok) {
         printf("##%s %s\n\n",id1->value.sval, id2->value.sval);
         sem_error(id2, "Function ID different from ID in function body END\n");
     }
+    
+    if (!return_ok) {
+        sem_error(id2, "Control may reach end of FUNC without a RETURN\n");
+    }
     return ok;
 }
 
-int sem_stat_list(Pnode root, Phash_node f_loc_env){
+int sem_stat_list(Pnode root, Phash_node f_loc_env, int * w_return){
 #if VERBOSE
     printf("@@ in sem_stat_list\n");
 #endif
     Pnode stat_node = root->child;
     int ok = 1;
     while (stat_node != NULL) {
-        ok = ok && sem_stat(stat_node, f_loc_env);
+        ok = ok && sem_stat(stat_node, f_loc_env, w_return);
         stat_node = stat_node->brother;
     }
     return ok;
 }
 
-int sem_stat(Pnode root, Phash_node f_loc_env){
+int sem_stat(Pnode root, Phash_node f_loc_env, int * w_return){
 #if VERBOSE
     printf("@@ in sem_stat\n");
 #endif
     int ok;
+    int return_ok;
     Pnode child = root->child;
     
     switch (child->value.ival) {//always a NONTERMINAL
@@ -291,7 +298,8 @@ int sem_stat(Pnode root, Phash_node f_loc_env){
             ok = sem_assign_stat(child, f_loc_env);
             break;
         case NIF_STAT:
-            ok = sem_if_stat(child, f_loc_env);
+            ok = sem_if_stat(child, f_loc_env, &return_ok);
+            *w_return = return_ok;
             break;
         case NWHILE_STAT:
             ok = sem_while_stat(child, f_loc_env);
@@ -304,6 +312,7 @@ int sem_stat(Pnode root, Phash_node f_loc_env){
             break;
         case NRETURN_STAT:
             ok = sem_return_stat(child, f_loc_env);
+            *w_return = 1;
             break;
         case NREAD_STAT:
             ok = sem_read_stat(child, f_loc_env);
@@ -477,7 +486,7 @@ int sem_indexing(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     return ok_index;
 }
 
-int sem_if_stat(Pnode root, Phash_node f_loc_env){
+int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return){
 #if VERBOSE
     printf("@@ in sem_if_stat\n");
 #endif
@@ -496,22 +505,33 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env){
 	}
     
 	printf("\nif_stat_list_node ##%d\n", if_stat_list_node->value.ival);
-    int if_stat_list_ok = sem_stat_list(if_stat_list_node, f_loc_env);
+    
+    int return_if_stat_list = 0;
+    int return_else_list = 0;
+    int return_elsif_stat_list_opt = 0;
+    
+    int if_stat_list_ok = sem_stat_list(if_stat_list_node, f_loc_env, &return_if_stat_list);
     
     int else_stat_list_ok = 1;
     if (else_stat_list_node) {
-        else_stat_list_ok = sem_stat_list(else_stat_list_node, f_loc_env);
+        else_stat_list_ok = sem_stat_list(else_stat_list_node, f_loc_env, &return_else_list);
+    }
+    else {
+        return_else_list = 1;
     }
     
-	int elsif_stat_list_opt_ok = sem_elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env);
+	int elsif_stat_list_opt_ok = sem_elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env, &return_elsif_stat_list_opt);
     
+    *w_return = return_if_stat_list && return_else_list && return_elsif_stat_list_opt;
 	return main_expr_ok && if_stat_list_ok && elsif_stat_list_opt_ok && else_stat_list_ok;
 }
-int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env){
+
+int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return){
 #if VERBOSE
     printf("@@ in sem_elsif_stat_list_opt\n");
 #endif
     if (root->child == NULL){
+        *w_return = 1;
 		return 1;
 	}
     
@@ -526,11 +546,13 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env){
     if (main_expr_type->type!=BOOL){
 		sem_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
 	}
+    int return_stat = 0;
+    int stat_list_ok = sem_stat_list(stat_list_node, f_loc_env, &return_stat);
     
-    int stat_list_ok = sem_stat_list(stat_list_node, f_loc_env);
+    int return_elsif_stat_list_opt = 0;
+    int elsif_stat_list_opt_ok = sem_elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env, &return_elsif_stat_list_opt);
     
-    int elsif_stat_list_opt_ok = sem_elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env);
-	
+    *w_return = return_stat && return_elsif_stat_list_opt;
 	return main_expr_ok && stat_list_ok && elsif_stat_list_opt_ok;
 }
 
@@ -548,7 +570,8 @@ int sem_while_stat(Pnode root, Phash_node f_loc_env){
     if(!ok){
         sem_error(root, "Type Error, expected BOOL in WHILE clause\n");
     }
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env);
+    int not_used;
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used);
     return ok;
 }
 
@@ -589,8 +612,8 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env){
         sem_error(root, "Type error: expected INT in FOR-STAT\n");
     }
     //TODO: check that id is not assigned in stat-list
-    
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env);
+    int not_used;
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used);
     
     return ok;
 }
@@ -624,8 +647,8 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env){
     if (!ok) {
         sem_error(root, "Type error: ID must be of the same type of VECTOR elements in FOR-EACH STAT\n");
     }
-    
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env);
+    int not_used;
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used);
     return ok;
 }
 

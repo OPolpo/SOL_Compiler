@@ -19,12 +19,15 @@ begin test
 	if a==b then
 		t = r;
 		r = t;
+		return 4;
 	elsif a>b then
 		w = struct(2, "alpha");
 		a = b + c;
+		return 4;
 	else
 		a = b-c;
 		c = 1;
+		return 2;
 	endif;
 end test
 
