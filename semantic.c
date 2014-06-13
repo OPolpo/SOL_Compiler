@@ -95,7 +95,7 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype){
                     ok = ok && sem_struct_domain(dom_node, f_loc_env, stype);
                     break;
                 case NVECTOR_DOMAIN:
-                    ok = ok && sem_struct_domain(dom_node, f_loc_env, stype);
+                    ok = ok && sem_vector_domain(dom_node, f_loc_env, stype);
                     break;
                 default:
                     break;
@@ -205,14 +205,25 @@ int sem_const_sect_opt(Pnode root, Phash_node f_loc_env){
 #if VERBOSE
     printf("@@ in sem_const_sect_opt\n");
 #endif
-    Pnode decl_node = root->child;
-    Pnode expr_node = decl_node->brother;
     int ok = 1;
-    
-    Pschema domain_schema = new_schema_node(-1);
-    ok = ok && sem_decl(decl_node, f_loc_env, &domain_schema);
-    print_sch(domain_schema);
-    
+    if (root->child != NULL) {
+        Pnode decl_node = root->child;
+        Pnode expr_node;
+        while (decl_node != NULL) {
+            expr_node = decl_node->brother;
+            Pschema domain_schema = new_schema_node(-1);
+            ok = ok && sem_decl(decl_node, f_loc_env, &domain_schema);
+            //print_sch(domain_schema);
+            Pschema expr_schema = new_schema_node(-1);
+            ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema);
+            
+            ok = ok && are_compatible(domain_schema, expr_schema);
+            if(!ok){
+                sem_error(decl_node, "Type error, in CONST initialization domain and expression must be compatible\n");
+            }
+            decl_node = expr_node->brother;
+        }
+    }
     return ok;
 }
 
@@ -1034,6 +1045,8 @@ int sem_built_in_call(Pnode root, Phash_node f_loc_env, Pschema * stype){
 int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 #if VERBOSE
     printf("@@ in sem_expr\n");
+    treeprint(root, " ");
+    printf(".\n");
 #endif
 	int expr_ok;
     Class not_used;
