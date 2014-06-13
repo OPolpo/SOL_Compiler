@@ -7,12 +7,18 @@ char error_msg[100];
 
 
 int sem_program(Pnode root, Phash_node f_loc_env, int not_first){
+#if VERBOSE
+    printf("@@ in sem_program\n");
+#endif
 	return sem_func_decl(root->child, f_loc_env, not_first);
 }
+
 int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first){
+#if VERBOSE
+    printf("@@ in sem_func_decl\n");
+#endif
 	Pnode id = root->child;
 	Pnode current = id->brother;
-    Pschema * stype;
     
     Phash_node new_f_loc_env;
     
@@ -24,7 +30,9 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first){
     
 	int decl_list_opt_ok = sem_decl_list_opt(current, new_f_loc_env);
 	current = current->brother;
-	int domain_ok = sem_domain(current, new_f_loc_env, stype);
+    
+    Pschema domain_schema = new_schema_node(-1);
+	int domain_ok = sem_domain(current, new_f_loc_env, &domain_schema);
 	current = current->brother;
 	int type_sect_opt_ok = sem_type_sect_opt(current, new_f_loc_env);
 	current = current->brother;
@@ -39,36 +47,61 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first){
     
     return decl_list_opt_ok && domain_ok && type_sect_opt_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
 }
+
 int sem_decl_list_opt(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_decl_list_opt\n");
+#endif
+    /*
 	Pnode current = root->child;
 	int decl_list_opt_ok = 1;
 	while(current != NULL){
-		decl_list_opt_ok = decl_list_opt_ok && sem_decl(current, f_loc_env);
+		decl_list_opt_ok = decl_list_opt_ok && sem_decl(current, f_loc_env, NULL);
 		current = current->brother;
 	}
 	return decl_list_opt_ok;
-}
-int sem_decl(Pnode root, Phash_node f_loc_env){
+     */
     return 1;
 }
+
+int sem_decl(Pnode root, Phash_node f_loc_env, Pschema * stype){
+#if VERBOSE
+    printf("@@ in sem_decl\n");
+#endif
+    Pnode domain_node = root->child->brother;
+    int ok = sem_domain(domain_node, f_loc_env, stype);
+    return ok;
+}
+
 int sem_id_list(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_id_list\n");
+#endif
     return 1;
 }
+
 int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype){
-    printf("\n## in domain\n");
-    /*
+#if VERBOSE
+    printf("@@ in sem_domain\n");
+#endif
+    
     int ok = 1;
     Pnode dom_node = root->child;
     Phash_node h_node;
     Pschema s_node;
     switch (dom_node->type) {
         case T_ATOMIC_DOMAIN:
-            printf("\n## atomic domain\n");
-            s_node = new_schema_node(dom_node->value.ival);
-            stype = &s_node;
+#if VERBOSE
+            printf("@@ in atomic domain\n");
+#endif
+            (*stype)->type = INT;
+//            s_node = new_schema_node(dom_node->value.ival);
+//            stype = &s_node;
             break;
         case T_ID:
-            printf("\n## id domain\n");
+#if VERBOSE
+            printf("@@ in id domain\n");
+#endif
             h_node = find_visible_node(dom_node->value.sval, f_loc_env);
             ok = ok && (h_node != NULL);
             if (!ok) {
@@ -77,13 +110,20 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype){
             *stype = h_node->schema;
             break;
         case T_NONTERMINAL:
-            printf("\n## nonterm domain\n");
+#if VERBOSE
+            printf("@@ in nonterminal\n");
+#endif
             switch (dom_node->value.ival) {
                 case NSTRUCT_DOMAIN:
-                    create_schema()
+#if VERBOSE
+                    printf("@@ in struct domain\n");
+#endif
+                    
                     break;
                 case NVECTOR_DOMAIN:
-                    
+#if VERBOSE
+                    printf("@@ in vector domain\n");
+#endif
                     break;
                 default:
                     break;
@@ -91,7 +131,7 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype){
             break;
         default:
             break;
-    }*/
+    }
     
     
     //TRY TO USE CREATE SCHEMA...
@@ -106,21 +146,51 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype){
     return 1;
 }
 int sem_struct_domain(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_struct_domain\n");
+#endif
     
 }
 int sem_vector_domain(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_vector_domain\n");
+#endif
     
 }
+
 int sem_type_sect_opt(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_type_sect_opt\n");
+#endif
     return 1;
 }
+
 int sem_var_sect_opt(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_var_sect_opt\n");
+#endif
     return 1;
 }
+
 int sem_const_sect_opt(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_const_sect_opt\n");
+#endif
+    Pnode decl_node = root->child;
+    Pnode expr_node = decl_node->brother;
+    int ok = 1;
     
+    Pschema domain_schema = new_schema_node(-1);
+    ok = ok && sem_decl(decl_node, f_loc_env, &domain_schema);
+    print_sch(domain_schema);
+    
+    return ok;
 }
+
 int sem_func_list_opt(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_func_list_opt\n");
+#endif
     int ok = 1;
     Pnode func_decl_node = root->child;
     if (func_decl_node == NULL) {
@@ -132,7 +202,11 @@ int sem_func_list_opt(Pnode root, Phash_node f_loc_env){
     }
     return ok;
 }
+
 int sem_func_body(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_func_body\n");
+#endif
     Pnode id1 = root->child;
     Pnode stat_list_node = id1->brother;
     Pnode id2 = stat_list_node->brother;
@@ -150,22 +224,26 @@ int sem_func_body(Pnode root, Phash_node f_loc_env){
     }
     return ok;
 }
+
 int sem_stat_list(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_stat_list\n");
+#endif
     Pnode stat_node = root->child;
     int ok = 1;
     while (stat_node != NULL) {
-        printf("\n## stat_list %d\n", root->value.ival);
-        printf("\n## stat %d\n", stat_node->value.ival);
         ok = ok && sem_stat(stat_node, f_loc_env);
         stat_node = stat_node->brother;
     }
     return ok;
 }
+
 int sem_stat(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_stat\n");
+#endif
     int ok;
     Pnode child = root->child;
-    printf("\n## root %d\n", root->value.ival);
-    printf("\n##%d\n", child->value.ival);
     
     switch (child->value.ival) {//always a NONTERMINAL
         case NASSIGN_STAT:
@@ -200,7 +278,11 @@ int sem_stat(Pnode root, Phash_node f_loc_env){
     }
     return ok;
 }
+
 int sem_assign_stat(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_assign_stat\n");
+#endif
     Pnode lhs_node = root->child;
     Pnode expr_node = lhs_node->brother;
     int ok = 1;
@@ -229,7 +311,11 @@ int sem_assign_stat(Pnode root, Phash_node f_loc_env){
     }
     return ok;
 }
+
 int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_class){//to be called on a SCHEMA not mallocated
+#if VERBOSE
+    printf("@@ in sem_left_hand_side\n");
+#endif
     Phash_node h_node;
     int lhs_ok;
     Pnode child = root->child;
@@ -279,7 +365,11 @@ int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class 
     }
     return lhs_ok;
 }
+
 int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_class){
+#if VERBOSE
+    printf("@@ in sem_fielding\n");
+#endif
     int ok_field;
     Pnode lhs_node = root->child;
     // Pschema lhs_type = new_schema_node(-1);
@@ -313,7 +403,11 @@ int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     }
     return ok_field;
 }
+
 int sem_indexing(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_class){
+#if VERBOSE
+    printf("@@ in sem_indexing\n");
+#endif
     int ok_index;
     Pnode lhs_node = root->child;
     Pnode index_node = lhs_node->brother;
@@ -342,7 +436,11 @@ int sem_indexing(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     *stype = lhs_type->p1;
     return ok_index;
 }
+
 int sem_if_stat(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_if_stat\n");
+#endif
     
 	Pnode main_expr_node = root->child;
 	Pnode if_stat_list_node = main_expr_node->brother;
@@ -370,6 +468,9 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env){
 	return main_expr_ok && if_stat_list_ok && elsif_stat_list_opt_ok && else_stat_list_ok;
 }
 int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_elsif_stat_list_opt\n");
+#endif
     if (root->child == NULL){
 		return 1;
 	}
@@ -392,7 +493,11 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env){
 	
 	return main_expr_ok && stat_list_ok && elsif_stat_list_opt_ok;
 }
+
 int sem_while_stat(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_while_stat\n");
+#endif
     Pnode expr_node = root->child;
     Pnode stat_list_node = expr_node->brother;
     
@@ -406,15 +511,19 @@ int sem_while_stat(Pnode root, Phash_node f_loc_env){
     ok = ok && sem_stat_list(stat_list_node, f_loc_env);
     return ok;
 }
+
 int sem_for_stat(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_for_stat\n");
+#endif
     Pnode id_node = root->child;
     Pnode expr1_node = id_node->brother;
     Pnode expr2_node = expr1_node->brother;
     Pnode stat_list_node = expr2_node->brother;
-    int ok;
+    int ok = 0;
     
     Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env);
-    if (id_hash_node != NULL) {
+    if (id_hash_node == NULL) {
         ok = 0;
         sem_error(root, "Variable ID in FOR-STAT is not defined\n");
     }
@@ -445,16 +554,80 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env){
     
     return ok;
 }
+
 int sem_foreach_stat(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_foreach_stat\n");
+#endif
+    Pnode id_node = root->child;
+    Pnode expr_node = id_node->brother;
+    Pnode stat_list_node = expr_node->brother;
+    int ok = 1;
     
+    Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env);
+    if (id_hash_node == NULL) {
+        ok = 0;
+        sem_error(root, "Variable ID in FOR-STAT is not defined\n");
+    }
+    ok = ok && (id_hash_node->class_node == CLVAR || id_hash_node->class_node == CLPAR);
+    if (!ok) {
+        sem_error(root, "Variable ID in FOR-STAT must be a VAR or a PAR\n");
+    }
+    
+    Pschema expr_schema = new_schema_node(-1);
+    ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema);
+    ok = ok && (expr_schema->type == VECTOR);
+    if (!ok) {
+        sem_error(root, "Type error: expr must be a VECTOR in FOR-EACH STAT\n");
+    }
+    ok = ok && are_compatible(expr_schema->p1, id_hash_node->schema);
+    if (!ok) {
+        sem_error(root, "Type error: ID must be of the same type of VECTOR elements in FOR-EACH STAT\n");
+    }
+    
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env);
+    return ok;
 }
+
 int sem_return_stat(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_return_stat\n");
+#endif
+    Pnode expr_node = root->child;
     
+    Pschema expr_schema = new_schema_node(-1);
+    int ok = sem_expr(expr_node, f_loc_env, &expr_schema);
+    ok = ok && are_compatible(expr_schema, f_loc_env->schema);
+    if(!ok) {
+        sem_error(expr_node, "Type error: RETURN-EXPR type must be the same as in function definition\n");
+    }
+    return ok;
 }
+
 int sem_read_stat(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_read_stat\n");
+#endif
+    Pnode spec = root->child;
+    Pnode id_node = spec->brother;
+    int ok = sem_specifier_opt(spec, f_loc_env);
     
+    Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env);
+    if (id_hash_node == NULL) {
+        ok = 0;
+        sem_error(root, "Variable ID in READ-STAT is not defined\n");
+    }
+    ok = ok && (id_hash_node->class_node == CLVAR || id_hash_node->class_node == CLPAR);
+    if (!ok) {
+        sem_error(root, "Variable ID in READ-STAT must be a VAR or a PAR\n");
+    }
+    return ok;
 }
+
 int sem_specifier_opt(Pnode root, Phash_node f_loc_env){ // NULL or STRING
+#if VERBOSE
+    printf("@@ in sem_specifier_opt\n");
+#endif
     Pnode specifier = root->child;
     Pschema type_spec = new_schema_node(-1);
     int ok = 1;
@@ -472,9 +645,22 @@ int sem_specifier_opt(Pnode root, Phash_node f_loc_env){ // NULL or STRING
 }
 
 int sem_write_stat(Pnode root, Phash_node f_loc_env){
+#if VERBOSE
+    printf("@@ in sem_write_stat\n");
+#endif
+    Pnode spec = root->child;
+    int ok = sem_specifier_opt(spec, f_loc_env);
     
+    Pschema expr_schema = new_schema_node(-1);
+    ok = ok && sem_expr(spec->brother, f_loc_env, &expr_schema);
+    
+    return ok;
 }
+
 int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
+#if VERBOSE
+    printf("@@ in sem_math_expr\n");
+#endif
 	Pnode expr1 = root->child;
 	Pnode expr2 = root->child->brother;
 	Pschema expr1_type = new_schema_node(-1);
@@ -501,7 +687,11 @@ int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	(*stype)->type = expr1_type->type;
 	return expr1_ok && expr2_ok;
 }
+
 int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
+#if VERBOSE
+    printf("@@ in sem_logic_expr\n");
+#endif
 	Pnode expr1 = root->child;
 	Pnode expr2 = root->child->brother;
 	Pschema expr1_type = new_schema_node(-1);
@@ -516,7 +706,11 @@ int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	(*stype)->type = BOOL;
 	return expr1_ok && expr2_ok;
 }
+
 int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
+#if VERBOSE
+    printf("@@ in sem_rel_expr\n");
+#endif
 	Pnode expr1 = root->child;
 	Pnode expr2 = root->child->brother;
 	Pschema expr1_type = new_schema_node(-1);
@@ -562,7 +756,11 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	(*stype)->type = BOOL;
 	return expr1_ok && expr2_ok && type_ok;
 }
+
 int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
+#if VERBOSE
+    printf("@@ in sem_neg_expr\n");
+#endif
 	Pschema expr_type = new_schema_node(-1);
 	int expr_ok = sem_expr(root->child, f_loc_env, &expr_type);
 	switch(root->qualifier){
@@ -585,7 +783,11 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	}
 	return expr_ok;
 }
+
 int sem_wr_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
+#if VERBOSE
+    printf("@@ in sem_wr_expr\n");
+#endif
     int ok = sem_specifier_opt(root->child, f_loc_env);
     int expr_ok = 1;
     if (ok) {
@@ -593,7 +795,11 @@ int sem_wr_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
     }
     return ok && expr_ok;
 }
+
 int sem_rd_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
+#if VERBOSE
+    printf("@@ in sem_rd_expr\n");
+#endif
     int ok = sem_specifier_opt(root->child, f_loc_env);
     printf("\n## dopo specifier_opt\n");
     int dom_ok = 1;
@@ -604,7 +810,11 @@ int sem_rd_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
     }
     return ok && dom_ok;
 }
+
 int sem_instance_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
+#if VERBOSE
+    printf("@@ in sem_instance_expr\n");
+#endif
 	int expr_ok = 0;
 	int count = 0;
 	Pschema current_schema = new_schema_node(-1); //allocate schema
@@ -651,6 +861,7 @@ int sem_instance_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	}
 	return expr_ok;
 }
+
 int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype){
 #if VERBOSE
     printf("@@ in sem_func_call\n");
@@ -686,13 +897,13 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype){
     if (!param_ok) {
         sem_error(id_node, "Formal parameter must be compatible with actual parameter in function call\n");
     }
-    
-    printf("\n## do errore\n");
-    
     return id_ok && expr_ok && param_ok;
 }
 
 int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
+#if VERBOSE
+    printf("@@ in sem_cond_expr\n");
+#endif
 
 	Pnode main_expr_node = root->child;
 	Pnode first_expr_node = main_expr_node->brother;
@@ -731,6 +942,9 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 }
 
 int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype){
+#if VERBOSE
+    printf("@@ in sem_elsif_expr_list_opt\n");
+#endif
 	if (root->child == NULL){
 		*stype = NULL;
 		return 1;
@@ -758,11 +972,13 @@ int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	if (elsif_expr_type != NULL && !are_compatible(*expr_type, elsif_expr_type)){
 		sem_error(elsif_expr_node, "type error, alternatives are of different type\n");
 	}
-    
 	return main_expr_ok && expr_ok && elsif_expr_ok;
-    
 }
+
 int sem_built_in_call(Pnode root, Phash_node f_loc_env, Pschema * stype){
+#if VERBOSE
+    printf("@@ in sem_built_in_call\n");
+#endif
 	Pschema built_in_call_type = new_schema_node(-1);
 	int built_in_call_ok = sem_expr(root->child, f_loc_env, &built_in_call_type);
     
@@ -781,10 +997,12 @@ int sem_built_in_call(Pnode root, Phash_node f_loc_env, Pschema * stype){
             break;
 	}
 	return built_in_call_ok;
-    
 }
 
 int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
+#if VERBOSE
+    printf("@@ in sem_expr\n");
+#endif
 	int expr_ok;
     Class not_used;
     

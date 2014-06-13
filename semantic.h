@@ -30,7 +30,7 @@
 int sem_program(Pnode root, Phash_node f_loc_env, int not_first);
 int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first);
 int sem_decl_list_opt(Pnode root, Phash_node f_loc_env);
-int sem_decl(Pnode root, Phash_node f_loc_env);
+int sem_decl(Pnode root, Phash_node f_loc_env, Pschema * stype);
 int sem_id_list(Pnode root, Phash_node f_loc_env);
 int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype);
 int sem_struct_domain(Pnode root, Phash_node f_loc_env);
