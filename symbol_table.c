@@ -222,6 +222,7 @@ int are_compatible(Pschema a, Pschema b){
         case REAL:
         case BOOL:
         case STRING:
+            printf("atomic\n");
             return (a->type == b->type);
             break;
         case STRUCT:
@@ -229,6 +230,7 @@ int are_compatible(Pschema a, Pschema b){
                 Pschema a_child = a->p1;
                 Pschema b_child = b->p1;
                 while (a_child != NULL && b_child != NULL) {
+                    printf("a_child != NULL && b_child != NULL\n");
                     ok = are_compatible(a_child, b_child);
                     a_child = a_child->p2;
                     b_child = b_child->p2;
@@ -236,8 +238,10 @@ int are_compatible(Pschema a, Pschema b){
                         return 0; //FALSE
                 }
                 if (a_child != b_child) {
+                    printf("a_child != b_child\n");
                     return 0; //FALSE
                 }
+                return 1;
             }
             break;
         case VECTOR:
@@ -246,7 +250,8 @@ int are_compatible(Pschema a, Pschema b){
             }
             return are_compatible(a->p1, b->p1);
         default:
-            printf("");
+            printf("default?!\n");
+            return 0;
             break;
     }
     return 0;

@@ -1,5 +1,6 @@
 #include "semantic.h"
 #include "parser.h"
+#include "tree.h"
 
 #define VERBOSE 1
 
@@ -53,13 +54,13 @@ int sem_decl_list_opt(Pnode root, Phash_node f_loc_env){
     printf("@@ in sem_decl_list_opt\n");
 #endif
     /*
-	Pnode current = root->child;
-	int decl_list_opt_ok = 1;
-	while(current != NULL){
-		decl_list_opt_ok = decl_list_opt_ok && sem_decl(current, f_loc_env, NULL);
-		current = current->brother;
-	}
-	return decl_list_opt_ok;
+     Pnode current = root->child;
+     int decl_list_opt_ok = 1;
+     while(current != NULL){
+     decl_list_opt_ok = decl_list_opt_ok && sem_decl(current, f_loc_env, NULL);
+     current = current->brother;
+     }
+     return decl_list_opt_ok;
      */
     return 1;
 }
@@ -84,51 +85,43 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype){
 #if VERBOSE
     printf("@@ in sem_domain\n");
 #endif
-    
     int ok = 1;
     Pnode dom_node = root->child;
     Phash_node h_node;
-    Pschema s_node;
     switch (dom_node->type) {
-        case T_ATOMIC_DOMAIN:
-#if VERBOSE
-            printf("@@ in atomic domain\n");
-#endif
-            (*stype)->type = INT;
-//            s_node = new_schema_node(dom_node->value.ival);
-//            stype = &s_node;
-            break;
-        case T_ID:
-#if VERBOSE
-            printf("@@ in id domain\n");
-#endif
-            h_node = find_visible_node(dom_node->value.sval, f_loc_env);
-            ok = ok && (h_node != NULL);
-            if (!ok) {
-                sem_error(dom_node, "Type error, type not defined or not visible\n");
-            }
-            *stype = h_node->schema;
-            break;
         case T_NONTERMINAL:
-#if VERBOSE
-            printf("@@ in nonterminal\n");
-#endif
             switch (dom_node->value.ival) {
                 case NSTRUCT_DOMAIN:
-#if VERBOSE
-                    printf("@@ in struct domain\n");
-#endif
-                    
+                    ok = ok && sem_struct_domain(dom_node, f_loc_env, stype);
                     break;
                 case NVECTOR_DOMAIN:
-#if VERBOSE
-                    printf("@@ in vector domain\n");
-#endif
+                    ok = ok && sem_struct_domain(dom_node, f_loc_env, stype);
                     break;
                 default:
                     break;
             }
             break;
+        case T_ID:
+#if VERBOSE
+            printf("@@ T_ID\n");
+#endif
+            h_node = find_visible_node(dom_node->value.sval, f_loc_env);
+            ok = ok && (h_node != NULL && h_node->class_node == CLTYPE);
+            if (!ok) {
+                sem_error(dom_node, "Type error, type not defined or not visible\n");
+            }
+            *stype = h_node->schema;
+            break;
+        case T_ATOMIC_DOMAIN:
+#if VERBOSE
+            printf("@@ T_ATOMIC_DOMAIN\n");
+#endif
+            (*stype)->type = dom_node->value.ival;
+            //            s_node = new_schema_node(dom_node->value.ival);
+            //            stype = &s_node;
+            break;
+            
+            
         default:
             break;
     }
@@ -136,26 +129,62 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype){
     
     //TRY TO USE CREATE SCHEMA...
     /*
-    printf("\n## domain...\n");
-    Pschema sch = create_schema(root, f_loc_env, NULL);
-    print_sch(sch);
-    stype = &sch;
-    print_sch(*stype);
-    
-    printf("%d: in domain\n ",stype);*/
+     printf("\n## domain...\n");
+     Pschema sch = create_schema(root, f_loc_env, NULL);
+     print_sch(sch);
+     stype = &sch;
+     print_sch(*stype);
+     
+     printf("%d: in domain\n ",stype);*/
     return 1;
 }
-int sem_struct_domain(Pnode root, Phash_node f_loc_env){
+int sem_struct_domain(Pnode root, Phash_node f_loc_env, Pschema * stype){
 #if VERBOSE
     printf("@@ in sem_struct_domain\n");
 #endif
+    int ok =1;
+    Pnode decl = root->child;
+    (*stype)->type = STRUCT;
+    //(*stype)->p1 = new_schema_node(-1);
     
+    
+    Pschema last = (*stype)->p1;
+    treeprint(root, " ");
+    printf("last %p\n", last);
+    
+    while (decl != NULL) { //DECL
+        Pnode decl_domain = decl->child->brother;
+        Pnode id = decl->child->child;
+        
+        while (id != NULL) {
+            Pschema to_add = new_schema_node(-1);
+            Pschema * Pto_add = &to_add;
+            ok = ok && sem_domain(decl_domain, f_loc_env, &to_add);
+            printf("to_add %p\n", Pto_add);
+            
+            if(last == NULL){
+                (*stype)->p1 = to_add;
+            }
+            else{
+                last->p2 = to_add;
+            }
+            last = to_add;
+            id = id->brother;
+        }
+        decl = decl->brother;
+    }
+    return ok;
 }
-int sem_vector_domain(Pnode root, Phash_node f_loc_env){
+int sem_vector_domain(Pnode root, Phash_node f_loc_env, Pschema * stype){
 #if VERBOSE
     printf("@@ in sem_vector_domain\n");
 #endif
-    
+    int ok =1;
+    (*stype)->type = VECTOR;
+    (*stype)->size = root->child->value.ival;
+    (*stype)->p1 = new_schema_node(-1);
+    ok = ok && sem_domain(root->child->brother, f_loc_env, &(*stype)->p1);
+    return ok;
 }
 
 int sem_type_sect_opt(Pnode root, Phash_node f_loc_env){
@@ -414,9 +443,9 @@ int sem_indexing(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     
     Pschema lhs_type = *stype;
     //printf("\n##1 %d \n",(lhs_type));
-
+    
     ok_index = sem_left_hand_side(lhs_node, f_loc_env, &lhs_type, lhs_class);
-
+    
     //printf("\n##2 %d \n",(lhs_type));
     //printf("\n## lhs_type\n");
     printSchema(lhs_type, " ");
@@ -599,6 +628,10 @@ int sem_return_stat(Pnode root, Phash_node f_loc_env){
     int ok = sem_expr(expr_node, f_loc_env, &expr_schema);
     ok = ok && are_compatible(expr_schema, f_loc_env->schema);
     if(!ok) {
+        printf("expr");
+        print_sch(expr_schema);
+        printf("func");
+        print_sch(f_loc_env->schema);
         sem_error(expr_node, "Type error: RETURN-EXPR type must be the same as in function definition\n");
     }
     return ok;
@@ -671,7 +704,7 @@ int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
         
         printf("\n## expr1 math_expr\n");
         printSchema(expr1_type," ");
-
+        
 		//sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", tabsem_types[expr1_type]);
 		sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", "to_do");
 		sem_error(expr1, error_msg);
@@ -806,7 +839,6 @@ int sem_rd_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
     if (ok) {
         printf("\n## xpecifier_opt è ok \n");
         dom_ok = sem_domain(root->child->brother, f_loc_env, stype);
-        print_sch(*stype);
     }
     return ok && dom_ok;
 }
@@ -904,7 +936,7 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 #if VERBOSE
     printf("@@ in sem_cond_expr\n");
 #endif
-
+    
 	Pnode main_expr_node = root->child;
 	Pnode first_expr_node = main_expr_node->brother;
 	Pnode elsif_expr_node = first_expr_node->brother;
@@ -913,19 +945,19 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	//check contraint on conditional clause
 	Pschema main_expr_type = new_schema_node(-1);;
 	int main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type);
-
+    
 	if (main_expr_type->type!=BOOL){
 		sem_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
 	}
     
 	//check contraint on first and last alternative
 	Pschema * first_expr_type = stype;
-
+    
 	int first_expr_ok = sem_expr(first_expr_node, f_loc_env,first_expr_type);
     
 	Pschema else_expr_type = new_schema_node(-1);
 	int else_expr_ok = sem_expr(else_expr_node, f_loc_env, &else_expr_type);
-
+    
 	if (!are_compatible(*first_expr_type, else_expr_type)){
 		sem_error(else_expr_node, "Type error, alternatives are of different type\n");
 	}
