@@ -6,8 +6,8 @@ all: prova clean
 lexer: lex.c parser.h def.h
 	cc -o lexer lex.c -DLEXER
 
-prova: lex.o parser.o tree.o hash_table.o symbol_table.o semantic.o
-	cc -g -o prova lex.o parser.o tree.o hash_table.o symbol_table.o semantic.o
+prova: lex.o parser.o tree.o hash_table.o symbol_table.o semantic.o code_gen.o
+	cc -g -o prova lex.o parser.o tree.o hash_table.o symbol_table.o semantic.o code_gen.o
 
 lex.o: lex.c parser.h def.h
 	cc -g -c lex.c 
@@ -26,6 +26,9 @@ symbol_table.o: symbol_table.c symbol_table.h
 
 semantic.o: semantic.c semantic.h
 	cc -g -c semantic.c
+
+code_gen.o: code_gen.c code_gen.h
+	cc -g -c code_gen.c
 
 lex.c: lexer.lex parser.y parser.h parser.c def.h
 	flex -o lex.c lexer.lex
