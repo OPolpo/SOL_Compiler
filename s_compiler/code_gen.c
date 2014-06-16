@@ -56,6 +56,23 @@ Code makecode1(Operator op, int arg){
     return code;
 }
 
+Code makecode2(Operator op, int arg1, int arg2){
+    Code code;
+    code = makecode(op);
+    code.head->args[0].ival = arg1;
+    code.head->args[1].ival = arg2;
+    return code;
+}
+
+Code makecode3(Operator op, int arg1, int arg2, int arg3){
+    Code code;
+    code = makecode(op);
+    code.head->args[0].ival = arg1;
+    code.head->args[1].ival = arg2;
+    code.head->args[2].ival = arg3;
+    return code;
+}
+
 Code make_push_pop(int size, int chain, int entry){
     return concode(makecode2(S_PUSH, size, chain),
                    makecode1(S_GOTO, entry),

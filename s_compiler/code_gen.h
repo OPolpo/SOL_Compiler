@@ -4,22 +4,22 @@
 #include "def.h"
 
 typedef enum{
-    S_NEW,
-    S_NEWS,
-    S_LDC,
-    S_LDI,
-    S_LDR,
-    S_LDS,
-    S_LOD,
-    S_CAT,
-    S_LDA,
-    S_FDA,
-    S_EIL,
-    S_SIL,
-    S_IXA,
-    S_STO,
-    S_IST,
-    S_JMF,
+    S_NEW,      //NEW object-size
+    S_NEWS,     //NEWS object-size
+    S_LDC,      //LDC 'c' LDC '1'
+    S_LDI,      //LDI 25
+    S_LDR,      //LDR 3.14
+    S_LDS,      //LDS "alpha"
+    S_LOD,      // LOD = env-offset, oid
+    S_CAT,      //CAT = num-fields, struct-size  CAT = num-elements, vector-size
+    S_LDA,      //LDA = env-offset, oid
+    S_FDA,      //FDA (field address) = field-offset
+    S_EIL,      //EIL, SIL (indirect load, either embedded or on stack) = field-size
+    S_SIL,      //EIL, SIL (indirect load, either embedded or on stack) = field-size
+    S_IXA,      //IXA (indexed address) = elem-size
+    S_STO,      //STO = env-offset, oid
+    S_IST,      //IST = operator without arguments
+    S_JMF,      //
     S_JMP,
     S_EQU,
     S_NEQ,
@@ -61,7 +61,7 @@ typedef enum{
     S_TOINT,
     S_TOREAL,
     S_READ,
-    S_FREAD,
+    S_FREAD,    //READ offset-env oid format
     S_WRITE,
     S_FWRITE,
     S_FUNC,
@@ -90,6 +90,7 @@ Stat *newstat(Operator op);
 Code makecode(Operator op);
 Code makecode1(Operator op, int arg);
 Code makecode2(Operator op, int arg1, int arg2);
+Code makecode3(Operator op, int arg1, int arg2, int arg3);
 Code make_push_pop(int size, int chain, int entry);
 Code make_ldc(char c);
 Code make_ldi(int i);
