@@ -11,7 +11,7 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first){
 #if VERBOSE
     printf("@@ in sem_program\n");
 #endif
-	return sem_func_decl(root->child, f_loc_env, not_first);
+    return sem_func_decl(root->child, f_loc_env, not_first);
 }
 
 int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first){
@@ -277,9 +277,11 @@ int sem_stat_list(Pnode root, Phash_node f_loc_env, int * w_return){
 #endif
     Pnode stat_node = root->child;
     int ok = 1;
+    int w_return_stat = 0;
     while (stat_node != NULL) {
-        ok = ok && sem_stat(stat_node, f_loc_env, w_return);
+        ok = ok && sem_stat(stat_node, f_loc_env, &w_return_stat);
         stat_node = stat_node->brother;
+        *w_return = *w_return || w_return_stat;
     }
     return ok;
 }
@@ -700,7 +702,7 @@ int sem_specifier_opt(Pnode root, Phash_node f_loc_env){ // NULL or STRING
     int ok = 1;
     int spec_ok = (specifier == NULL);
     if (!spec_ok) {
-        ok = sem_expr(specifier->child, f_loc_env, &type_spec);
+        ok = sem_expr(specifier, f_loc_env, &type_spec);
         spec_ok = (type_spec->type == STRING);
     }
     
@@ -950,6 +952,8 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype){
     
     while (param_node != NULL && current_formal != NULL) {
         current_schema = new_schema_node(-1);
+        
+        printf("\n## \n");
         expr_ok = expr_ok && sem_expr(param_node, f_loc_env, &current_schema);
         
         param_ok = are_compatible(current_schema, current_formal->formal->schema);
@@ -963,6 +967,7 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype){
     if (!param_ok) {
         sem_error(id_node, "Formal parameter must be compatible with actual parameter in function call\n");
     }
+    (*stype) = h_id_node->schema;
     return id_ok && expr_ok && param_ok;
 }
 
@@ -1133,6 +1138,7 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
             }
             break;
 		default:
+            printf("%d\n\n", root->type);
 			sem_error(root, "Some weird terminal node in expr\n");
 	}
 	return expr_ok;
