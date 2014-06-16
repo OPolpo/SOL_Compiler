@@ -194,7 +194,8 @@ for_stat : FOR ID {$$ = idnode();} '=' expr TO expr DO stat_list ENDFOR {$$ = no
 foreach_stat : FOREACH ID {$$ = idnode();} IN expr DO stat_list ENDFOREACH {$$ = nontermnode(NFOREACH_STAT);
 														  	 				$$->child = $3;
 														   				 	$3->brother = $5;
-														   				 	$5->brother = $7;}
+														   				 	$5->brother = nontermnode(NSTAT_LIST);
+                                                                            $5->brother->child = $7;}
 return_stat : RETURN expr {$$ = nontermnode(NRETURN_STAT);
 						   $$->child = $2;}
 read_stat : READ specifier_opt ID {$$ = nontermnode(NREAD_STAT);
@@ -210,8 +211,8 @@ expr : expr bool_op bool_term {$$ = $2;
 							   $$->child = $1;
 							   $1->brother = $3;}
 	 | bool_term
-bool_op : AND {$$ = nontermnode(NLOGIC_EXPR); $$->qualifier = AND}
-		| OR {$$ = nontermnode(NLOGIC_EXPR); $$->qualifier = OR}
+bool_op : AND {$$ = nontermnode(NLOGIC_EXPR); $$->qualifier = AND;}
+        | OR {$$ = nontermnode(NLOGIC_EXPR); $$->qualifier = OR;}
 bool_term : rel_term rel_op rel_term {$$ = $2;
 									  $$->child = $1;
 									  $1->brother = $3;}
