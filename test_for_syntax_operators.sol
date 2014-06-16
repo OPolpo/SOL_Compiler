@@ -1,12 +1,13 @@
 --test :P
-func tester2():int
+func tester2():char
 var a, b, c,d,e: int;
 	res: int;
 	t, r: struct(x: int; y: string;);
 	v: vector [10] of int; 
 	i: int;
 	m, n: int;
-
+	k:vector [20] of int;
+	dd: vector[30] of vector[100] of int;
 const MM: int=20;
 
 func reverse(v: vector [100] of int;): vector [100] of int
@@ -70,6 +71,11 @@ begin exwrite2
 	return 0;
 end exwrite2
 
+func p(k:vector [20] of int; i:int;):int
+begin p
+	return 3*4;
+end p
+
 begin tester2
 
 	m = sum(v);
@@ -92,16 +98,16 @@ begin tester2
 	endwhile;
 
 	for i=1 to 100 do 
-		k = f(v[i]);
+		k = f(dd[i]);
 		a = p(k, i); 
 	endfor;
 
 	foreach n in v do 
-		m = compute(n);
+		m = fact(n);
 	endforeach;
 
 	read v;
 	read ["v.dat"] v;
-
-
+	
+	return 's';
 end tester2

@@ -185,12 +185,14 @@ else_stat_opt : ELSE stat_list {$$ = nontermnode(NSTAT_LIST);
               | /** eps **/{$$ = NULL;}
 while_stat : WHILE expr DO stat_list ENDWHILE {$$ = nontermnode(NWHILE_STAT);
 											   $$->child = $2;
-											   $2->brother = $4;}
+											   $2->brother = nontermnode(NSTAT_LIST);
+                                               $2->brother->child = $4;}
 for_stat : FOR ID {$$ = idnode();} '=' expr TO expr DO stat_list ENDFOR {$$ = nontermnode(NFOR_STAT);
 																		 $$->child = $3;
 																		 $3->brother = $5;
 																		 $5->brother = $7;
-																		 $7->brother = $9;}
+																		 $7->brother = nontermnode(NSTAT_LIST);
+                                                                         $7->brother->child = $9;}
 foreach_stat : FOREACH ID {$$ = idnode();} IN expr DO stat_list ENDFOREACH {$$ = nontermnode(NFOREACH_STAT);
 														  	 				$$->child = $3;
 														   				 	$3->brother = $5;

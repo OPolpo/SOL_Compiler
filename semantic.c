@@ -585,33 +585,33 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env){
     Pnode expr1_node = id_node->brother;
     Pnode expr2_node = expr1_node->brother;
     Pnode stat_list_node = expr2_node->brother;
-    int ok = 0;
+    int ok = 1;
     
     Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env);
     if (id_hash_node == NULL) {
         ok = 0;
-        sem_error(root, "Variable ID in FOR-STAT is not defined\n");
+        sem_error(id_node, "Variable ID in FOR-STAT is not defined\n");
     }
     ok = ok && (id_hash_node->class_node == CLVAR || id_hash_node->class_node == CLPAR);
     if (!ok) {
-        sem_error(root, "Variable ID in FOR-STAT must be a VAR or a PAR\n");
+        sem_error(id_node, "Variable ID in FOR-STAT must be a VAR or a PAR\n");
     }
     ok = ok && (id_hash_node->schema->type == INT);
     if (!ok) {
-        sem_error(root, "Variable ID in FOR-STAT must be of type INT\n");
+        sem_error(id_node, "Variable ID in FOR-STAT must be of type INT\n");
     }
     
     Pschema expr1_schema = new_schema_node(-1);
     ok = ok && sem_expr(expr1_node, f_loc_env, &expr1_schema);
     ok = ok && (expr1_schema->type == INT);
     if (!ok) {
-        sem_error(root, "Type error: expected INT in FOR-STAT\n");
+        sem_error(expr1_node, "Type error: expected INT in FOR-STAT\n");
     }
     Pschema expr2_schema = new_schema_node(-1);
     ok = ok && sem_expr(expr2_node, f_loc_env, &expr2_schema);
     ok = ok && (expr2_schema->type == INT);
     if (!ok) {
-        sem_error(root, "Type error: expected INT in FOR-STAT\n");
+        sem_error(expr2_node, "Type error: expected INT in FOR-STAT\n");
     }
     //TODO: check that id is not assigned in stat-list
     int not_used;
@@ -632,22 +632,22 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env){
     Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env);
     if (id_hash_node == NULL) {
         ok = 0;
-        sem_error(root, "Variable ID in FOR-STAT is not defined\n");
+        sem_error(id_node, "Variable ID in FOREACH-STAT is not defined\n");
     }
     ok = ok && (id_hash_node->class_node == CLVAR || id_hash_node->class_node == CLPAR);
     if (!ok) {
-        sem_error(root, "Variable ID in FOR-STAT must be a VAR or a PAR\n");
+        sem_error(id_node, "Variable ID in FOREACH-STAT must be a VAR or a PAR\n");
     }
     
     Pschema expr_schema = new_schema_node(-1);
     ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema);
     ok = ok && (expr_schema->type == VECTOR);
     if (!ok) {
-        sem_error(root, "Type error: expr must be a VECTOR in FOR-EACH STAT\n");
+        sem_error(expr_node, "Type error: expr must be a VECTOR in FOR-EACH STAT\n");
     }
     ok = ok && are_compatible(expr_schema->p1, id_hash_node->schema);
     if (!ok) {
-        sem_error(root, "Type error: ID must be of the same type of VECTOR elements in FOR-EACH STAT\n");
+        sem_error(expr_node, "Type error: ID must be of the same type of VECTOR elements in FOREACH STAT\n");
     }
     int not_used;
     ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used);
