@@ -1,4 +1,4 @@
-func prog(a,x: int; b: string; c: struct(nome,cognome: string; anno:int;); d:real; e: vector [4] of char;): int
+func prog(aa,xx: int; b: string; c: struct(nome,cognome: string; anno:int;); d:real; e: vector [4] of char;): int
 	type	TO1: int; 
 			T2: string;
 			T3, T4: T2;

@@ -1,5 +1,6 @@
 #include "symbol_table.h"
 #include "parser.h"
+#include "semantic.h"
 
 int oid = 1;
 
@@ -16,7 +17,8 @@ void handle_function_part(Pnode current, Phash_node func, int * loc_oid, Class p
                 Phash_node id_node = new_id_node(id->value.sval, part_class, *loc_oid);
                 (*loc_oid)++;
                 id_node->schema = domain_sch;
-                insert(id_node, func->locenv);
+                if(!insert(id_node, func->locenv))
+                    sem_error(id, "ID already defined in same environment\n");
                 id = id->brother;
             }
             child = child->brother;
@@ -58,7 +60,9 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                                 Phash_node id_node = new_id_node(id->value.sval, CLPAR, loc_oid);
                                 loc_oid++;
                                 id_node->schema = domain_sch;
-                                insert(id_node, func->locenv);
+                                if (!insert(id_node, func->locenv)) {
+                                    sem_error(id, "Name of formal parameters must be unique\n");
+                                }
                                 
                                 Formal * to_add = (Formal *)calloc(1,sizeof(Formal));
                                 to_add->formal = id_node;
@@ -101,8 +105,9 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     if (current->child != NULL) {
                         child = current->child; // FUNC DECL
                         while (child != NULL) {//loop on FUNC DECL
-                            
-                            insert(create_symbol_table(child, func), func->locenv);
+                            if (!insert(create_symbol_table(child, func), func->locenv)) {
+                                sem_error(child, "Function names must be unique\n");
+                            }
                             child = child->brother;
                         }
                     }

@@ -1,19 +1,35 @@
 //http://en.wikipedia.org/wiki/List_of_prime_numbers
 #include "hash_table.h"
 #include "parser.h"
+#include "semantic.h"
 
 int hash (char* id){
-    int i, h = 0; 
+    int i, h = 0;
     for(i = 0; id[i] != '\0'; i++){
         h = ((h << SHIFT) + id[i]) % TOT;
     }
     return h;
 }
 
-void insert(Phash_node p, Phash_node * table){
+int insert(Phash_node p, Phash_node * table){
+    if (getNode(p->name, table) != NULL) {
+        return 0;
+    }
     int pos = hash(p->name);
     p->next = table[pos];
     table[pos] = p;
+    return 1;
+}
+
+int find_same_id(Phash_node p, Phash_node table_pos){
+    Phash_node current = table_pos;
+    while (current!= NULL) {
+        if (strcmp(p->name, current->name) == 0) {
+            return 1;
+        }
+        current = current->next;
+    }
+    return 0;
 }
 
 Phash_node getNode(char * id, Phash_node * table){
@@ -77,7 +93,7 @@ void print_func_node(Phash_node node){
 
 void print_generic_node(Phash_node node){
     printf("[%d] %s | ", node->oid, node->name);
-
+    
     switch (node->class_node) {
         case CLTYPE:
             printf("TYPE ");
@@ -96,7 +112,7 @@ void print_generic_node(Phash_node node){
             break;
     }
     (node->schema != NULL)? printf("ok schema |"): printf("no schema |");
-
+    
     printf ("\n");
 }
 
@@ -202,4 +218,4 @@ void print_hash_content(Phash_node * table){
  Formal * formal;
  struct shash_node * next;
  } Hash_node, * Phash_node;
-*/
+ */
