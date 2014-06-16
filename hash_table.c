@@ -107,6 +107,9 @@ void print_generic_node(Phash_node node){
         case CLPAR:
             printf("PAR ");
             break;
+        case CLCOUNT:
+            printf("COUNT ");
+            break;
         default:
             //function... TODO merge with print_func_node OR not?
             break;

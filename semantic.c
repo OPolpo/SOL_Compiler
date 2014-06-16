@@ -381,9 +381,9 @@ int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class 
                 sem_error(child, "Use of not visible ID\n");
                 //sem_error("Use of not visible ID %s\n", root->value.sval);
             }
-            lhs_ok = (h_node->class_node == CLVAR || h_node->class_node == CLPAR || h_node->class_node == CLCONST);
+            lhs_ok = (h_node->class_node == CLVAR || h_node->class_node == CLPAR || h_node->class_node == CLCONST || h_node->class_node == CLCOUNT);
             if (!lhs_ok) {
-                sem_error(child, "An lhs cannot be a function or a constant name\n");
+                sem_error(child, "An lhs cannot be a function or a type name\n");
             }
             *lhs_class = h_node->class_node;
             
@@ -614,9 +614,14 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env){
         sem_error(expr2_node, "Type error: expected INT in FOR-STAT\n");
     }
     //TODO: check that id is not assigned in stat-list
+    
+    Class id_class = id_hash_node->class_node;
+    id_hash_node->class_node = CLCOUNT;
+    
     int not_used;
     ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used);
     
+    id_hash_node->class_node = id_class;
     return ok;
 }
 

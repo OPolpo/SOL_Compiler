@@ -1,5 +1,5 @@
 --test :P
-func tester2():char
+func tester2(sssh:int;):char
 var a, b, c,d,e: int;
 	res: int;
 	t, r: struct(x: int; y: string;);
@@ -15,7 +15,7 @@ begin reverse
 	return v;
 end reverse
 
-func f(v: vector [100] of int;): vector [20] of int
+func f(vv: vector [100] of int;): vector [20] of int
 var v: vector [20] of int;
 begin f
 	return v;
@@ -96,11 +96,25 @@ begin tester2
 		res = res + 1;
 		a = a - b; 
 	endwhile;
-
+	i = 0;
 	for i=1 to 100 do 
+		--i = 0;
+		--
 		k = f(dd[i]);
 		a = p(k, i); 
+		a=9;
+			sssh = 0;
+		for sssh=1 to 100 do 
+			---sssh = 0;
+			--
+			k = f(dd[i]);
+			a = p(k, i); 
+			a=9;
+			--i = 0;
+		endfor;
+		sssh = 0;
 	endfor;
+	i = 0;
 
 	foreach n in v do 
 		m = fact(n);

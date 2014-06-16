@@ -11,7 +11,8 @@ typedef enum{
     CLVAR,
     CLCONST,
     CLFUNC,
-    CLPAR
+    CLPAR,
+    CLCOUNT
 } Class;
 
 
