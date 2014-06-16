@@ -1,40 +1,27 @@
-CC=cc
-CFLAGS=-c -Wall
+CC = cc -g
+CFLAGS = -c -Wall
+COMP_PATH = s_compiler
+COMP_PATH_LEXER = s_compiler
+COMP_PATH_PARSER = s_compiler
 
-all: prova clean
+OBJ = $(COMP_PATH_LEXER)/lex.o $(COMP_PATH_PARSER)/parser.o $(COMP_PATH)/tree.o $(COMP_PATH)/hash_table.o $(COMP_PATH)/symbol_table.o $(COMP_PATH)/semantic.o $(COMP_PATH)/code_gen.o
 
-lexer: lex.c parser.h def.h
-	cc -o lexer lex.c -DLEXER
+all: compiler clean
 
-prova: lex.o parser.o tree.o hash_table.o symbol_table.o semantic.o code_gen.o
-	cc -g -o prova lex.o parser.o tree.o hash_table.o symbol_table.o semantic.o code_gen.o
+$(COMP_PATH_LEXER)/lexer: $(COMP_PATH_LEXER)/lex.c $(COMP_PATH_PARSER)/parser.h
+	cc -o lexer $(COMP_PATH_LEXER)/lex.c -DLEXER
 
-lex.o: lex.c parser.h def.h
-	cc -g -c lex.c 
+compiler: $(OBJ)
+	$(CC) -o $@ $^
 
-parser.o: parser.c def.h 
-	cc -g -c parser.c
+%.o: %.c
+	$(CC) -o $*.o -c $*.c
 
-tree.o: tree.c tree.h def.h parser.h
-	cc -g -c tree.c
+$(COMP_PATH_LEXER)/lex.c: $(COMP_PATH_LEXER)/lexer.lex $(COMP_PATH_PARSER)/parser.h
+	flex -o $(COMP_PATH_LEXER)/lex.c $(COMP_PATH_LEXER)/lexer.lex
 
-hash_table.o: hash_table.c hash_table.h
-	cc -g -c hash_table.c
-
-symbol_table.o: symbol_table.c symbol_table.h
-	cc -g -c symbol_table.c
-
-semantic.o: semantic.c semantic.h
-	cc -g -c semantic.c
-
-code_gen.o: code_gen.c code_gen.h
-	cc -g -c code_gen.c
-
-lex.c: lexer.lex parser.y parser.h parser.c def.h
-	flex -o lex.c lexer.lex
-
-parser.h: parser.y def.h
-	bison -d -o parser.c parser.y
+$(COMP_PATH_PARSER)/parser.h: $(COMP_PATH_PARSER)/parser.y
+	bison -d -o $(COMP_PATH_PARSER)/parser.c $(COMP_PATH_PARSER)/parser.y
 
 clean: 
-	rm lex.c *.o parser.c parser.h
+	rm $(COMP_PATH)/lex.c $(COMP_PATH)/*.o $(COMP_PATH)/parser.c $(COMP_PATH)/parser.h
