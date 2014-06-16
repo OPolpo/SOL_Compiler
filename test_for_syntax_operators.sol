@@ -38,7 +38,8 @@ var name: string;
 	v1, v2: Vect;
 begin exread
 	v1 = rd Vect;
-	v2 = reverse(rd [name] Vect);
+	--v2 = reverse(rd [name] Vect);
+	return 0;
 end exread
 
 func exwrite():int
@@ -46,7 +47,7 @@ var i, j: int;
 	name: string;
 	v: vector [100] of int;
 begin exwrite
-	write f(v);
+	write fact(v[1]);
 	read name;
 	write [name] reverse(v);
 end exwrite
