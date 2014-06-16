@@ -1089,6 +1089,7 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	switch(root->type){
 		case T_CHARCONST:
 			(*stype)->type = CHAR;
+            
 			break;
 		case T_INTCONST:
 			(*stype)->type = INT;
