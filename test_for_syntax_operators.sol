@@ -9,6 +9,11 @@ var a, b, c: int;
 
 const MM: int=20;
 
+func reverse(v: vector [10] of int;): vector [10] of int
+begin reverse
+	return v;
+end reverse
+
 func sum(v: vector [10] of int;):int 
 var n, res: int;
 begin sum
