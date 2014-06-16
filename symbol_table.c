@@ -169,6 +169,13 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                                 //last = node->p1;
                             }
                             else{
+                                Pschema temp = node->p1;
+                                while (temp != NULL){
+                                    if (strcmp(to_add->id, temp->id)==0)   
+                                        sem_error(id,"Attributes in Struct environment must be unique\n");        
+                                    temp = temp->p2;
+                                }
+
                                 last->p2 = to_add;
                                 //last = last->p2;
                             }
