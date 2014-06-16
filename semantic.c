@@ -707,7 +707,7 @@ int sem_specifier_opt(Pnode root, Phash_node f_loc_env){ // NULL or STRING
     }
     
     if (!spec_ok) {
-        sem_error(specifier, "Type error, specifier in wr/write/rd/read call must be a STRING or NULL");//to_do
+        sem_error(specifier, "Type error, specifier in wr/write/rd/read call must be a STRING or NULL\n");//to_do
     }
     printf("##%d %d\n", ok, spec_ok);
     return ok && spec_ok;
@@ -836,7 +836,7 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 		case '-':
 			if(expr_type->type != INT || expr_type->type != REAL){
 				//sprintf(error_msg,"Type error, expected INT | REAL instead of %s \n", tabsem_types[expr_type]);//
-				sprintf(error_msg,"Type error, expected INT | REAL");
+				sprintf(error_msg,"Type error, expected INT | REAL\n");
 				sem_error(root->child, error_msg);
 			}
 			(*stype)->type = expr_type->type;
@@ -844,7 +844,7 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 		case NOT:
 			if(expr_type->type != BOOL){
 				//sprintf(error_msg,"Type error, expected BOOL instead of %s \n", tabsem_types[expr_type]);//
-				sprintf(error_msg,"Type error, expected BOOL in NEG-EXPR");
+				sprintf(error_msg,"Type error, expected BOOL in NEG-EXPR\n");
 				sem_error(root->child, error_msg);
 			}
 			(*stype)->type = BOOL;
@@ -917,7 +917,7 @@ int sem_instance_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 				Pschema next = new_schema_node(-1);
 				expr_ok = expr_ok && sem_expr(current_node, f_loc_env, &next);
 				if(!are_compatible(next,current_schema)){
-					sem_error(current_node, "Type Error, Vector type are non uniform");
+					sem_error(current_node, "Type Error, Vector type are non uniform\n");
 					break;
 				}
 				current_node = current_node->brother;
@@ -1058,13 +1058,13 @@ int sem_built_in_call(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	switch(root->qualifier){
 		case TOINT:
 			if(built_in_call_type->type != REAL){
-				sem_error(root->child, "Type error, expected REAL");
+				sem_error(root->child, "Type error, expected REAL\n");
 			}
 			(*stype)->type = INT;
             break;
 		case TOREAL:
 			if(built_in_call_type->type != INT){
-				sem_error(root->child, "Type error, expected INT");
+				sem_error(root->child, "Type error, expected INT\n");
 			}
 			(*stype)->type = REAL;
             break;

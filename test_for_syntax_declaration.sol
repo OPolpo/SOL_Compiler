@@ -5,7 +5,7 @@ func prog(a,x: int; b: string; c: struct(nome,cognome: string; anno:int;); d:rea
 			T5: vector [10] of T3;
 			typeint: struct(nome,cognome: string; anno:int; a: struct(b,c:int;););
 	var i, j: int; 
-		z: typeint;
+		z: int;
 		x, y: real;
 		s, t: T5;
 		a: vector [100] of int;
@@ -13,9 +13,9 @@ func prog(a,x: int; b: string; c: struct(nome,cognome: string; anno:int;); d:rea
 	const 	MAX: int = 100;
 			name: T2 = "alpha";
 			VECT: vector [5] of real = vector(2.0, 3.12, 4.67, 1.1, 23.0);
-			MAT: vector [2] of vector [5] of real = vector(VECT, vector(x, y, z, 10.0, x+y+z));
+			MAT: vector [2] of vector [5] of real = vector(VECT, vector(x, y, toreal(z), 10.0, x+y+toreal(z)));
 
-	func f1(n:int;): typeint 
+	func f1(n:int;): bool 
 		var c:char;
 			i:int;
 			r:real;
@@ -27,6 +27,7 @@ func prog(a,x: int; b: string; c: struct(nome,cognome: string; anno:int;); d:rea
 		r = 64.15;
 		s = "alpha";
 		ok = true;
+		return c > 'a';
 	end f1
 
 	func f2(c:bool;): bool 
@@ -49,9 +50,11 @@ func prog(a,x: int; b: string; c: struct(nome,cognome: string; anno:int;); d:rea
 						struct("Louis", "Green", 1998), 
 						struct("Ann", "Black", 2001));
 		ok = person.name == "John";
+		return ok;
 	end f2
 	
 begin prog 
 	x = toreal(i+j)*(r-toreal(i));
 	j = toint(x+y-1.25);
+	return 9;
 end prog
