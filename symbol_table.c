@@ -235,7 +235,7 @@ int are_compatible(Pschema a, Pschema b){
                     if(!ok)
                         return 0; //FALSE
                 }
-                if (a_child != b_child) {
+                if (a_child != NULL || b_child != NULL) {
                     return 0; //FALSE
                 }
                 return 1;

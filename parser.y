@@ -236,7 +236,7 @@ low_term : low_term high_bin_op factor {$$ = $2;
 		 | factor 
 high_bin_op : '*' {$$ = nontermnode(NMATH_EXPR); $$->qualifier = '*';}
 			| '/' {$$ = nontermnode(NMATH_EXPR); $$->qualifier = '/';}
-factor : unary_op factor {$$ = $1; $1->child = $2;}
+factor : unary_op factor {$$ = $1; if($1->child == NULL) $1->child = $2; else $1->child->brother = $2;}
 	   | '(' expr ')' {$$ = $2;}
 	   | left_hand_side 
 	   | atomic_const 

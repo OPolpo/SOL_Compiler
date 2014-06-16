@@ -1,18 +1,24 @@
 --test :P
 func tester2():int
-var a, b, c: int;
+var a, b, c,d,e: int;
 	res: int;
 	t, r: struct(x: int; y: string;);
-	v: vector [100] of int; 
+	v: vector [10] of int; 
 	i: int;
 	m, n: int;
 
 const MM: int=20;
 
-func reverse(v: vector [10] of int;): vector [10] of int
+func reverse(v: vector [100] of int;): vector [100] of int
 begin reverse
 	return v;
 end reverse
+
+func f(v: vector [100] of int;): vector [20] of int
+var v: vector [20] of int;
+begin f
+	return v;
+end f
 
 func sum(v: vector [10] of int;):int 
 var n, res: int;
@@ -50,6 +56,7 @@ begin exwrite
 	write fact(v[1]);
 	read name;
 	write [name] reverse(v);
+	return 0;
 end exwrite
 
 func exwrite2():int
@@ -60,6 +67,7 @@ var i: int;
 begin exwrite2
 	v1 = wr f(v);
 	v2 = f(wr [name] v);
+	return 0;
 end exwrite2
 
 begin tester2

@@ -953,9 +953,11 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype){
     while (param_node != NULL && current_formal != NULL) {
         current_schema = new_schema_node(-1);
         
-        printf("\n## \n");
+        printf("\n## PARAMETRO\n");
         expr_ok = expr_ok && sem_expr(param_node, f_loc_env, &current_schema);
         
+        print_sch(current_schema);
+        print_sch(current_formal->formal->schema);
         param_ok = are_compatible(current_schema, current_formal->formal->schema);
         if(!param_ok)
             break;
@@ -1100,8 +1102,6 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
             switch(root->value.ival){
                 case NLEFT_HAND_SIDE:
                     expr_ok = sem_left_hand_side(root, f_loc_env, stype, &not_used);
-                    printf("\n##in the expr\n");
-                    printSchema(*stype, " ");
                     break;
                 case NMATH_EXPR:
                     expr_ok = sem_math_expr(root, f_loc_env, stype);
