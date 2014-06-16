@@ -308,6 +308,8 @@ int main(){
         
         printf("## START\n");
         sem_program(root, symtab, 0);
+        
+        printf("## END\n");
 	}
 	return(result);
 }

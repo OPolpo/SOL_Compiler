@@ -1087,7 +1087,7 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 			break;
 		case T_INTCONST:
 			(*stype)->type = INT;
-            printf("## @@ %d", INT);
+            printf("## @@ %d\n", INT);
 			break;
 		case T_REALCONST:
 			(*stype)->type = REAL;
