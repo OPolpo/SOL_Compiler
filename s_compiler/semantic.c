@@ -5,7 +5,7 @@
 #define VERBOSE 1
 
 char error_msg[100];
-extern char * convert_bool;
+char convert_bool[] = {'0','1'};
 
 
 int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
@@ -886,6 +886,7 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 			}
 			(*stype)->type = expr_type->type;
             
+            *code = appcode(*code, makecode(S_RDIV));
             break;
 		case NOT:
 			if(expr_type->type != BOOL){

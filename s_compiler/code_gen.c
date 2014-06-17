@@ -66,7 +66,6 @@ char * tabOperator[]={
     "HALT",
     "SCODE"};
 
-char convert_bool[] = {'0','1'};
 
 void relocate_address(Code code, int offset){
     Stat *pt = code.head; int i;
