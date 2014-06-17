@@ -5,7 +5,7 @@
 #define VERBOSE 1
 
 char error_msg[100];
-char convert_bool[] = {'0','1'};
+extern char * convert_bool;
 
 
 int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
@@ -1123,7 +1123,7 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
     treeprint(root, " ");
     printf(".\n");
 #endif
-	int expr_ok;
+	int expr_ok = 1;
     Class not_used;
     
 	switch(root->type){

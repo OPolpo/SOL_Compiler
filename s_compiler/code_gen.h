@@ -69,6 +69,7 @@ typedef enum{
     S_SCODE
 } Operator;
 
+
 typedef struct sstat{
     int address;
     Operator op;

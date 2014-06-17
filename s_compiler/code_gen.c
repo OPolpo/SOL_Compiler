@@ -1,6 +1,8 @@
 #include "code_gen.h"
 #include "parser.h"
 
+char convert_bool[] = {'0','1'};
+
 void relocate_address(Code code, int offset){
     Stat *pt = code.head; int i;
     for(i = 1; i <= code.size; i++){
