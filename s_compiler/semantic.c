@@ -875,10 +875,6 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
     
 	(*stype)->type = BOOL;
 
-    // S_EQU,
-    // S_NEQ,
-    // S_IN,
-
     switch (root->qualifier) {
         case EQ:
             *code = appcode(*code, makecode(S_EQU));
@@ -1204,12 +1200,14 @@ int sem_built_in_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
 				sem_error(root->child, "Type error, expected REAL\n");
 			}
 			(*stype)->type = INT;
+            *code = appcode(*code, makecode(S_TOINT));
             break;
 		case TOREAL:
 			if(built_in_call_type->type != INT){
 				sem_error(root->child, "Type error, expected INT\n");
 			}
 			(*stype)->type = REAL;
+            *code = appcode(*code, makecode(S_TOREAL));
             break;
 	}
 	return built_in_call_ok;
