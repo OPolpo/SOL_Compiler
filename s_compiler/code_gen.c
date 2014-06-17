@@ -35,7 +35,11 @@ Code concode(Code code1, Code code2, ...){
 
 Stat * newstat(Operator op){
     Stat *pstat;
-    pstat = (Stat*)newmem(sizeof(Stat));
+    pstat = (Stat*) malloc(sizeof(Stat));
+    if (!pstat) {
+        fprintf(stderr, "Impossible to allocate new memory\n");
+        exit(EXIT_FAILURE);
+    }
     pstat->address = 0;
     pstat->op = op;
     pstat->next = NULL;

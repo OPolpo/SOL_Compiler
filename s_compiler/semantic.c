@@ -7,14 +7,14 @@
 char error_msg[100];
 
 
-int sem_program(Pnode root, Phash_node f_loc_env, int not_first){
+int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
 #if VERBOSE
     printf("@@ in sem_program\n");
 #endif
-    return sem_func_decl(root->child, f_loc_env, not_first);
+    return sem_func_decl(root->child, f_loc_env, not_first, code);
 }
 
-int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first){
+int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, code){
 #if VERBOSE
     printf("@@ in sem_func_decl\n");
 #endif
@@ -731,7 +731,7 @@ int sem_write_stat(Pnode root, Phash_node f_loc_env){
     return ok;
 }
 
-int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
+int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 #if VERBOSE
     printf("@@ in sem_math_expr\n");
 #endif
@@ -740,7 +740,7 @@ int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	Pschema expr1_type = new_schema_node(-1);
 	Pschema expr2_type = new_schema_node(-1);
 	
-	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type);
+	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, code);
 	if(expr1_type->type != INT && expr1_type->type != REAL){
         
         printf("\n## expr1 math_expr\n");
@@ -750,7 +750,7 @@ int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 		sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", "to_do");
 		sem_error(expr1, error_msg);
 	}
-	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type);
+	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, code);
 	if(expr2_type->type != expr1_type->type){
         printf("\n## expr2 math_expr\n");
         printSchema(expr2_type," ");
@@ -759,6 +759,45 @@ int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 		sem_error(expr2, error_msg);
 	}
 	(*stype)->type = expr1_type->type;
+    
+    if (expr1_type->type == INT) {
+        switch (root->qualifier) {
+            case '+':
+                appcode(code, makecode(S_IPLUS));
+                break;
+            case '-':
+                appcode(code, makecode(S_IMINUS));
+                break;
+            case '*':
+                appcode(code, makecode(S_ITIMES));
+                break;
+            case '/':
+                appcode(code, makecode(S_IDIV));
+                break;
+            default:
+                break;
+        }
+    }
+    else{ //expr1_type->type == REAL
+        switch (root->qualifier) {
+            case '+':
+                appcode(code, makecode(S_RPLUS));
+                break;
+            case '-':
+                appcode(code, makecode(S_RMINUS));
+                break;
+            case '*':
+                appcode(code, makecode(S_RTIMES));
+                break;
+            case '/':
+                appcode(code, makecode(S_RDIV));
+                break;
+            default:
+                break;
+        }
+        
+    }
+    
 	return expr1_ok && expr2_ok;
 }
 
@@ -1077,7 +1116,7 @@ int sem_built_in_call(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	return built_in_call_ok;
 }
 
-int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
+int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 #if VERBOSE
     printf("@@ in sem_expr\n");
     treeprint(root, " ");
@@ -1089,20 +1128,23 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
 	switch(root->type){
 		case T_CHARCONST:
 			(*stype)->type = CHAR;
-            
+            appcode(make_ldc(root->value.ival), code);
 			break;
 		case T_INTCONST:
 			(*stype)->type = INT;
-            printf("## @@ %d\n", INT);
+            appcode(make_ldi(root->value.ival), code);
 			break;
 		case T_REALCONST:
 			(*stype)->type = REAL;
+            appcode(make_ldr(root->value.rval), code);
 			break;
 		case T_STRCONST:
 			(*stype)->type = STRING;
+            appcode(make_lds(root->value.sval), code);
 			break;
 		case T_BOOLCONST:
 			(*stype)->type = BOOL;
+            appcode(make_ldc(convert_bool[root->value.bval]), code);
 			break;
 		case T_NONTERMINAL:
             switch(root->value.ival){
@@ -1110,7 +1152,7 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype){
                     expr_ok = sem_left_hand_side(root, f_loc_env, stype, &not_used);
                     break;
                 case NMATH_EXPR:
-                    expr_ok = sem_math_expr(root, f_loc_env, stype);
+                    expr_ok = sem_math_expr(root, f_loc_env, stype, code);
                     break;
                 case NLOGIC_EXPR:
                     expr_ok = sem_logic_expr(root, f_loc_env, stype);
