@@ -112,13 +112,62 @@ Stat * newstat(Operator op){
     return pstat;
 }
 
-Code makecode(Operator op){
+/*
+ case S_HALT:
+ case S_TOINT:
+ case S_TOREAL:
+ case S_POP:
+ case S_IUMI:
+ case S_RUMI:
+ case S_NEG:
+ case S_IN:
+ case S_IPLUS:
+ case S_RPLUS:
+ case S_IMINUS:
+ case S_RMINUS:
+ case S_ITIMES:
+ case S_RTIMES:
+ case S_IDIV:
+ case S_RDIV:
+ case S_CGT:
+ case S_IGT:
+ case S_RGT:
+ case S_SGT:
+ case S_CGE:
+ case S_IGE:
+ case S_RGE:
+ case S_SGE:
+ case S_CLT:
+ case S_ILT:
+ case S_RLT:
+ case S_SLT:
+ case S_CLE:
+ case S_ILE:
+ case S_RLE:
+ case S_SLE:
+ case S_EQU:
+ case S_NEQ:
+ case S_IST:*/
+Code makecode(Operator op){//for all codes without arguments
     Code code;
     code.head = code.tail = newstat(op);
     code.size = 1;
     return code;
 }
 
+/*
+ case S_FUNC:
+ case S_GOTO:
+ case S_JMF:
+ case S_JMP:
+ case S_IXA:
+ case S_EIL:
+ case S_SIL:
+ case S_FDA:
+ case S_LDI:
+ case S_NEW:
+ case S_NEWS:
+ case S_SCODE:*/
 Code makecode1(Operator op, int arg){
     Code code;
     code = makecode(op);
@@ -126,6 +175,26 @@ Code makecode1(Operator op, int arg){
     return code;
 }
 
+/*
+ case S_WRITE:
+ case S_FWRITE:
+ case S_RD:
+ case S_FRD:
+ case S_WR:
+ case S_FWR:*/
+Code makecode_str(Operator op, char * s){
+    Code code;
+    code = makecode(op);
+    code.head->args[0].sval = s;
+    return code;
+}
+
+/*
+ case S_PUSH:
+ case S_STO:
+ case S_LDA:
+ case S_CAT:
+ case S_LOD:*/
 Code makecode2(Operator op, int arg1, int arg2){
     Code code;
     code = makecode(op);
@@ -134,12 +203,15 @@ Code makecode2(Operator op, int arg1, int arg2){
     return code;
 }
 
-Code makecode3(Operator op, int arg1, int arg2, int arg3){
+/*
+case S_READ:
+case S_FREAD:*/
+Code makecode_xread(Operator op, int arg1, int arg2, char * arg3){
     Code code;
     code = makecode(op);
     code.head->args[0].ival = arg1;
     code.head->args[1].ival = arg2;
-    code.head->args[2].ival = arg3;
+    code.head->args[2].sval = arg3;
     return code;
 }
 
