@@ -814,10 +814,16 @@ int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * cod
 	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, code);
 	if(expr1_type->type != BOOL)
 		sem_error(expr1, "Type error, expected BOOL in LOGIC-EXPR\n");
+    
+    if (root->qualifier == AND) {
+        
+    }
+    
 	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, code);
 	if(expr2_type->type != BOOL)
 		sem_error(expr2, "Type error, expected BOOL in LOGIC-EXPR\n");
 	(*stype)->type = BOOL;
+    
 	return expr1_ok && expr2_ok;
 }
 
@@ -970,7 +976,11 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 			}
 			(*stype)->type = expr_type->type;
             
-            *code = appcode(*code, makecode(S_RDIV));
+            if (expr_type->type == INT) {
+                *code = appcode(*code, makecode(S_IUMI));
+            }else{ //expr_type->type == REAL
+                *code = appcode(*code, makecode(S_RUMI));
+            }
             break;
 		case NOT:
 			if(expr_type->type != BOOL){
@@ -979,6 +989,8 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 				sem_error(root->child, error_msg);
 			}
 			(*stype)->type = BOOL;
+            
+            *code = appcode(*code, makecode(S_NEG));
             break;
 	}
 	return expr_ok;
