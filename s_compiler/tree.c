@@ -105,7 +105,7 @@ void treeprint(Pnode root, char* father_indent) {
     else if(root->type == T_REALCONST)
         printf(" (%f)", root->value.rval);
     else if(root->type == T_BOOLCONST)
-        printf(" (%s)", (root->value.bval == TRUE ? "TRUE" : "FALSE"));
+        printf(" (%c)", (root->value.bval));
     else if(root->type == T_NONTERMINAL){
         switch (root->qualifier) {
             case AND:
