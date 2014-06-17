@@ -65,7 +65,8 @@ char * tabOperator[]={
     "FUNC",
     "HALT",
     "SCODE",
-    "RETURN"
+    "RETURN",
+    "---"
 };
 
 
@@ -79,12 +80,16 @@ void relocate_address(Code code, int offset){
 
 Code appcode(Code code1, Code code2){
     Code rescode;
-    relocate_address(code2, code1.size);
-    rescode.head = code1.head;
-    rescode.tail = code2.tail;
-    code1.tail->next = code2.head;
-    rescode.size = code1.size + code2.size;
-    return rescode;
+    
+    if (code1.head->op != S_NOOP) {
+        relocate_address(code2, code1.size);
+        rescode.head = code1.head;
+        rescode.tail = code2.tail;
+        code1.tail->next = code2.head;
+        rescode.size = code1.size + code2.size;
+        return rescode;
+    }
+    else return code2;
 }
 
 Code endcode(){
@@ -149,7 +154,9 @@ Stat * newstat(Operator op){
  case S_SLE:
  case S_EQU:
  case S_NEQ:
- case S_IST:*/
+ case S_IST:
+ case S_RETURN:
+ case S_NOOP*/
 Code makecode(Operator op){//for all codes without arguments
     Code code;
     code.head = code.tail = newstat(op);
@@ -206,8 +213,8 @@ Code makecode2(Operator op, int arg1, int arg2){
 }
 
 /*
-case S_READ:
-case S_FREAD:*/
+ case S_READ:
+ case S_FREAD:*/
 Code makecode_xread(Operator op, int arg1, int arg2, char * arg3){
     Code code;
     code = makecode(op);
@@ -228,7 +235,7 @@ Code make_ldc(char c){
     Code code;
     code = makecode(S_LDC);
     code.head->args[0].bval = c;
-        printf("in make_ldc '%c'\n", code.head->args[0].bval);
+    printf("in make_ldc '%c'\n", code.head->args[0].bval);
     return code;
 }
 
@@ -254,9 +261,8 @@ Code make_lds(char *s){
 }
 
 void print_stat(FILE * stream, Stat * stat){
-    printf("stat->op %d", stat->op);
     fprintf(stream, "%s ", tabOperator[stat->op]);
-
+    
     switch(stat->op){
         case S_HALT:
         case S_TOINT:
@@ -294,6 +300,7 @@ void print_stat(FILE * stream, Stat * stat){
         case S_NEQ:
         case S_IST:
         case S_RETURN:
+        case S_NOOP:
             break;
             
         case S_READ:
@@ -323,7 +330,6 @@ void print_stat(FILE * stream, Stat * stat){
             fprintf(stream, "%f ", stat->args[0].rval);
             break;
         case S_LDC:
-                printf("bb\n");
             fprintf(stream, "'%c' ", stat->args[0].bval);
             break;
             
@@ -344,21 +350,14 @@ void print_stat(FILE * stream, Stat * stat){
         default:
             fprintf(stream, "ERROR");
     }
-        printf("bb\n");
     fprintf(stream, "\n");
 }
 
 void print_code(FILE * stream, Code * code){
-    printf("zz\n");
     Stat * stat;
     stat = code->head;
-    printf("yy\n");
     while(stat){
-        printf("xx\n");
-        printf("%p ", stat);
         print_stat(stream, stat);
-        printf("ww\n");
         stat = stat->next;
-        printf("vv\n");
     }
 }

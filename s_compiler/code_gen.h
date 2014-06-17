@@ -69,7 +69,8 @@ typedef enum{
     S_FUNC,
     S_HALT,
     S_SCODE,
-    S_RETURN
+    S_RETURN,
+    S_NOOP
 } Operator;
 
 

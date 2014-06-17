@@ -820,7 +820,8 @@ int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * cod
 	Pschema expr1_type = new_schema_node(-1);
 	Pschema expr2_type = new_schema_node(-1);
     
-    Code expr1_code, expr2_code;
+    Code expr1_code = makecode(S_NOOP);
+    Code expr2_code = makecode(S_NOOP);
 	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, &expr1_code);
 	if(expr1_type->type != BOOL)
 		sem_error(expr1, "Type error, expected BOOL in LOGIC-EXPR\n");
@@ -1265,17 +1266,7 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 			break;
 		case T_BOOLCONST:
 			(*stype)->type = BOOL;
-            printf("dd\n");
-            //printf("%d %d", TRUE,FALSE);
-            printf("ee\n");
-            Code ldc = make_ldc(root->value.bval);
-            printf("ff\n");
-            printf("%p\n",code);
-            printf("%p\n",code->head);
-            print_code(stdout, code);
-            printf("gg\n");
-            *code = appcode(*code, ldc);
-            printf("hh\n");
+            *code = appcode(*code, make_ldc(root->value.bval));
 			break;
 		case T_NONTERMINAL:
             switch(root->value.ival){
