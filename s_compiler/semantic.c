@@ -868,6 +868,90 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 	}
     
 	(*stype)->type = BOOL;
+
+    // S_EQU,
+    // S_NEQ,
+    // S_IN,
+
+    switch (root->qualifier) {
+        case EQ:
+            *code = appcode(*code, makecode(S_EQU));
+        break;
+        case NE:
+            *code = appcode(*code, makecode(S_NEQ));
+        break;
+        case IN:
+            *code = appcode(*code, makecode(S_IN));
+        break;
+        case '<':
+            switch(expr1_type->type){
+                case CHAR:
+                    *code = appcode(*code, makecode(S_CLT));
+                break;
+                case INT:
+                    *code = appcode(*code, makecode(S_ILT));
+                break;
+                case REAL:
+                    *code = appcode(*code, makecode(S_RLT));
+                break;
+                case STRING:
+                    *code = appcode(*code, makecode(S_SLT));
+                break;
+            }
+        break;
+        case '>':
+            switch(expr1_type->type){
+                case CHAR:
+                    *code = appcode(*code, makecode(S_CGT));
+                break;
+                case INT:
+                    *code = appcode(*code, makecode(S_IGT));
+                break;
+                case REAL:
+                    *code = appcode(*code, makecode(S_RGT));
+                break;
+                case STRING:
+                    *code = appcode(*code, makecode(S_SGT));
+                break;
+            }
+        break;
+        case LE:
+            switch(expr1_type->type){
+                case CHAR:
+                    *code = appcode(*code, makecode(S_CLE));
+                break;
+                case INT:
+                    *code = appcode(*code, makecode(S_ILE));
+                break;
+                case REAL:
+                    *code = appcode(*code, makecode(S_RLE));
+                break;
+                case STRING:
+                    *code = appcode(*code, makecode(S_SLE));
+                break;
+            }
+        break;
+            
+            break;
+        case GE:
+            switch(expr1_type->type){
+                case CHAR:
+                    *code = appcode(*code, makecode(S_CGE));
+                break;
+                case INT:
+                    *code = appcode(*code, makecode(S_IGE));
+                break;
+                case REAL:
+                    *code = appcode(*code, makecode(S_RGE));
+                break;
+                case STRING:
+                    *code = appcode(*code, makecode(S_SGE));
+                break;
+            }
+        break;
+        default:
+        break;
+    }
 	return expr1_ok && expr2_ok && type_ok;
 }
 
