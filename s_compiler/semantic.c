@@ -48,7 +48,11 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
 	current = current->brother;
 	int type_sect_opt_ok = sem_type_sect_opt(current, new_f_loc_env, code);
 	current = current->brother;
-	int var_sect_opt_ok = sem_var_sect_opt(current, new_f_loc_env, code);
+    
+    Code var_code = makecode(S_NOOP);
+	int var_sect_opt_ok = sem_var_sect_opt(current, new_f_loc_env, &var_code);
+    *code = appcode(*code, var_code);
+    
 	current = current->brother;
 	int const_sect_opt_ok = sem_const_sect_opt(current, new_f_loc_env, code);
 	current = current->brother;
@@ -208,6 +212,13 @@ int sem_var_sect_opt(Pnode root, Phash_node f_loc_env, Code * code){
 #if VERBOSE
     printf("@@ in sem_var_sect_opt\n");
 #endif
+    
+     Pnode current = root->child;
+     int var_sect_opt_ok = 1;
+     while(current != NULL){
+         var_sect_opt_ok = var_sect_opt_ok && sem_decl(current, f_loc_env, NULL, code);
+         current = current->brother;
+     }
     return 1;
 }
 
