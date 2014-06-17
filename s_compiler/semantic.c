@@ -12,12 +12,14 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
 #if VERBOSE
     printf("@@ in sem_program\n");
 #endif
-    Code * func_decl_code;
-    int ok = sem_func_decl(root->child, f_loc_env, not_first, func_decl_code);
-    *code = concode(makecode1(S_SCODE, ####),
-                    make_push_pop(####, -1, ####),
-                    makecode(S_HALT),
-                    * func_decl_code);
+    // Code * func_decl_code;
+    // int ok = sem_func_decl(root->child, f_loc_env, not_first, func_decl_code);
+    // *code = concode(makecode1(S_SCODE, ####),
+    //                 make_push_pop(####, -1, ####),
+    //                 makecode(S_HALT),
+    //                 * func_decl_code);
+
+    int ok = sem_func_decl(root->child, f_loc_env, not_first, code);
 
     return ok;
 }
