@@ -308,7 +308,7 @@ int main(){
 		Phash_node symtab = create_symbol_table(root, NULL);
         
         printf("## START\n");
-        Code code = makecode(S_SCODE);
+        //Code code = makecode(S_SCODE);
         sem_program(root, symtab, 0, &code);
         //print_code(stdout, &code);
         
