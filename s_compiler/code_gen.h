@@ -82,8 +82,6 @@ typedef struct scode{
     Stat * tail;
 }Code;
 
-char convert_bool[] = {'0','1'};
-
 void relocate_address(Code code, int offset);
 Code appcode(Code code1, Code code2);
 Code endcode();
