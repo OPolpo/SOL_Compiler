@@ -1,4 +1,6 @@
-typedef enum{
+#include <stdio.h>
+
+char * tabOperator[]={
     "S_NEW",
     "S_NEWS",
     "S_LDC",
@@ -61,20 +63,5 @@ typedef enum{
     "S_FWRITE",
     "S_FUNC",
     "S_HALT",
-    "S_SCODE"
-} tabOperator;
-
-print_code(Code * code, FILE * stream){
-    Stat * stat;
-    stat = code->head;
-    while(stat){
-        print_stat(stat, FILE * stream);
-        stat = stat->head;
-    }
-}
-print_stat(Stat * stat, FILE * stream){
-    fprintf(stream, "%s ", tabOperator[stat->op]);
-    fprintf(stderr, "\n");
-    // if(stat->args[])
-    // fprintf(stream, "%s ", tabOperator[stat->op]);
-}
+    "S_SCODE"};
+    
