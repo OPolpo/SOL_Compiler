@@ -3,6 +3,7 @@
 
 #include "def.h"
 
+
 typedef enum{
     S_NEW,      //NEW object-size
     S_NEWS,     //NEWS object-size
@@ -97,6 +98,8 @@ Code make_ldc(char c);
 Code make_ldi(int i);
 Code make_ldr(float r);
 Code make_lds(char *s);
+void print_code(Code * code);
+void print_stat(Stat * stat);
 
 
 #endif

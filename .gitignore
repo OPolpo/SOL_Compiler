@@ -7,3 +7,4 @@ test_stupid.sol
 *.orig
 SOL_compiler/*
 SOL_compilers/*
+compiler
