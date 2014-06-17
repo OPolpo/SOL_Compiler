@@ -99,7 +99,6 @@ Code make_ldi(int i);
 Code make_ldr(float r);
 Code make_lds(char *s);
 void print_code(Code * code);
-void print_stat(Stat * stat);
-
+void print_stat(FILE * stream, Stat * stat);
 
 #endif

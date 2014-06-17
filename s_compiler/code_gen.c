@@ -179,12 +179,96 @@ Code make_lds(char *s){
     return code;
 }
 
-void print_stat(Stat * stat){
-    fprintf(stdout, "%s ", tabOperator[stat->op]);
-    fprintf(stdout, "\n");
-    // if(stat->args[])
-    // fprintf(stream, "%s ", tabOperator[stat->op]);
+void print_stat(FILE * stream, Stat * stat){
+    fprintf(stream, "%s ", tabOperator[stat->op]);
+    switch(stat->op){
+            
+        case S_HALT:
+        case S_TOINT:
+        case S_TOREAL:
+        case S_POP:
+        case S_IUMI:
+        case S_RUMI:
+        case S_NEG:
+        case S_IN:
+        case S_IPLUS:
+        case S_RPLUS:
+        case S_IMINUS:
+        case S_RMINUS:
+        case S_ITIMES:
+        case S_RTIMES:
+        case S_IDIV:
+        case S_RDIV:
+        case S_CGT:
+        case S_IGT:
+        case S_RGT:
+        case S_SGT:
+        case S_CGE:
+        case S_IGE:
+        case S_RGE:
+        case S_SGE:
+        case S_CLT:
+        case S_ILT:
+        case S_RLT:
+        case S_SLT:
+        case S_CLE:
+        case S_ILE:
+        case S_RLE:
+        case S_SLE:
+        case S_EQU:
+        case S_NEQ:
+        case S_IST:
+            break;
+            
+        case S_READ:
+        case S_FREAD:
+            fprintf(stream, "%d %d %s", stat->args[0].ival, stat->args[1].ival, stat->args[2].sval);
+            break;
+            
+        case S_PUSH:
+        case S_STO:
+        case S_LDA:
+        case S_CAT:
+        case S_LOD:
+            fprintf(stream, "%d %d ", stat->args[0].ival, stat->args[1].ival);
+            break;
+            
+        case S_WRITE:
+        case S_FWRITE:
+        case S_RD:
+        case S_FRD:
+        case S_WR:
+        case S_FWR:
+        case S_LDS:
+            fprintf(stream, "%s ", stat->args[0].sval);
+            break;
+            
+        case S_LDR:
+            fprintf(stream, "%f ", stat->args[0].rval);
+            break;
+        case S_LDC:
+            fprintf(stream, "%c ", stat->args[0].ival);
+            break;
+            
+        case S_FUNC:
+        case S_GOTO:
+        case S_JMF:
+        case S_JMP:
+        case S_IXA:
+        case S_EIL:
+        case S_SIL:
+        case S_FDA:
+        case S_LDI:
+        case S_NEW:
+        case S_NEWS:
+        case S_SCODE:
+            fprintf(stream, "%d ", stat->args[0].ival);
+            break;
+    }
+    fprintf(stream, "\n");
 }
+
+
 
 void print_code(Code * code){
     Stat * stat;
