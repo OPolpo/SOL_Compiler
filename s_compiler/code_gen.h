@@ -2,6 +2,7 @@
 #define SOL_compilers_code_gen_h
 
 #include "def.h"
+#include <stdio.h>
 
 
 typedef enum{
@@ -98,8 +99,8 @@ Code make_ldc(char c);
 Code make_ldi(int i);
 Code make_ldr(float r);
 Code make_lds(char *s);
-void print_code(Code * code);
-void print_stat(Stat * stat);
+void print_code(Code * code, FILE * stream);
+void print_stat(Stat * stat, FILE * stream);
 
 
 #endif

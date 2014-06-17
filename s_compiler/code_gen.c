@@ -2,69 +2,69 @@
 //#include "parser.h"
 
 char * tabOperator[]={
-    "S_NEW",
-    "S_NEWS",
-    "S_LDC",
-    "S_LDI",
-    "S_LDR",
-    "S_LDS",
-    "S_LOD",
-    "S_CAT",
-    "S_LDA",
-    "S_FDA",
-    "S_EIL",
-    "S_SIL",
-    "S_IXA",
-    "S_STO",
-    "S_IST",
-    "S_JMF",
-    "S_JMP",
-    "S_EQU",
-    "S_NEQ",
-    "S_CGT",
-    "S_IGT",
-    "S_RGT",
-    "S_SGT",
-    "S_CGE",
-    "S_IGE",
-    "S_RGE",
-    "S_SGE",
-    "S_CLT",
-    "S_ILT",
-    "S_RLT",
-    "S_SLT",
-    "S_CLE",
-    "S_ILE",
-    "S_RLE",
-    "S_SLE",
-    "S_IN",
-    "S_IPLUS",
-    "S_RPLUS",
-    "S_IMINUS",
-    "S_RMINUS",
-    "S_ITIMES",
-    "S_RTIMES",
-    "S_IDIV",
-    "S_RDIV",
-    "S_IUMI",
-    "S_RUMI",
-    "S_NEG",
-    "S_WR",
-    "S_FWR",
-    "S_PUSH",
-    "S_GOTO",
-    "S_POP",
-    "S_RD",
-    "S_FRD",
-    "S_TOINT",
-    "S_TOREAL",
-    "S_READ",
-    "S_FREAD",
-    "S_WRITE",
-    "S_FWRITE",
-    "S_FUNC",
-    "S_HALT",
-    "S_SCODE"};
+    "NEW",
+    "NEWS",
+    "LDC",
+    "LDI",
+    "LDR",
+    "LDS",
+    "LOD",
+    "CAT",
+    "LDA",
+    "FDA",
+    "EIL",
+    "SIL",
+    "IXA",
+    "STO",
+    "IST",
+    "JMF",
+    "JMP",
+    "EQU",
+    "NEQ",
+    "CGT",
+    "IGT",
+    "RGT",
+    "SGT",
+    "CGE",
+    "IGE",
+    "RGE",
+    "SGE",
+    "CLT",
+    "ILT",
+    "RLT",
+    "SLT",
+    "CLE",
+    "ILE",
+    "RLE",
+    "SLE",
+    "IN",
+    "IPLUS",
+    "RPLUS",
+    "IMINUS",
+    "RMINUS",
+    "ITIMES",
+    "RTIMES",
+    "IDIV",
+    "RDIV",
+    "IUMI",
+    "RUMI",
+    "NEG",
+    "WR",
+    "FWR",
+    "PUSH",
+    "GOTO",
+    "POP",
+    "RD",
+    "FRD",
+    "TOINT",
+    "TOREAL",
+    "READ",
+    "FREAD",
+    "WRITE",
+    "FWRITE",
+    "FUNC",
+    "HALT",
+    "SCODE"};
 
 char convert_bool[] = {'0','1'};
 
@@ -179,18 +179,18 @@ Code make_lds(char *s){
     return code;
 }
 
-void print_stat(Stat * stat){
-    fprintf(stdout, "%s ", tabOperator[stat->op]);
-    fprintf(stdout, "\n");
+void print_stat(Stat * stat, FILE * stream){
+    fprintf(stream, "%s ", tabOperator[stat->op]);
+    fprintf(stream, "\n");
     // if(stat->args[])
     // fprintf(stream, "%s ", tabOperator[stat->op]);
 }
 
-void print_code(Code * code){
+void print_code(Code * code, FILE * stream){
     Stat * stat;
     stat = code->head;
     while(stat){
-        print_stat(stat);
+        print_stat(stat, stream);
         stat = stat->next;
     }
 }
