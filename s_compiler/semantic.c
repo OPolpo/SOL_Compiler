@@ -811,18 +811,33 @@ int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * cod
 	Pschema expr1_type = new_schema_node(-1);
 	Pschema expr2_type = new_schema_node(-1);
     
-	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, code);
+    Code * expr1_code, * expr2_code;
+	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, expr1_code);
 	if(expr1_type->type != BOOL)
 		sem_error(expr1, "Type error, expected BOOL in LOGIC-EXPR\n");
     
-    if (root->qualifier == AND) {
-        
-    }
-    
-	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, code);
+	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, expr2_code);
 	if(expr2_type->type != BOOL)
 		sem_error(expr2, "Type error, expected BOOL in LOGIC-EXPR\n");
-	(*stype)->type = BOOL;
+	
+    (*stype)->type = BOOL;
+    
+    if (root->qualifier == AND) {
+        *code = concode(expr1_code,
+                        makecode1(S_JMF, expr2_code->size+2),
+                        expr2_code,
+                        makecode1(S_JMP, 2),
+                        make_ldc('0'),
+                        endcode());
+    }else{//root->qualifier == AND
+        *code = concode(expr1_code,
+                        makecode1(S_JMF, 3),
+                        make_ldc('1'),
+                        makecode1(S_JMP, expr2_code->size+1),
+                        expr2_code,
+                        endcode());
+    }
+    
     
 	return expr1_ok && expr2_ok;
 }
