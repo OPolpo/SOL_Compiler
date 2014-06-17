@@ -885,6 +885,7 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 				sem_error(root->child, error_msg);
 			}
 			(*stype)->type = expr_type->type;
+            
             break;
 		case NOT:
 			if(expr_type->type != BOOL){

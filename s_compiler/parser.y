@@ -310,7 +310,7 @@ int main(){
         printf("## START\n");
         Code code = makecode(S_SCODE);
         sem_program(root, symtab, 0, &code);
-        print_code(&code, stdout);
+        //print_code(stdout, &code);
         
         printf("## END\n");
 	}

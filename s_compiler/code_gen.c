@@ -268,11 +268,11 @@ void print_stat(FILE * stream, Stat * stat){
     fprintf(stream, "\n");
 }
 
-void print_code(Code * code, FILE * stream){
+void print_code(FILE * stream, Code * code){
     Stat * stat;
     stat = code->head;
     while(stat){
-        print_stat(stat, stream);
+        print_stat(stream, stat);
         stat = stat->next;
     }
 }
