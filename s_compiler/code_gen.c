@@ -84,6 +84,27 @@ Code make_push_pop(int size, int chain, int entry){
                    endcode());
 }
 
+Code make_ldc(char c){
+    Code code;
+    code = makecode(S_LDC);
+    code.head->args[0].ival = c;
+    return code;
+}
+
+Code make_ldi(int i){
+    Code code;
+    code = makecode(S_LDI);
+    code.head->args[0].ival = i;
+    return code;
+}
+
+Code make_ldr(float r){
+    Code code;
+    code = makecode(S_LDR);
+    code.head->args[0].rval = r;
+    return code;
+}
+
 Code make_lds(char *s){
     Code code;
     code = makecode(S_LDS);

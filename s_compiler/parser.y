@@ -3,6 +3,7 @@
 #include "tree.h"
 #include "symbol_table.h"
 #include "semantic.h"
+#include "code_gen.h"
 
 #define YYSTYPE Pnode
 extern char *yytext;
@@ -307,7 +308,8 @@ int main(){
 		Phash_node symtab = create_symbol_table(root, NULL);
         
         printf("## START\n");
-        sem_program(root, symtab, 0);
+        Code code = makecode(S_SCODE);
+        sem_program(root, symtab, 0, &code);
         
         printf("## END\n");
 	}
