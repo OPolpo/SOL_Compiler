@@ -3,7 +3,6 @@ lex.c
 parser.c
 parser.h
 prova
-test_stupid.sol
 *.orig
 SOL_compiler/*
 SOL_compilers/*
