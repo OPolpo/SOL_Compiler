@@ -64,7 +64,9 @@ char * tabOperator[]={
     "FWRITE",
     "FUNC",
     "HALT",
-    "SCODE"};
+    "SCODE",
+    "RETURN"
+};
 
 
 void relocate_address(Code code, int offset){
@@ -101,7 +103,7 @@ Code concode(Code code1, Code code2, ...){
 
 Stat * newstat(Operator op){
     Stat *pstat;
-    pstat = (Stat*) malloc(sizeof(Stat));
+    pstat = (Stat*) calloc(1,sizeof(Stat));
     if (!pstat) {
         fprintf(stderr, "Impossible to allocate new memory\n");
         exit(EXIT_FAILURE);
@@ -225,7 +227,8 @@ Code make_push_pop(int size, int chain, int entry){
 Code make_ldc(char c){
     Code code;
     code = makecode(S_LDC);
-    code.head->args[0].ival = c;
+    code.head->args[0].bval = c;
+        printf("in make_ldc '%c'\n", code.head->args[0].bval);
     return code;
 }
 
@@ -251,9 +254,10 @@ Code make_lds(char *s){
 }
 
 void print_stat(FILE * stream, Stat * stat){
+    printf("stat->op %d", stat->op);
     fprintf(stream, "%s ", tabOperator[stat->op]);
+
     switch(stat->op){
-            
         case S_HALT:
         case S_TOINT:
         case S_TOREAL:
@@ -289,6 +293,7 @@ void print_stat(FILE * stream, Stat * stat){
         case S_EQU:
         case S_NEQ:
         case S_IST:
+        case S_RETURN:
             break;
             
         case S_READ:
@@ -318,7 +323,8 @@ void print_stat(FILE * stream, Stat * stat){
             fprintf(stream, "%f ", stat->args[0].rval);
             break;
         case S_LDC:
-            fprintf(stream, "%c ", stat->args[0].ival);
+                printf("bb\n");
+            fprintf(stream, "'%c' ", stat->args[0].bval);
             break;
             
         case S_FUNC:
@@ -335,15 +341,24 @@ void print_stat(FILE * stream, Stat * stat){
         case S_SCODE:
             fprintf(stream, "%d ", stat->args[0].ival);
             break;
+        default:
+            fprintf(stream, "ERROR");
     }
+        printf("bb\n");
     fprintf(stream, "\n");
 }
 
 void print_code(FILE * stream, Code * code){
+    printf("zz\n");
     Stat * stat;
     stat = code->head;
+    printf("yy\n");
     while(stat){
+        printf("xx\n");
+        printf("%p ", stat);
         print_stat(stream, stat);
+        printf("ww\n");
         stat = stat->next;
+        printf("vv\n");
     }
 }

@@ -62,7 +62,7 @@ typedef union{
 	int ival;
 	float rval;
 	char *sval;
-	enum {FALSE, TRUE} bval;
+	char bval;
 } Value;
 
 typedef struct snode{
