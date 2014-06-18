@@ -20,9 +20,9 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
                     makecode(S_HALT),
                     func_decl_code,
                     endcode());
-
+    
     //int ok = sem_func_decl(root->child, f_loc_env, not_first, code);
-
+    
     return ok;
 }
 
@@ -49,7 +49,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     int size = 0;
 	int domain_ok = sem_domain(current, new_f_loc_env, &domain_schema, code, &size);
 	current = current->brother;
-
+    
 	int type_sect_opt_ok = sem_type_sect_opt(current, new_f_loc_env, code);
 	current = current->brother;
     
@@ -58,14 +58,14 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
 	int var_sect_opt_ok = sem_var_sect_opt(current, new_f_loc_env, &var_code, &var_num_objects);
     *code = appcode(*code, var_code);
 	current = current->brother;
-
+    
     int const_num_objects = 0;
     int const_sect_opt_ok = sem_const_sect_opt(current, new_f_loc_env, code, &const_num_objects);
 	current = current->brother;
-
+    
 	int func_list_opt_ok = sem_func_list_opt(current, new_f_loc_env, code);
 	current = current->brother;
-
+    
 	int func_body_ok = sem_func_body(current, new_f_loc_env, code);
     
     *num_objects = var_num_objects + const_num_objects + decl_num_objects;
@@ -81,8 +81,9 @@ int sem_decl_list_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_o
     int decl_list_opt_ok = 1;
     while(current != NULL){
         int decl_num_objects = 0;
-        decl_list_opt_ok = decl_list_opt_ok && sem_decl(current, f_loc_env, NULL, code, &decl_num_objects);
-        *num_objects += decl_num_objects;
+        Pschema domain_schema = new_schema_node(-1);
+        decl_list_opt_ok = decl_list_opt_ok && sem_decl(current, f_loc_env, &domain_schema, code, &decl_num_objects);
+        (*num_objects) += decl_num_objects;
         current = current->brother;
     }
     return decl_list_opt_ok;
@@ -94,6 +95,10 @@ int sem_decl(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int
 #endif
     Pnode domain_node = root->child->brother;
     int size = 0;
+    
+    printf("## %p\n", stype);
+    
+    printf("## \n");
     int ok = sem_domain(domain_node, f_loc_env, stype, code, &size);
     sem_id_list(domain_node, f_loc_env, code, num_objects);
     int i;
@@ -125,7 +130,7 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, i
     int ok = 1;
     Pnode dom_node = root->child;
     Phash_node h_node;
-
+    
     switch (dom_node->type) {
         case T_NONTERMINAL:
             switch (dom_node->value.ival) {
@@ -154,17 +159,19 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, i
 #if VERBOSE
             printf("@@ T_ATOMIC_DOMAIN\n");
 #endif
+            printf("##before (*stype)->type %p\n", (stype));
             (*stype)->type = dom_node->value.ival;
-            //            s_node = new_schema_node(dom_node->value.ival);
-            //            stype = &s_node;
+            printf("##after (*stype)->type\n");
             break;
             
             
         default:
             break;
     }
-    
+    printf("##before\n");
     *size = compute_size(*stype);
+    
+    printf("#after %d\n", *size);
     //TRY TO USE CREATE SCHEMA...
     /*
      printf("\n## domain...\n");
@@ -240,14 +247,15 @@ int sem_var_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_ob
     printf("@@ in sem_var_sect_opt\n");
 #endif
     
-     Pnode current = root->child;
-     int var_sect_opt_ok = 1;
-     while(current != NULL){
+    Pnode current = root->child;
+    int var_sect_opt_ok = 1;
+    while(current != NULL){
         int var_num_objects = 0;
-        var_sect_opt_ok = var_sect_opt_ok && sem_decl(current, f_loc_env, NULL, code, &var_num_objects);
-        *num_objects += var_num_objects;
+        Pschema domain_schema = new_schema_node(-1);
+        var_sect_opt_ok = var_sect_opt_ok && sem_decl(current, f_loc_env, &domain_schema, code, &var_num_objects);
+        (*num_objects) += var_num_objects;
         current = current->brother;
-     }
+    }
     return 1;
 }
 
@@ -264,7 +272,7 @@ int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_
             Pschema domain_schema = new_schema_node(-1);
             int const_num_objects = 0;
             ok = ok && sem_decl(decl_node, f_loc_env, &domain_schema, code, &const_num_objects);
-            *num_objects += const_num_objects;
+            (*num_objects) += const_num_objects;
             //print_sch(domain_schema);
             Pschema expr_schema = new_schema_node(-1);
             ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema, code);
@@ -943,85 +951,85 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 	}
     
 	(*stype)->type = BOOL;
-
+    
     switch (root->qualifier) {
         case EQ:
             *code = appcode(*code, makecode(S_EQU));
-        break;
+            break;
         case NE:
             *code = appcode(*code, makecode(S_NEQ));
-        break;
+            break;
         case IN:
             *code = appcode(*code, makecode(S_IN));
-        break;
+            break;
         case '<':
             switch(expr1_type->type){
                 case CHAR:
                     *code = appcode(*code, makecode(S_CLT));
-                break;
+                    break;
                 case INT:
                     *code = appcode(*code, makecode(S_ILT));
-                break;
+                    break;
                 case REAL:
                     *code = appcode(*code, makecode(S_RLT));
-                break;
+                    break;
                 case STRING:
                     *code = appcode(*code, makecode(S_SLT));
-                break;
+                    break;
             }
-        break;
+            break;
         case '>':
             switch(expr1_type->type){
                 case CHAR:
                     *code = appcode(*code, makecode(S_CGT));
-                break;
+                    break;
                 case INT:
                     *code = appcode(*code, makecode(S_IGT));
-                break;
+                    break;
                 case REAL:
                     *code = appcode(*code, makecode(S_RGT));
-                break;
+                    break;
                 case STRING:
                     *code = appcode(*code, makecode(S_SGT));
-                break;
+                    break;
             }
-        break;
+            break;
         case LE:
             switch(expr1_type->type){
                 case CHAR:
                     *code = appcode(*code, makecode(S_CLE));
-                break;
+                    break;
                 case INT:
                     *code = appcode(*code, makecode(S_ILE));
-                break;
+                    break;
                 case REAL:
                     *code = appcode(*code, makecode(S_RLE));
-                break;
+                    break;
                 case STRING:
                     *code = appcode(*code, makecode(S_SLE));
-                break;
+                    break;
             }
-        break;
+            break;
             
             break;
         case GE:
             switch(expr1_type->type){
                 case CHAR:
                     *code = appcode(*code, makecode(S_CGE));
-                break;
+                    break;
                 case INT:
                     *code = appcode(*code, makecode(S_IGE));
-                break;
+                    break;
                 case REAL:
                     *code = appcode(*code, makecode(S_RGE));
-                break;
+                    break;
                 case STRING:
                     *code = appcode(*code, makecode(S_SGE));
-                break;
+                    break;
             }
-        break;
+            break;
         default:
-        break;
+            break;
     }
 	return expr1_ok && expr2_ok && type_ok;
 }
