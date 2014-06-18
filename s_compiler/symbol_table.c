@@ -182,7 +182,7 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                                     }
                                     temp = temp->p2;
                                 }
-
+                                
                                 last->p2 = to_add;
                                 //last = last->p2;
                             }
@@ -282,19 +282,19 @@ int compute_size(Pschema schema){
         case CHAR:
         case BOOL:
             return sizeof(char);
-        break;
+            break;
         case INT:
             return sizeof(int);
-        break;
+            break;
         case REAL:
             return sizeof(float);
-        break;
-        case STRING:    
+            break;
+        case STRING:
             return sizeof(char*);
-        break;
-        case VECTOR:    
-            return (schema->size)*compute_size(schema->p1); 
-        break;
+            break;
+        case VECTOR:
+            return (schema->size)*compute_size(schema->p1);
+            break;
         case STRUCT:{
             Pschema current = schema->p1;
             int dimension = 0;
@@ -303,11 +303,11 @@ int compute_size(Pschema schema){
                 current = current->p2;
             }
             return dimension;
-        }     
-        break;
+        }
+            break;
         default:
             fprintf(stderr, "%s\n","Some weird schema node in schema");
-        return 0;
-        break;
+            return 0;
+            break;
     }
 }

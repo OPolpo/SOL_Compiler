@@ -257,7 +257,7 @@ int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_
             int const_num_objects = 0;
             ok = ok && sem_decl(decl_node, f_loc_env, &domain_schema, code, &const_num_objects);
             (*num_objects) += const_num_objects;
-
+            
             Pschema expr_schema = new_schema_node(-1);
             int i;
             for(i=0;i<const_num_objects;i++)
@@ -443,7 +443,7 @@ int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class 
             *code = appcode(*code, makecode2(S_LOD,offset,h_node->oid));
             //printf("\n##id schema %d \n",(h_node->schema));
         }
-        break;
+            break;
         case T_NONTERMINAL:
             switch (child->value.ival) {
                 case NFIELDING:
@@ -1102,7 +1102,7 @@ int sem_instance_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
 			current_node = current_node->brother; //switch to the firse brother
             
             int num_field=1;
-
+            
 			while (current_node){//cicle for the other brother
 				Pschema next = new_schema_node(-1);
 				expr_ok = sem_expr(current_node, f_loc_env, &next, code);
@@ -1111,9 +1111,9 @@ int sem_instance_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
 				current_node = current_node->brother;
                 num_field++;
 			}
-
+            
             *code = appcode(*code, makecode2(S_CAT, num_field, compute_size(*stype)));
-
+            
             break;
 		case VECTOR:
 			(*stype)->type = VECTOR;
