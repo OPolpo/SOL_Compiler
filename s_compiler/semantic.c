@@ -245,7 +245,7 @@ int sem_var_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_ob
      while(current != NULL){
         int var_num_objects = 0;
         var_sect_opt_ok = var_sect_opt_ok && sem_decl(current, f_loc_env, NULL, code, &var_num_objects);
-        num_objects += var_num_objects;
+        *num_objects += var_num_objects;
         current = current->brother;
      }
     return 1;
@@ -264,7 +264,7 @@ int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_
             Pschema domain_schema = new_schema_node(-1);
             int const_num_objects = 0;
             ok = ok && sem_decl(decl_node, f_loc_env, &domain_schema, code, &const_num_objects);
-            num_objects += const_num_objects;
+            *num_objects += const_num_objects;
             //print_sch(domain_schema);
             Pschema expr_schema = new_schema_node(-1);
             ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema, code);
