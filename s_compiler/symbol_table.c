@@ -3,6 +3,7 @@
 #include "semantic.h"
 
 int oid = 1;
+char error_msg_symb[100];
 
 void handle_function_part(Pnode current, Phash_node func, int * loc_oid, Class part_class){
     if (current->child != NULL) { //?_SECT_OPT
@@ -17,8 +18,10 @@ void handle_function_part(Pnode current, Phash_node func, int * loc_oid, Class p
                 Phash_node id_node = new_id_node(id->value.sval, part_class, *loc_oid);
                 (*loc_oid)++;
                 id_node->schema = domain_sch;
-                if(!insert(id_node, func->locenv))
-                    sem_error(id, "ID already defined in same environment\n");
+                if(!insert(id_node, func->locenv)){
+                    sprintf(error_msg_symb, "ID \"%s\" already defined in same environment\n", id->value.sval);
+                    sem_error(id, error_msg_symb);
+                }
                 id = id->brother;
             }
             child = child->brother;
@@ -61,7 +64,8 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                                 loc_oid++;
                                 id_node->schema = domain_sch;
                                 if (!insert(id_node, func->locenv)) {
-                                    sem_error(id, "Name of formal parameters must be unique\n");
+                                    sprintf(error_msg_symb, "Name of formal parameters must be unique, \"%s\" already declared\n", id->value.sval);
+                                    sem_error(id, error_msg_symb);
                                 }
                                 
                                 Formal * to_add = (Formal *)calloc(1,sizeof(Formal));
@@ -106,7 +110,8 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                         child = current->child; // FUNC DECL
                         while (child != NULL) {//loop on FUNC DECL
                             if (!insert(create_symbol_table(child, func), func->locenv)) {
-                                sem_error(child, "Function names must be unique\n");
+                                sprintf(error_msg_symb, "Function names must be unique, \"%s\" already declared\n", child->value.sval);
+                                sem_error(child, error_msg_symb);
                             }
                             child = child->brother;
                         }
@@ -171,8 +176,10 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                             else{
                                 Pschema temp = node->p1;
                                 while (temp != NULL){
-                                    if (strcmp(to_add->id, temp->id)==0)   
-                                        sem_error(id,"Attributes in Struct environment must be unique\n");        
+                                    if (strcmp(to_add->id, temp->id)==0){
+                                        sprintf(error_msg_symb, "Attributes in STRUCT decl must be unique, \"%s\" already present\n",to_add->id);
+                                        sem_error(id,error_msg_symb);
+                                    }
                                     temp = temp->p2;
                                 }
 
@@ -204,7 +211,10 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                 }
                 func = func->father;
             }
-            if (type_decl == NULL) printf("ERROR type not found: %s\n", dom_child->value.sval);
+            if (type_decl == NULL){
+                sprintf(error_msg_symb, "ERROR type not found: %s\n", dom_child->value.sval);
+                sem_error(dom_child, error_msg_symb);
+            }
             break;
         case T_ATOMIC_DOMAIN:
             //CHAR, INT, REAL, STRING, BOOL
