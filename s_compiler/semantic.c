@@ -15,6 +15,8 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     Code func_decl_code = makecode(S_NOOP);
     int num_objects = 0;
     int ok = sem_func_decl(root->child, f_loc_env, not_first, &func_decl_code, &num_objects);
+    
+    //print_code(stderr, &func_decl_code);
     *code = concode(makecode1(S_SCODE, func_decl_code.size+4),
                     make_push_pop(0, -1, 0),
                     makecode(S_HALT),
@@ -30,7 +32,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
 #if VERBOSE
     printf("@@ in sem_func_decl\n");
 #endif
-	Pnode id = root->child;
+    Pnode id = root->child;
 	Pnode current = id->brother;
     
     Phash_node new_f_loc_env;
@@ -43,6 +45,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     int decl_num_objects = 0;
     Code decl_code = makecode(S_NOOP);
 	int decl_list_opt_ok = sem_decl_list_opt(current, new_f_loc_env, &decl_code, &decl_num_objects);
+    *code = appcode(*code, decl_code);
 	current = current->brother;
     
     Pschema domain_schema = new_schema_node(-1);
@@ -56,8 +59,9 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     int var_num_objects = 0;
     Code var_code = makecode(S_NOOP);
 	int var_sect_opt_ok = sem_var_sect_opt(current, new_f_loc_env, &var_code, &var_num_objects);
+    
     *code = appcode(*code, var_code);
-	current = current->brother;
+    current = current->brother;
     
     int const_num_objects = 0;
     int const_sect_opt_ok = sem_const_sect_opt(current, new_f_loc_env, code, &const_num_objects);
@@ -66,7 +70,9 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
 	int func_list_opt_ok = sem_func_list_opt(current, new_f_loc_env, code);
 	current = current->brother;
     
-	int func_body_ok = sem_func_body(current, new_f_loc_env, code);
+    Code func_body_code = makecode(S_NOOP);
+	int func_body_ok = sem_func_body(current, new_f_loc_env, &func_body_code);
+    *code = appcode(*code, func_body_code);
     
     *num_objects = var_num_objects + const_num_objects + decl_num_objects;
     return decl_list_opt_ok && domain_ok && type_sect_opt_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
@@ -76,7 +82,6 @@ int sem_decl_list_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_o
 #if VERBOSE
     printf("@@ in sem_decl_list_opt\n");
 #endif
-    
     Pnode current = root->child;
     int decl_list_opt_ok = 1;
     while(current != NULL){
@@ -95,12 +100,8 @@ int sem_decl(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int
 #endif
     Pnode domain_node = root->child->brother;
     int size = 0;
-    
-    printf("## %p\n", stype);
-    
-    printf("## \n");
     int ok = sem_domain(domain_node, f_loc_env, stype, code, &size);
-    sem_id_list(domain_node, f_loc_env, code, num_objects);
+    sem_id_list(root->child, f_loc_env, code, num_objects);
     int i;
     if((*stype)->type==STRUCT || (*stype)->type==VECTOR)
         for(i = 0; i< *num_objects; i++)
@@ -148,7 +149,8 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, i
 #if VERBOSE
             printf("@@ T_ID\n");
 #endif
-            h_node = find_visible_node(dom_node->value.sval, f_loc_env);
+            int offset;
+            h_node = find_visible_node(dom_node->value.sval, f_loc_env, &offset);
             ok = ok && (h_node != NULL && h_node->class_node == CLTYPE);
             if (!ok) {
                 sem_error(dom_node, "Type error, type not defined or not visible\n");
@@ -159,28 +161,14 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, i
 #if VERBOSE
             printf("@@ T_ATOMIC_DOMAIN\n");
 #endif
-            printf("##before (*stype)->type %p\n", (stype));
             (*stype)->type = dom_node->value.ival;
-            printf("##after (*stype)->type\n");
             break;
             
             
         default:
             break;
     }
-    printf("##before\n");
     *size = compute_size(*stype);
-    
-    printf("#after %d\n", *size);
-    //TRY TO USE CREATE SCHEMA...
-    /*
-     printf("\n## domain...\n");
-     Pschema sch = create_schema(root, f_loc_env, NULL);
-     print_sch(sch);
-     stype = &sch;
-     print_sch(*stype);
-     
-     printf("%d: in domain\n ",stype);*/
     return 1;
 }
 int sem_struct_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
@@ -194,8 +182,6 @@ int sem_struct_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
     
     
     Pschema last = (*stype)->p1;
-    treeprint(root, " ");
-    printf("last %p\n", last);
     
     while (decl != NULL) { //DECL
         Pnode decl_domain = decl->child->brother;
@@ -203,11 +189,8 @@ int sem_struct_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
         
         while (id != NULL) {
             Pschema to_add = new_schema_node(-1);
-            Pschema * Pto_add = &to_add;
-            int domain_num_objects = 0;
             int size = 0;
             ok = ok && sem_domain(decl_domain, f_loc_env, &to_add, code, &size);
-            printf("to_add %p\n", Pto_add);
             
             if(last == NULL){
                 (*stype)->p1 = to_add;
@@ -267,15 +250,18 @@ int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_
     if (root->child != NULL) {
         Pnode decl_node = root->child;
         Pnode expr_node;
+        Code expr_code = makecode(S_NOOP);
         while (decl_node != NULL) {
             expr_node = decl_node->brother;
             Pschema domain_schema = new_schema_node(-1);
             int const_num_objects = 0;
             ok = ok && sem_decl(decl_node, f_loc_env, &domain_schema, code, &const_num_objects);
             (*num_objects) += const_num_objects;
-            //print_sch(domain_schema);
+
             Pschema expr_schema = new_schema_node(-1);
-            ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema, code);
+            int i;
+            for(i=0;i<const_num_objects;i++)
+                ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema, &expr_code);
             
             ok = ok && are_compatible(domain_schema, expr_schema);
             if(!ok){
@@ -283,6 +269,7 @@ int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_
             }
             decl_node = expr_node->brother;
         }
+        *code = appcode(*code,expr_code);
     }
     return ok;
 }
@@ -435,9 +422,10 @@ int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class 
     
     //printf("\n##lhs: ");
     switch (child->type) {
-        case T_ID:
+        case T_ID:{
             //printf("\n##id %s\n", child->value.sval);
-            h_node = find_visible_node(child->value.sval, f_loc_env);
+            int offset;
+            h_node = find_visible_node(child->value.sval, f_loc_env, &offset);
             if (h_node == NULL) {
                 lhs_ok = 0;
                 sem_error(child, "Use of not visible ID\n");
@@ -452,9 +440,10 @@ int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class 
             //printf("\n## prima %d \n",(stype));
             
             *stype = h_node->schema; //TODO check about malloc...
-            
+            *code = appcode(*code, makecode2(S_LOD,offset,h_node->oid));
             //printf("\n##id schema %d \n",(h_node->schema));
-            break;
+        }
+        break;
         case T_NONTERMINAL:
             switch (child->value.ival) {
                 case NFIELDING:
@@ -648,8 +637,8 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Pnode expr2_node = expr1_node->brother;
     Pnode stat_list_node = expr2_node->brother;
     int ok = 1;
-    
-    Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env);
+    int offset;
+    Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env, &offset);
     if (id_hash_node == NULL) {
         ok = 0;
         sem_error(id_node, "Variable ID in FOR-STAT is not defined\n");
@@ -695,8 +684,8 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Pnode expr_node = id_node->brother;
     Pnode stat_list_node = expr_node->brother;
     int ok = 1;
-    
-    Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env);
+    int offset;
+    Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env, &offset);
     if (id_hash_node == NULL) {
         ok = 0;
         sem_error(id_node, "Variable ID in FOREACH-STAT is not defined\n");
@@ -747,8 +736,8 @@ int sem_read_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Pnode spec = root->child;
     Pnode id_node = spec->brother;
     int ok = sem_specifier_opt(spec, f_loc_env, code);
-    
-    Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env);
+    int offset;
+    Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env, &offset);
     if (id_hash_node == NULL) {
         ok = 0;
         sem_error(root, "Variable ID in READ-STAT is not defined\n");
@@ -885,14 +874,16 @@ int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * cod
     (*stype)->type = BOOL;
     
     if (root->qualifier == AND) {
-        *code = concode(expr1_code,
+        *code = concode(*code,
+                        expr1_code,
                         makecode1(S_JMF, expr2_code.size+2),
                         expr2_code,
                         makecode1(S_JMP, 2),
                         make_ldc('0'),
                         endcode());
     }else{//root->qualifier == AND
-        *code = concode(expr1_code,
+        *code = concode(*code,
+                        expr1_code,
                         makecode1(S_JMF, 3),
                         make_ldc('1'),
                         makecode1(S_JMP, expr2_code.size+1),
@@ -915,10 +906,6 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, code);
 	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, code);
     
-    printf("\n## expr1\n");
-    printSchema(expr1_type, " ");
-    printf("\n## expr2\n");
-    printSchema(expr2_type, " ");
 	int type_ok;
 	switch(root->qualifier){
 		case EQ:
@@ -1114,13 +1101,19 @@ int sem_instance_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
 			(*stype)->p1 = current_schema; // attach to root's schema the schema of first child
 			current_node = current_node->brother; //switch to the firse brother
             
+            int num_field=1;
+
 			while (current_node){//cicle for the other brother
 				Pschema next = new_schema_node(-1);
 				expr_ok = sem_expr(current_node, f_loc_env, &next, code);
 				current_schema->p2 = next;
 				current_schema = next;
 				current_node = current_node->brother;
+                num_field++;
 			}
+
+            *code = appcode(*code, makecode2(S_CAT, num_field, compute_size(*stype)));
+
             break;
 		case VECTOR:
 			(*stype)->type = VECTOR;
@@ -1154,8 +1147,8 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     Pnode id_node = root->child;
     Pnode param_node = id_node->brother;
     int id_ok, expr_ok = 1, param_ok = 0;
-    
-    Phash_node h_id_node = find_visible_node(id_node->value.sval, f_loc_env);
+    int offset;
+    Phash_node h_id_node = find_visible_node(id_node->value.sval, f_loc_env, &offset);
     id_ok = (h_id_node != NULL);
     
     if (!id_ok) {

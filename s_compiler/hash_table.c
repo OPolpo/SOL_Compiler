@@ -44,9 +44,10 @@ Phash_node getNode(char * id, Phash_node * table){
     return NULL;
 }
 
-Phash_node find_visible_node(char * id, Phash_node func_node){
+Phash_node find_visible_node(char * id, Phash_node func_node, int * offset){
     Phash_node f = func_node;
     printf("looking for: %s\n", id);
+    *offset=0;
     while (f != NULL) {
         print_func_node(f);
         print_hash_content(f->locenv);
@@ -58,6 +59,7 @@ Phash_node find_visible_node(char * id, Phash_node func_node){
             return node;
         }
         f = f->father;
+        (*offset)++;
     }
     return NULL;
 }

@@ -34,7 +34,7 @@ typedef struct shash_node{
     Class class_node; //TYPE, VAR, CONST, FUNC, PAR
     Pschema schema;
     struct shash_node ** locenv;
-    int formals_num;
+        int formals_num;
     Formal * formal;
     struct shash_node * father;
     struct shash_node * next;
@@ -43,7 +43,7 @@ typedef struct shash_node{
 int hash (char* id);
 int insert(Phash_node p,Phash_node * table);
 Phash_node getNode(char * id, Phash_node * table);
-Phash_node find_visible_node(char * id, Phash_node func_node);
+Phash_node find_visible_node(char * id, Phash_node func_node, int * offset);
 
 Phash_node * new_hash_table();
 void print_func_node(Phash_node node);

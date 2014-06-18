@@ -1,8 +1,9 @@
 --test :P
-func tester2():int
+func tester2(a:bool;):int
 type typeint: int;
-var a, b, c: bool;
---const ff: int = 3+4;
+const ff,gg:int = 3;
+	kk:real = 3.0;
+	kimberly:string = "fine";
 begin tester2
 	a = (true and false) or true;
 	return 1;
