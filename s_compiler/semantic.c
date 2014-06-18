@@ -12,12 +12,13 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
 #if VERBOSE
     printf("@@ in sem_program\n");
 #endif
-    Code * func_decl_code = makecode(S_NOOP);
-    int ok = sem_func_decl(root->child, f_loc_env, not_first, func_decl_code);
-    *code = concode(makecode1(S_SCODE, func_decl_code->size+5),
-                    make_push_pop(, -1, 0),
+    Code func_decl_code = makecode(S_NOOP);
+    int num_objects = 0;
+    int ok = sem_func_decl(root->child, f_loc_env, not_first, &func_decl_code, &num_objects);
+    *code = concode(makecode1(S_SCODE, func_decl_code.size+4),
+                    make_push_pop(0, -1, 0),
                     makecode(S_HALT),
-                    * func_decl_code,
+                    func_decl_code,
                     endcode());
 
     //int ok = sem_func_decl(root->child, f_loc_env, not_first, code);
@@ -25,7 +26,7 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     return ok;
 }
 
-int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
+int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, int * num_objects){
 #if VERBOSE
     printf("@@ in sem_func_decl\n");
 #endif
@@ -39,59 +40,71 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     else
         new_f_loc_env = f_loc_env;
     
-    
-	int decl_list_opt_ok = sem_decl_list_opt(current, new_f_loc_env, code);
+    int decl_num_objects = 0;
+	int decl_list_opt_ok = sem_decl_list_opt(current, new_f_loc_env, code, &decl_num_objects);
 	current = current->brother;
     
     Pschema domain_schema = new_schema_node(-1);
 	int domain_ok = sem_domain(current, new_f_loc_env, &domain_schema, code);
 	current = current->brother;
+
 	int type_sect_opt_ok = sem_type_sect_opt(current, new_f_loc_env, code);
 	current = current->brother;
     
+    int var_num_objects = 0;
     Code var_code = makecode(S_NOOP);
-	int var_sect_opt_ok = sem_var_sect_opt(current, new_f_loc_env, &var_code);
+	int var_sect_opt_ok = sem_var_sect_opt(current, new_f_loc_env, &var_code, &var_num_objects);
     *code = appcode(*code, var_code);
-    
 	current = current->brother;
-	int const_sect_opt_ok = sem_const_sect_opt(current, new_f_loc_env, code);
+
+    int const_num_objects = 0;
+    int const_sect_opt_ok = sem_const_sect_opt(current, new_f_loc_env, code, &const_num_objects);
 	current = current->brother;
+
 	int func_list_opt_ok = sem_func_list_opt(current, new_f_loc_env, code);
 	current = current->brother;
+
 	int func_body_ok = sem_func_body(current, new_f_loc_env, code);
     
+    *num_objects = var_num_objects + const_num_objects + decl_num_objects;
     return decl_list_opt_ok && domain_ok && type_sect_opt_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
 }
 
-int sem_decl_list_opt(Pnode root, Phash_node f_loc_env, Code * code){
+int sem_decl_list_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects){
 #if VERBOSE
     printf("@@ in sem_decl_list_opt\n");
 #endif
-    /*
-     Pnode current = root->child;
-     int decl_list_opt_ok = 1;
-     while(current != NULL){
-     decl_list_opt_ok = decl_list_opt_ok && sem_decl(current, f_loc_env, NULL);
-     current = current->brother;
-     }
-     return decl_list_opt_ok;
-     */
-    return 1;
+    
+    Pnode current = root->child;
+    int decl_list_opt_ok = 1;
+    while(current != NULL){
+        int decl_num_objects = 0;
+        decl_list_opt_ok = decl_list_opt_ok && sem_decl(current, f_loc_env, NULL, code, &decl_num_objects);
+        *num_objects += decl_num_objects;
+        current = current->brother;
+    }
+    return decl_list_opt_ok;
 }
 
-int sem_decl(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
+int sem_decl(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int * num_objects){
 #if VERBOSE
     printf("@@ in sem_decl\n");
 #endif
     Pnode domain_node = root->child->brother;
     int ok = sem_domain(domain_node, f_loc_env, stype, code);
+    sem_id_list(domain_node, f_loc_env, code, num_objects);
     return ok;
 }
 
-int sem_id_list(Pnode root, Phash_node f_loc_env, Code * code){
+int sem_id_list(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects){
 #if VERBOSE
     printf("@@ in sem_id_list\n");
 #endif
+    Pnode current = root->child;
+    while(current){
+        (*num_objects)++;
+        current = current->brother;
+    }
     return 1;
 }
 
@@ -102,6 +115,7 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
     int ok = 1;
     Pnode dom_node = root->child;
     Phash_node h_node;
+
     switch (dom_node->type) {
         case T_NONTERMINAL:
             switch (dom_node->value.ival) {
@@ -173,6 +187,7 @@ int sem_struct_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
         while (id != NULL) {
             Pschema to_add = new_schema_node(-1);
             Pschema * Pto_add = &to_add;
+            int domain_num_objects = 0;
             ok = ok && sem_domain(decl_domain, f_loc_env, &to_add, code);
             printf("to_add %p\n", Pto_add);
             
@@ -208,7 +223,7 @@ int sem_type_sect_opt(Pnode root, Phash_node f_loc_env, Code * code){
     return 1;
 }
 
-int sem_var_sect_opt(Pnode root, Phash_node f_loc_env, Code * code){
+int sem_var_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects){
 #if VERBOSE
     printf("@@ in sem_var_sect_opt\n");
 #endif
@@ -216,13 +231,15 @@ int sem_var_sect_opt(Pnode root, Phash_node f_loc_env, Code * code){
      Pnode current = root->child;
      int var_sect_opt_ok = 1;
      while(current != NULL){
-         var_sect_opt_ok = var_sect_opt_ok && sem_decl(current, f_loc_env, NULL, code);
-         current = current->brother;
+        int var_num_objects = 0;
+        var_sect_opt_ok = var_sect_opt_ok && sem_decl(current, f_loc_env, NULL, code, &var_num_objects);
+        num_objects += var_num_objects;
+        current = current->brother;
      }
     return 1;
 }
 
-int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code){
+int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects){
 #if VERBOSE
     printf("@@ in sem_const_sect_opt\n");
 #endif
@@ -233,7 +250,9 @@ int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code){
         while (decl_node != NULL) {
             expr_node = decl_node->brother;
             Pschema domain_schema = new_schema_node(-1);
-            ok = ok && sem_decl(decl_node, f_loc_env, &domain_schema, code);
+            int const_num_objects = 0;
+            ok = ok && sem_decl(decl_node, f_loc_env, &domain_schema, code, &const_num_objects);
+            num_objects += const_num_objects;
             //print_sch(domain_schema);
             Pschema expr_schema = new_schema_node(-1);
             ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema, code);
@@ -258,7 +277,8 @@ int sem_func_list_opt(Pnode root, Phash_node f_loc_env, Code * code){
         return ok;
     }
     while (func_decl_node != NULL) {
-        ok = ok && sem_func_decl(func_decl_node, f_loc_env, 1, code);
+        int f_num_objects = 0;
+        ok = ok && sem_func_decl(func_decl_node, f_loc_env, 1, code, &f_num_objects);
         func_decl_node = func_decl_node->brother;
     }
     return ok;
