@@ -45,7 +45,8 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
 	current = current->brother;
     
     Pschema domain_schema = new_schema_node(-1);
-	int domain_ok = sem_domain(current, new_f_loc_env, &domain_schema, code);
+    int size = 0;
+	int domain_ok = sem_domain(current, new_f_loc_env, &domain_schema, code, &size);
 	current = current->brother;
 
 	int type_sect_opt_ok = sem_type_sect_opt(current, new_f_loc_env, code);
@@ -91,7 +92,8 @@ int sem_decl(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int
     printf("@@ in sem_decl\n");
 #endif
     Pnode domain_node = root->child->brother;
-    int ok = sem_domain(domain_node, f_loc_env, stype, code);
+    int size = 0;
+    int ok = sem_domain(domain_node, f_loc_env, stype, code, &size);
     sem_id_list(domain_node, f_loc_env, code, num_objects);
     return ok;
 }
@@ -108,7 +110,7 @@ int sem_id_list(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects
     return 1;
 }
 
-int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
+int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int * size){
 #if VERBOSE
     printf("@@ in sem_domain\n");
 #endif
@@ -154,7 +156,7 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
             break;
     }
     
-    
+    *size = compute_size(*stype);
     //TRY TO USE CREATE SCHEMA...
     /*
      printf("\n## domain...\n");
@@ -188,7 +190,8 @@ int sem_struct_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
             Pschema to_add = new_schema_node(-1);
             Pschema * Pto_add = &to_add;
             int domain_num_objects = 0;
-            ok = ok && sem_domain(decl_domain, f_loc_env, &to_add, code);
+            int size = 0;
+            ok = ok && sem_domain(decl_domain, f_loc_env, &to_add, code, &size);
             printf("to_add %p\n", Pto_add);
             
             if(last == NULL){
@@ -212,7 +215,8 @@ int sem_vector_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
     (*stype)->type = VECTOR;
     (*stype)->size = root->child->value.ival;
     (*stype)->p1 = new_schema_node(-1);
-    ok = ok && sem_domain(root->child->brother, f_loc_env, &(*stype)->p1, code);
+    int size = 0;
+    ok = ok && sem_domain(root->child->brother, f_loc_env, &(*stype)->p1, code, &size);
     return ok;
 }
 
@@ -1070,7 +1074,8 @@ int sem_rd_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
     int dom_ok = 1;
     if (ok) {
         printf("\n## xpecifier_opt è ok \n");
-        dom_ok = sem_domain(root->child->brother, f_loc_env, stype, code);
+        int size = 0;
+        dom_ok = sem_domain(root->child->brother, f_loc_env, stype, code, &size);
     }
     return ok && dom_ok;
 }

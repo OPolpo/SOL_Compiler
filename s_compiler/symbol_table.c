@@ -276,3 +276,38 @@ int are_compatible(Pschema a, Pschema b){
     }
     //return 0;
 }
+
+int compute_size(Pschema schema){
+    switch(schema->type){
+        case CHAR:
+        case BOOL:
+            return sizeof(char);
+        break;
+        case INT:
+            return sizeof(int);
+        break;
+        case REAL:
+            return sizeof(float);
+        break;
+        case STRING:    
+            return sizeof(char*);
+        break;
+        case VECTOR:    
+            return (schema->size)*compute_size(schema->p1); 
+        break;
+        case STRUCT:{
+            Pschema current = schema->p1;
+            int dimension = 0;
+            while(current){
+                dimension += compute_size(current);
+                current = current->p2;
+            }
+            return dimension;
+        }     
+        break;
+        default:
+            fprintf(stderr, "%s\n","Some weird schema node in schema");
+        return 0;
+        break;
+    }
+}

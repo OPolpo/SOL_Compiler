@@ -14,6 +14,7 @@ Phash_node new_id_node(char * _name, Class _class, int loc_id);
 Pschema new_schema_node(int _type);
 int are_compatible(Pschema a, Pschema b);
 Pschema create_schema(Pnode domain, Phash_node func, char * id);
+int compute_size(Pschema schema);
 
 
 #endif

@@ -24,4 +24,4 @@ $(COMP_PATH_PARSER)/parser.h: $(COMP_PATH_PARSER)/parser.y
 	bison -d -o $(COMP_PATH_PARSER)/parser.c $(COMP_PATH_PARSER)/parser.y
 
 clean: 
-	rm $(COMP_PATH)/lex.c $(COMP_PATH)/*.o $(COMP_PATH)/parser.c $(COMP_PATH)/parser.h
+	rm -f $(COMP_PATH)/lex.c $(COMP_PATH)/*.o $(COMP_PATH)/parser.c $(COMP_PATH)/parser.h
