@@ -80,16 +80,34 @@ void relocate_address(Code code, int offset){
 
 Code appcode(Code code1, Code code2){
     Code rescode;
+    /*
+    printf("********\nAppendo a: \n");
+    print_code(stdout, &code1);
+    printf("\nQUESTO: \n");
+    print_code(stdout, &code2);
+    printf("\nOttengo: \n");
+    */
     
-    if (code1.head->op != S_NOOP) {
+    if (code1.head->op == S_NOOP ) {
+        if (code1.tail != code1.head) {
+            fprintf(stderr, "********* Strange code starting with NOOP\n");
+        }
+        //print_code(stdout, &code2);
+        //printf("********\nFINE append. \n");
+        return code2;
+    }
+    else{
         relocate_address(code2, code1.size);
         rescode.head = code1.head;
         rescode.tail = code2.tail;
         code1.tail->next = code2.head;
         rescode.size = code1.size + code2.size;
+        
+        //print_code(stdout, &rescode);
+        //printf("********\nFINE append. \n");
+
         return rescode;
     }
-    else return code2;
 }
 
 Code endcode(){
