@@ -41,7 +41,8 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
         new_f_loc_env = f_loc_env;
     
     int decl_num_objects = 0;
-	int decl_list_opt_ok = sem_decl_list_opt(current, new_f_loc_env, code, &decl_num_objects);
+    Code decl_code = makecode(S_NOOP);
+	int decl_list_opt_ok = sem_decl_list_opt(current, new_f_loc_env, &decl_code, &decl_num_objects);
 	current = current->brother;
     
     Pschema domain_schema = new_schema_node(-1);
@@ -95,6 +96,13 @@ int sem_decl(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int
     int size = 0;
     int ok = sem_domain(domain_node, f_loc_env, stype, code, &size);
     sem_id_list(domain_node, f_loc_env, code, num_objects);
+    int i;
+    if((*stype)->type==STRUCT || (*stype)->type==VECTOR)
+        for(i = 0; i< *num_objects; i++)
+            *code = appcode(*code, makecode1(S_NEWS,size));
+    else
+        for(i = 0; i< *num_objects; i++)
+            *code = appcode(*code, makecode1(S_NEW,size));
     return ok;
 }
 
