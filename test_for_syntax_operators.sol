@@ -84,10 +84,16 @@ begin tester2
 	a = if b>c then b+c elsif b==c+1 then b-c elsif b==d+1 then b-d elsif b==e+1 then b-e else a+1 endif;
 	if a==b then
 		t = r;
+		return 'x';
+	elsif a>b then
+		a=b;
+		return '3';
 	elsif a>b then
 		t = struct(2, "alpha");
 		a = b + c;
+		return 'y';
 	else
+		return 'z';
 		a = b-c;
 	endif;
 
@@ -123,5 +129,5 @@ begin tester2
 	read v;
 	read ["v.dat"] v;
 	
-	return 's';
+	--return 's';
 end tester2

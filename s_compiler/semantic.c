@@ -589,24 +589,30 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
 	}
     
 	Pnode main_expr_node = root->child;
-	Pnode stat_list_node = main_expr_node->brother;
-	Pnode elsif_stat_list_opt_node = stat_list_node->brother;
+    Pnode stat_list_node;
+	int stat_list_ok, main_expr_ok;
     
-	//check contraint on conditional clause
-    Pschema main_expr_type = new_schema_node(-1);;
-    int main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, code);
+    *w_return = 1;
+    while (main_expr_node) {
+        stat_list_node = main_expr_node->brother;
+        
+        //check constraint on conditional clause
+        Pschema main_expr_type = new_schema_node(-1);;
+        main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, code);
+        
+        if (main_expr_type->type!=BOOL){
+            sem_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
+        }
+        int return_stat = 0;
+        stat_list_ok = sem_stat_list(stat_list_node, f_loc_env, &return_stat, code);
+        
+        *w_return = return_stat && *w_return;
+        printf("%d<-\n",return_stat);
+        
+        main_expr_node = stat_list_node->brother;
+    }
     
-    if (main_expr_type->type!=BOOL){
-		sem_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
-	}
-    int return_stat = 0;
-    int stat_list_ok = sem_stat_list(stat_list_node, f_loc_env, &return_stat, code);
-    
-    int return_elsif_stat_list_opt = 0;
-    int elsif_stat_list_opt_ok = sem_elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env, &return_elsif_stat_list_opt, code);
-    
-    *w_return = return_stat && return_elsif_stat_list_opt;
-	return main_expr_ok && stat_list_ok && elsif_stat_list_opt_ok;
+	return main_expr_ok && stat_list_ok;
 }
 
 int sem_while_stat(Pnode root, Phash_node f_loc_env, Code * code){
@@ -712,7 +718,7 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
 
 int sem_return_stat(Pnode root, Phash_node f_loc_env, Code * code){
 #if VERBOSE
-    printf("@@ in sem_return_stat\n");
+    printf("@@ in sem_return_stat ***\n");
 #endif
     Pnode expr_node = root->child;
     

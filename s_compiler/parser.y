@@ -171,16 +171,15 @@ if_stat : IF expr THEN stat_list elsif_stat_list_opt else_stat_opt ENDIF {$$ = n
 																		  $$->child = $2;
 																		  $2->brother = nontermnode(NSTAT_LIST);
                                                                           $2->brother->child = $4;
-                                                                          $2->brother->brother = $5;
-                                                                          //find a way to make it optional
-																		  $5->brother = $6;
+                                                                          $2->brother->brother = nontermnode(NELSIF_STAT_LIST_OPT);
+                                                                          $2->brother->brother->child = $5;
+																		  $2->brother->brother->brother = $6;
 																	  }
-elsif_stat_list_opt : ELSIF expr THEN stat_list elsif_stat_list_opt {$$ = nontermnode(NELSIF_STAT_LIST_OPT);
-																	 $$->child = $2;
+elsif_stat_list_opt : ELSIF expr THEN stat_list elsif_stat_list_opt {$$ = $2;
 																	 $2->brother = nontermnode(NSTAT_LIST);
                                                                      $2->brother->child = $4;
 																	 $2->brother->brother = $5;}
-				 	| /** eps **/ {$$ = nontermnode(NELSIF_STAT_LIST_OPT);}
+				 	| /** eps **/ {$$ = NULL;}
 else_stat_opt : ELSE stat_list {$$ = nontermnode(NSTAT_LIST);
                                 $$->child = $2;}
               | /** eps **/{$$ = NULL;}
