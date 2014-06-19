@@ -1135,6 +1135,8 @@ int sem_instance_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
 			}
 			(*stype)->size = count;
 			(*stype)->p1 = current_schema;
+            
+            *code = appcode(*code, makecode2(S_CAT, (*stype)->size, compute_size(*stype)));
             break;
 	}
 	return expr_ok;
@@ -1194,7 +1196,7 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 	Pnode else_expr_node = elsif_expr_node->brother;
     
 	//check contraint on conditional clause
-	Pschema main_expr_type = new_schema_node(-1);;
+	Pschema main_expr_type = new_schema_node(-1);
 	int main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, code);
     
 	if (main_expr_type->type!=BOOL){
@@ -1203,11 +1205,12 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     
 	//check contraint on first and last alternative
 	Pschema * first_expr_type = stype;
-    
-	int first_expr_ok = sem_expr(first_expr_node, f_loc_env,first_expr_type, code);
+    Code first_expr_code = makecode(S_NOOP);
+	int first_expr_ok = sem_expr(first_expr_node, f_loc_env,first_expr_type, &first_expr_code);
     
 	Pschema else_expr_type = new_schema_node(-1);
-	int else_expr_ok = sem_expr(else_expr_node, f_loc_env, &else_expr_type, code);
+    Code else_expr_code = makecode(S_NOOP);
+	int else_expr_ok = sem_expr(else_expr_node, f_loc_env, &else_expr_type, &else_expr_code);
     
 	if (!are_compatible(*first_expr_type, else_expr_type)){
 		sem_error(else_expr_node, "Type error, alternatives are of different type\n");
@@ -1215,11 +1218,21 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     
 	//check contraint on elsif part
 	Pschema elsif_expr_type = new_schema_node(-1);
-	int elsif_expr_ok = sem_elsif_expr_list_opt(elsif_expr_node, f_loc_env, &elsif_expr_type, code);
+    Code elsif_expr_code = makecode(S_NOOP);
+	int elsif_expr_ok = sem_elsif_expr_list_opt(elsif_expr_node, f_loc_env, &elsif_expr_type, &elsif_expr_code);
 	
 	if (elsif_expr_type != NULL && !are_compatible(*first_expr_type, elsif_expr_type)){
 		sem_error(elsif_expr_node, "Type error, alternatives are of different type\n");
 	}
+    
+    *code = concode(*code,
+                    makecode1(S_JMF, first_expr_code.size+2),
+                    first_expr_code,
+                    makecode1(S_JMP, elsif_expr_code.size+else_expr_code.size+1),
+                    elsif_expr_code,
+                    else_expr_code,
+                    endcode());
+    
     
 	return main_expr_ok && first_expr_ok && elsif_expr_ok && else_expr_ok;
 }
