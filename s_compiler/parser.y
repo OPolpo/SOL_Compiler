@@ -274,13 +274,13 @@ expr_list_opt : expr_list
 cond_expr : IF expr THEN expr elsif_expr_list_opt ELSE expr ENDIF {$$ = nontermnode(NCOND_EXPR);
 																   $$->child = $2;
 																   $2->brother = $4;
-																   $4->brother = $5;
-																   $5->brother = $7;}
-elsif_expr_list_opt : ELSIF expr THEN expr elsif_expr_list_opt {$$ = nontermnode(NELSIF_EXPR_LIST_OPT);
-																$$->child = $2;
+																   $4->brother = nontermnode(NELSIF_EXPR_LIST_OPT);
+                                                                   $4->brother->child = $5;
+																   $4->brother->brother = $7;}
+elsif_expr_list_opt : ELSIF expr THEN expr elsif_expr_list_opt {$$ = $2;
 																$2->brother = $4;
 																$4->brother = $5;}
-					| /** eps **/ {$$ = nontermnode(NELSIF_EXPR_LIST_OPT);}
+					| /** eps **/ {$$ = NULL;}
 built_in_call : toint_call
 			  | toreal_call
 toint_call : TOINT '(' expr ')' {$$ = nontermnode(NBUILT_IN_CALL);
