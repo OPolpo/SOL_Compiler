@@ -1216,10 +1216,11 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 		sem_error(else_expr_node, "Type error, alternatives are of different type\n");
 	}
     
+    int offset_to_exit = else_expr_code.size+1;
 	//check contraint on elsif part
 	Pschema elsif_expr_type = new_schema_node(-1);
     Code elsif_expr_code = makecode(S_NOOP);
-	int elsif_expr_ok = sem_elsif_expr_list_opt(elsif_expr_node, f_loc_env, &elsif_expr_type, &elsif_expr_code);
+	int elsif_expr_ok = sem_elsif_expr_list_opt(elsif_expr_node, f_loc_env, &elsif_expr_type, &elsif_expr_code, &offset_to_exit);
 	
 	if (elsif_expr_type != NULL && !are_compatible(*first_expr_type, elsif_expr_type)){
 		sem_error(elsif_expr_node, "Type error, alternatives are of different type\n");
@@ -1228,7 +1229,7 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     *code = concode(*code,
                     makecode1(S_JMF, first_expr_code.size+2),
                     first_expr_code,
-                    makecode1(S_JMP, elsif_expr_code.size+else_expr_code.size+1),
+                    makecode1(S_JMP, offset_to_exit),
                     elsif_expr_code,
                     else_expr_code,
                     endcode());
@@ -1237,7 +1238,7 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 	return main_expr_ok && first_expr_ok && elsif_expr_ok && else_expr_ok;
 }
 
-int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
+int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int * offset_to_exit){
 #if VERBOSE
     printf("@@ in sem_elsif_expr_list_opt\n");
 #endif
@@ -1251,7 +1252,7 @@ int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype, C
 	Pnode elsif_expr_node = expr_node->brother;
     
 	//check contraint on conditional clause
-    Pschema main_expr_type = new_schema_node(-1);;
+    Pschema main_expr_type = new_schema_node(-1);
     int main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, code);
     
     if (main_expr_type->type!=BOOL){
@@ -1260,14 +1261,24 @@ int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype, C
     
 	//check contraint on first and other elsif alternative recursively
     Pschema * expr_type = stype;
-    int expr_ok = sem_expr(expr_node, f_loc_env, expr_type, code);
+    Code expr_code = makecode(S_NOOP);
+    int expr_ok = sem_expr(expr_node, f_loc_env, expr_type, &expr_code);
     
+
+    *offset_to_exit += expr_code.size;
     Pschema elsif_expr_type = new_schema_node(-1);
-    int elsif_expr_ok = sem_elsif_expr_list_opt(elsif_expr_node, f_loc_env, &elsif_expr_type, code);
+    Code elsif_expr_code = makecode(S_NOOP);
+    int elsif_expr_ok = sem_elsif_expr_list_opt(elsif_expr_node, f_loc_env, &elsif_expr_type, &elsif_expr_code, offset_to_exit);
 	
+    
 	if (elsif_expr_type != NULL && !are_compatible(*expr_type, elsif_expr_type)){
 		sem_error(elsif_expr_node, "type error, alternatives are of different type\n");
 	}
+    
+    *code = concode(*code,
+                     makecode1(S_JMF, elsif_expr_code.size+2),
+                     elsif_expr_code,
+                     endcode());
 	return main_expr_ok && expr_ok && elsif_expr_ok;
 }
 
