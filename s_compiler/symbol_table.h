@@ -3,6 +3,7 @@
 
 #include "hash_table.h"
 #include "def.h"
+#include <math.h>
 
 
 Phash_node create_symbol_table(Pnode root, Phash_node father);
@@ -15,6 +16,6 @@ Pschema new_schema_node(int _type);
 int are_compatible(Pschema a, Pschema b);
 Pschema create_schema(Pnode domain, Phash_node func, char * id);
 int compute_size(Pschema schema);
-
+char * schema2format(Pschema schema);
 
 #endif
