@@ -558,29 +558,40 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
 		sem_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
 	}
     
-	printf("\nif_stat_list_node ##%d\n", if_stat_list_node->value.ival);
-    
     int return_if_stat_list = 0;
     int return_else_list = 0;
     int return_elsif_stat_list_opt = 0;
     
-    int if_stat_list_ok = sem_stat_list(if_stat_list_node, f_loc_env, &return_if_stat_list, code);
+    Code if_stat_list_code = makecode(S_NOOP);
+    int if_stat_list_ok = sem_stat_list(if_stat_list_node, f_loc_env, &return_if_stat_list, &if_stat_list_code);
     
+    Code else_stat_list_code = makecode(S_NOOP);
     int else_stat_list_ok = 1;
     if (else_stat_list_node) {
-        else_stat_list_ok = sem_stat_list(else_stat_list_node, f_loc_env, &return_else_list, code);
+        else_stat_list_ok = sem_stat_list(else_stat_list_node, f_loc_env, &return_else_list, &else_stat_list_code);
     }
     else {
         return_else_list = 1;
     }
     
-	int elsif_stat_list_opt_ok = sem_elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env, &return_elsif_stat_list_opt, code);
+    int offset_to_exit = else_stat_list_code.size+1;
+    Code elsif_stat_list_opt_code = makecode(S_NOOP);
+	int elsif_stat_list_opt_ok = sem_elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env, &return_elsif_stat_list_opt, &elsif_stat_list_opt_code, &offset_to_exit);
     
     *w_return = return_if_stat_list && return_else_list && return_elsif_stat_list_opt;
+    
+    *code = concode(*code,
+                    makecode1(S_JMF, if_stat_list_code.size+2),
+                    if_stat_list_code,
+                    elsif_stat_list_opt_code,
+                    makecode1(S_JMP, else_stat_list_code.size+1),
+                    else_stat_list_code,
+                    endcode());
+    
 	return main_expr_ok && if_stat_list_ok && elsif_stat_list_opt_ok && else_stat_list_ok;
 }
 
-int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
+int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, int * offset_to_exit){
 #if VERBOSE
     printf("@@ in sem_elsif_stat_list_opt\n");
 #endif
@@ -593,25 +604,46 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
     Pnode stat_list_node;
 	int stat_list_ok, main_expr_ok;
     
+    Stack_node_code * top = NULL;
+    Code * ptemp_code;
+    
     *w_return = 1;
     while (main_expr_node) {
         stat_list_node = main_expr_node->brother;
         
+        ptemp_code = (Code *)malloc(sizeof(Code));
+        *ptemp_code = makecode(S_NOOP);
+        
         //check constraint on conditional clause
         Pschema main_expr_type = new_schema_node(-1);;
-        main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, code);
+        main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, ptemp_code);
         
         if (main_expr_type->type!=BOOL){
             sem_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
         }
         int return_stat = 0;
-        stat_list_ok = sem_stat_list(stat_list_node, f_loc_env, &return_stat, code);
+        Code stat_list_code = makecode(S_NOOP);
+        stat_list_ok = sem_stat_list(stat_list_node, f_loc_env, &return_stat, &stat_list_code);
         
         *w_return = return_stat && *w_return;
-        printf("%d<-\n",return_stat);
+        *ptemp_code = concode(*ptemp_code,
+                              makecode1(S_JMF, stat_list_code.size+2),
+                              stat_list_code,
+                              endcode());
+        StackPush(&top, ptemp_code);
         
         main_expr_node = stat_list_node->brother;
     }
+    Code reverse = makecode(S_NOOP);
+    while (top != NULL) {
+        Code * current_code = StackPop(&top);
+        (*offset_to_exit) += (current_code->size+1);
+        reverse = concode(makecode1(S_JMP, *offset_to_exit),
+                          *current_code,
+                          reverse,
+                          endcode());
+    }
+    *code = appcode(*code, reverse);
     
 	return main_expr_ok && stat_list_ok;
 }
@@ -1210,7 +1242,7 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 		sem_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
 	}
     
-	//check contraint on first and last alternative
+	//check constraint on first and last alternative
 	Pschema * first_expr_type = stype;
     Code first_expr_code = makecode(S_NOOP);
 	int first_expr_ok = sem_expr(first_expr_node, f_loc_env,first_expr_type, &first_expr_code);
@@ -1313,7 +1345,6 @@ int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype, C
     }
     
     Code reverse = makecode(S_NOOP);
-    
     while (top != NULL) {
         printf("top != NULL......\n");
         Code * current_code = StackPop(&top);
@@ -1322,7 +1353,6 @@ int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype, C
                           *current_code,
                           reverse,
                           endcode());
-        
     }
     
     *code = appcode(*code, reverse);

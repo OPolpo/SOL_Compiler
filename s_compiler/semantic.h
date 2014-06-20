@@ -48,7 +48,7 @@ int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * type, Class *
 int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * type, Class * lhs_class, Code * code);
 int sem_indexing(Pnode root, Phash_node f_loc_env, Pschema * type, Class * lhs_class, Code * code);
 int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code);
-int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Code * code);
+int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, int * offset_to_exit);
 int sem_while_stat(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code);
