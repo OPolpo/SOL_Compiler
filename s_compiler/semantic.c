@@ -153,7 +153,8 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, i
             h_node = find_visible_node(dom_node->value.sval, f_loc_env, &offset);
             ok = ok && (h_node != NULL && h_node->class_node == CLTYPE);
             if (!ok) {
-                sem_error(dom_node, "Type error, type not defined or not visible\n");
+                sprintf(error_msg, "Type error, type \"%s\" not defined or not visible\n", dom_node->value.sval);
+                sem_error(dom_node, error_msg);
             }
             *stype = h_node->schema;
             break;
@@ -1231,12 +1232,15 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 	if (elsif_expr_type != NULL && !are_compatible(*first_expr_type, elsif_expr_type)){
 		sem_error(elsif_expr_node, "Type error, alternatives are of different type\n");
 	}
+    printf("elsif_expr_code\n");
+    print_code(stdout, &elsif_expr_code);
+    printf("elsif_expr_code\n");
     
     *code = concode(*code,
                     makecode1(S_JMF, first_expr_code.size+2),
                     first_expr_code,
-                    makecode1(S_JMP, offset_to_exit),
                     elsif_expr_code,
+                    makecode1(S_JMP, else_expr_code.size+1),
                     else_expr_code,
                     endcode());
     
@@ -1258,23 +1262,34 @@ int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype, C
     Pnode expr_node;
     Pschema * expr_type;
     int main_expr_ok, expr_ok;
+    
+    //Stack_code * code_stack;
+    //StackInit(&code_stack);
+    Stack_node_code * top = NULL;
+    
+    Code * ptemp_code;
+    
     while (main_expr_node) {
         expr_node = main_expr_node->brother;
         
+        ptemp_code = (Code *)malloc(sizeof(Code));
+        *ptemp_code = makecode(S_NOOP);
+        
         //check contraint on conditional clause
         Pschema main_expr_type = new_schema_node(-1);
-        main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, code);
+        main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, ptemp_code);
         
         if (main_expr_type->type!=BOOL){
             sem_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
         }
         
         Code expr_code;
-        //check constraint on first and other elsif alternative recursively
+        //check constraint on first and other elsif alternative
         if(first){
             expr_type = stype;
             expr_code = makecode(S_NOOP);
             expr_ok = sem_expr(expr_node, f_loc_env, expr_type, &expr_code);
+            first = 0;
         }else{
             Pschema elsif_expr_type = new_schema_node(-1);
             expr_code = makecode(S_NOOP);
@@ -1286,17 +1301,31 @@ int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype, C
             
         }
         
-        *code = concode(*code,
-                        makecode1(S_JMF, expr_code.size+1+1),
-                        expr_code,
-                        endcode());
+        *ptemp_code = concode(*ptemp_code,
+                              makecode1(S_JMF, expr_code.size+1+1),
+                              expr_code,
+                              endcode());
+        
+        StackPush(&top, ptemp_code);
+        printf("top = %p\n",top);
+        
         main_expr_node = expr_node->brother;
     }
-    /*
-     *code = concode(*code,
-     makecode1(S_JMF, elsif_expr_code.size+2),
-     elsif_expr_code,
-     endcode());*/
+    
+    Code reverse = makecode(S_NOOP);
+    
+    while (top != NULL) {
+        printf("top != NULL......\n");
+        Code * current_code = StackPop(&top);
+        (*offset_to_exit) += (current_code->size+1);
+        reverse = concode(makecode1(S_JMP, *offset_to_exit),
+                          *current_code,
+                          reverse,
+                          endcode());
+        
+    }
+    
+    *code = appcode(*code, reverse);
 	return main_expr_ok && expr_ok;
 }
 

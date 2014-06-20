@@ -49,13 +49,13 @@ Phash_node find_visible_node(char * id, Phash_node func_node, int * offset){
     printf("looking for: %s\n", id);
     *offset=0;
     while (f != NULL) {
-        print_func_node(f);
-        print_hash_content(f->locenv);
+        //print_func_node(f);
+        //print_hash_content(f->locenv);
         
         Phash_node node = getNode(id, f->locenv);
         if (node != NULL) {
-            print_generic_node(node);
-            printSchema(node->schema, " ");
+            //print_generic_node(node);
+            //printSchema(node->schema, " ");
             return node;
         }
         f = f->father;

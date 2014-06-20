@@ -80,28 +80,32 @@ void relocate_address(Code code, int offset){
 
 Code appcode(Code code1, Code code2){
     Code rescode;
-    /*
-     printf("********\nAppendo a: \n");
-     print_code(stdout, &code1);
-     printf("\nQUESTO: \n");
-     print_code(stdout, &code2);
-     printf("\nOttengo: \n");
-     */
+    
+    printf("********\nAppendo a: \n");
+    print_code(stdout, &code1);
+    printf("\nQUESTO: \n");
+    print_code(stdout, &code2);
+    printf("\nOttengo: \n");
+    
+    if (code1.head == code2.head && code1.tail == code2.tail) {
+        printf("Trying to concatenate a list with itself <==============\n");
+        return code1;
+    }
     
     if (code1.head->op == S_NOOP ) {
         if (code1.tail != code1.head) {
             fprintf(stderr, "********* Strange code starting with NOOP\n");
         }
-        //print_code(stdout, &code2);
-        //printf("********\nFINE append. \n");
+        print_code(stdout, &code2);
+        printf("FINE append-> coda2. \n********\n");
         return code2;
     }
     else if (code2.head->op == S_NOOP) {
         if (code2.tail != code2.head) {
             fprintf(stderr, "********* Strange code starting with NOOP\n");
         }
-        //print_code(stdout, &code2);
-        //printf("********\nFINE append. \n");
+        print_code(stdout, &code1);
+        printf("FINE append-> coda1. \n********\n");
         return code1;
     }
     else{
@@ -111,8 +115,8 @@ Code appcode(Code code1, Code code2){
         code1.tail->next = code2.head;
         rescode.size = code1.size + code2.size;
         
-        //print_code(stdout, &rescode);
-        //printf("********\nFINE append. \n");
+        print_code(stdout, &rescode);
+        printf("FINE append. \n********\n");
         
         return rescode;
     }
@@ -287,7 +291,7 @@ Code make_lds(char *s){
 }
 
 void print_stat(FILE * stream, Stat * stat){
-    fprintf(stream, "%s ", tabOperator[stat->op]);
+    fprintf(stream, "[%d] %s ", stat->address, tabOperator[stat->op]);
     
     switch(stat->op){
         case S_HALT:
@@ -386,4 +390,25 @@ void print_code(FILE * stream, Code * code){
         print_stat(stream, stat);
         stat = stat->next;
     }
+}
+
+//Code Stack
+void StackPush(Stack_node_code ** top, Code * element){
+    printf("->StackPush \n");
+    Stack_node_code * new_node = (Stack_node_code *)malloc(sizeof(Stack_node_code));
+    new_node->code = element;
+    new_node->next = *top;
+    *top = new_node;
+}
+
+Code * StackPop(Stack_node_code ** top){
+    printf("->StackPop\n");
+    Code * element = NULL;
+    if((*top)!=NULL){
+        element = (*top)->code;
+        (*top)=(*top)->next;
+    }else{
+        fprintf(stderr, "Stack Underflow\n");
+    }
+    return element;
 }

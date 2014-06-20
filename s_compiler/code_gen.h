@@ -105,4 +105,12 @@ Code make_lds(char *s);
 void print_code(FILE * stream, Code * code);
 void print_stat(FILE * stream, Stat * stat);
 
+//Code Stack
+typedef struct snode_stack{
+    Code * code;
+    struct snode_stack *next;
+} Stack_node_code;
+
+void StackPush(Stack_node_code ** stackPtr, Code * element);
+Code * StackPop(Stack_node_code ** stackPtr);
 #endif
