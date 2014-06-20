@@ -656,14 +656,25 @@ int sem_while_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Pnode stat_list_node = expr_node->brother;
     
     Pschema expr_schema = new_schema_node(-1);
-    int ok = sem_expr(expr_node, f_loc_env, &expr_schema, code);
-    
+    Code expr_code = makecode(S_NOOP);
+    int ok = sem_expr(expr_node, f_loc_env, &expr_schema, &expr_code);
+
     ok = ok && (expr_schema->type == BOOL);
     if(!ok){
         sem_error(root, "Type Error, expected BOOL in WHILE clause\n");
     }
+    
+    Code stat_list_code = makecode(S_NOOP);
     int not_used;
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, code);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
+    
+    *code = concode(*code,
+                    expr_code,
+                    makecode1(S_JMF, stat_list_code.size+2),
+                    stat_list_code,
+                    makecode1(S_JMP, -(stat_list_code.size+1+expr_code.size)),
+                    endcode()
+                    );
     return ok;
 }
 
