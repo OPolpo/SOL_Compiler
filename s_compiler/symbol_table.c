@@ -311,3 +311,62 @@ int compute_size(Pschema schema){
             break;
     }
 }
+
+char * schema2format(Pschema schema){
+    char * str, * tmp_str, * tmp2_str, * dim; //mallocami
+    Pschema tmp_schema;
+    int i;
+    switch (schema->type) {
+        case CHAR:
+            str = (char *)malloc(2*sizeof(char));
+            str = "c";
+            break;
+        case INT:
+            str = (char *)malloc(2*sizeof(char));
+            str = "i";
+            break;
+        case REAL:
+            str = (char *)malloc(2*sizeof(char));
+            str = "r";
+            break;
+        case STRING:
+            str = (char *)malloc(2*sizeof(char));
+            str = "s";
+            break;
+        case BOOL:
+            str = (char *)malloc(2*sizeof(char));
+            str = "b";
+            break;
+        case VECTOR:
+            tmp_str = schema2format(schema->p1);
+            i=log10(schema->size);
+            str = (char *)malloc((strlen(tmp_str)+i+1+3+1)*sizeof(char));
+            sprintf(str, "[%d,%s]", schema->size, tmp_str);
+            break;
+        case STRUCT:
+            tmp_schema = schema->p1;
+            tmp_str = schema2format(tmp_schema);
+            str = malloc((strlen(tmp_schema->id)+strlen(tmp_str)+5)*sizeof(char));
+            sprintf(str, "(%s:%s", tmp_schema->id, tmp_str);
+            
+            tmp_schema = tmp_schema->p2;
+            while (tmp_schema) {
+                tmp_str = schema2format(tmp_schema);
+                tmp2_str = malloc((strlen(str)+strlen(tmp_str)+1+2)*sizeof(char));
+                strcpy(tmp2_str, str);
+                str = tmp2_str;
+                strcat(str, ",");
+                strcat(str, (tmp_schema->id? tmp_schema->id: ""));
+                strcat(str, ":");
+                strcat(str, tmp_str);
+                ///sprintf(str, ",%s:%s", tmp_schema->id, tmp_str);
+                
+                tmp_schema = tmp_schema->p2;
+            }
+            strcat(str, ")");
+            //sprintf(str, ")");
+        default:
+            break;
+    }
+    return str;
+}
