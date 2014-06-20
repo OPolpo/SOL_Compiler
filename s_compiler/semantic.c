@@ -703,13 +703,15 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     }
     
     Pschema expr1_schema = new_schema_node(-1);
-    ok = ok && sem_expr(expr1_node, f_loc_env, &expr1_schema, code);
+    Code expr1_code = makecode(S_NOOP);
+    ok = ok && sem_expr(expr1_node, f_loc_env, &expr1_schema, &expr1_code);
     ok = ok && (expr1_schema->type == INT);
     if (!ok) {
         sem_error(expr1_node, "Type error: expected INT in FOR-STAT\n");
     }
     Pschema expr2_schema = new_schema_node(-1);
-    ok = ok && sem_expr(expr2_node, f_loc_env, &expr2_schema, code);
+    Code expr2_code = makecode(S_NOOP);
+    ok = ok && sem_expr(expr2_node, f_loc_env, &expr2_schema, &expr2_code);
     ok = ok && (expr2_schema->type == INT);
     if (!ok) {
         sem_error(expr2_node, "Type error: expected INT in FOR-STAT\n");
@@ -720,7 +722,26 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     id_hash_node->class_node = CLCOUNT;
     
     int not_used;
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, code);
+    Code stat_list_code = makecode(S_NOOP);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
+
+    *code = concode(*code,
+                expr1_code,
+                makecode2(S_STO,888,999),
+                expr2_code,
+                makecode2(S_STO,0,999),
+                makecode2(S_LOD,888,999),
+                makecode2(S_LOD,0,999),
+                makecode(S_ILE),
+                makecode1(S_JMF, stat_list_code.size+6),
+                stat_list_code,
+                makecode2(S_LOD,888,999),
+                makecode1(S_LDI,1),
+                makecode(S_IPLUS),
+                makecode2(S_LOD,888,999),
+                makecode1(S_JMP, -(stat_list_code.size+8)),
+                endcode()
+                );
     
     id_hash_node->class_node = id_class;
     return ok;
