@@ -31,6 +31,7 @@ typedef struct sschema{
 typedef struct shash_node{
     char * name;
     int oid;
+    int last_oid;
     Class class_node; //TYPE, VAR, CONST, FUNC, PAR
     Pschema schema;
     struct shash_node ** locenv;

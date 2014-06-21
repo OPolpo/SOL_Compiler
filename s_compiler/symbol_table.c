@@ -46,7 +46,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     func->father = father;
                     Phash_node * loc = new_hash_table();
                     func->locenv = loc;
-                    int loc_oid = 1;
+                    (func->locenv)->last_oid = 1;
                     
                     func->formals_num = 0;
                     current = current->brother; //DECL_LIST_OPT
@@ -60,8 +60,8 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                             
                             Pnode id = id_list->child;
                             while (id != NULL){ //loop on IDs
-                                Phash_node id_node = new_id_node(id->value.sval, CLPAR, loc_oid);
-                                loc_oid++;
+                                Phash_node id_node = new_id_node(id->value.sval, CLPAR, (func->locenv).last_oid);
+                                ((func->locenv)->last_oid)++;//non sono convinto
                                 id_node->schema = domain_sch;
                                 if (!insert(id_node, func->locenv)) {
                                     sprintf(error_msg_symb, "Name of formal parameters must be unique, \"%s\" already declared\n", id->value.sval);
@@ -93,13 +93,13 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     func->schema = create_schema(current, func->father, NULL);
                     
                     current = current->brother; //TYPE_SECT_OPT
-                    handle_function_part(current, func, &loc_oid, CLTYPE);
+                    handle_function_part(current, func, &((func->locenv).last_oid), CLTYPE);
                     
                     current = current->brother; //VAR_SECT_OPT
-                    handle_function_part(current, func, &loc_oid, CLVAR);
+                    handle_function_part(current, func, &((func->locenv).last_oid), CLVAR);
                     
                     current = current->brother; //CONST_SECT_OPT
-                    handle_function_part(current, func, &loc_oid, CLCONST);
+                    handle_function_part(current, func, &((func->locenv).last_oid), CLCONST);
                     
                     print_func_node(func);
                     printSchema(func->schema," ");
