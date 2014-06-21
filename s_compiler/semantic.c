@@ -386,7 +386,7 @@ int sem_assign_stat(Pnode root, Phash_node f_loc_env, Code * code){
     printf("@@ in sem_assign_stat\n");
 #endif
     Pnode lhs_node = root->child;
-    Pnode expr_node = lhs_node->brother;
+    // Pnode expr_node = lhs_node->brother;
     int ok = 1;
     
     Pschema lhs_schema;
@@ -399,7 +399,8 @@ int sem_assign_stat(Pnode root, Phash_node f_loc_env, Code * code){
         sem_error(root, "Semantic error, cannot assign value to a CONST\n");//to_do
     }
     
-    ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema, code);
+    // Code expr_code = makecode(S_NOOP);
+    // ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema, &expr_code);
     
     ok = ok && are_compatible(lhs_schema, expr_schema);
     
@@ -411,6 +412,12 @@ int sem_assign_stat(Pnode root, Phash_node f_loc_env, Code * code){
     if (!ok) {
         sem_error(root, "Type error in ASSIGNMENT, type must be compatible\n");//to_do
     }
+
+    // *code = concode(*code,
+    //                 expr_code,
+    //                 makecode2(S_STO,offset,->oid),
+    //                 endcode());
+
     return ok;
 }
 
