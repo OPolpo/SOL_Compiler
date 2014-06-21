@@ -151,7 +151,7 @@ Phash_node new_id_node(char * _name, Class _class, int loc_oid){
 Pschema create_schema(Pnode domain, Phash_node func, char * id){
     //func: function node of the local environment
     Pnode dom_child = domain->child;
-    Pschema node;
+    Pschema node = NULL;
     Phash_node type_decl = NULL;
     switch (dom_child->type) {
         case T_NONTERMINAL:
@@ -313,7 +313,7 @@ int compute_size(Pschema schema){
 }
 
 char * schema2format(Pschema schema){
-    char * str, * tmp_str, * tmp2_str, * dim; //mallocami
+    char * str, * tmp_str, * tmp2_str; //mallocami
     Pschema tmp_schema;
     int i;
     switch (schema->type) {
@@ -369,6 +369,7 @@ char * schema2format(Pschema schema){
             //sprintf(str, ")");
             break;
         default:
+            str = NULL;
             break;
     }
     return str;
