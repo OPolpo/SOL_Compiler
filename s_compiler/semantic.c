@@ -393,7 +393,7 @@ int sem_assign_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Class lhs_class = -1; //maybe is not allocated...
     Pschema expr_schema = new_schema_node(-1);
     
-    ok = sem_left_hand_side(lhs_node, f_loc_env, &lhs_schema, &lhs_class, code);
+    ok = sem_left_hand_side(lhs_node, f_loc_env, &lhs_schema, &lhs_class, code, 1);
     ok = ok && (lhs_class == CLVAR || lhs_class == CLPAR); //not a CONST
     if (!ok) {
         sem_error(root, "Semantic error, cannot assign value to a CONST\n");//to_do
@@ -414,7 +414,7 @@ int sem_assign_stat(Pnode root, Phash_node f_loc_env, Code * code){
     return ok;
 }
 
-int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_class, Code * code){//to be called on a SCHEMA not mallocated
+int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_class, Code * code, int is_addr){//to be called on a SCHEMA not mallocated
 #if VERBOSE
     printf("@@ in sem_left_hand_side\n");
 #endif
@@ -442,7 +442,13 @@ int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class 
             //printf("\n## prima %d \n",(stype));
             
             *stype = h_node->schema; //TODO check about malloc...
-            *code = appcode(*code, makecode2(S_LOD,offset,h_node->oid));
+            
+            if (is_addr) {
+                *code = appcode(*code, makecode2(S_LDA,offset,h_node->oid));
+            }else{
+                *code = appcode(*code, makecode2(S_LOD,offset,h_node->oid));
+            }
+            
             //printf("\n##id schema %d \n",(h_node->schema));
         }
             break;
@@ -480,7 +486,7 @@ int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     // Pschema lhs_type = new_schema_node(-1);
     Pschema lhs_type = *stype;
     
-    ok_field = sem_left_hand_side(lhs_node, f_loc_env, &lhs_type, lhs_class, code);
+    ok_field = sem_left_hand_side(lhs_node, f_loc_env, &lhs_type, lhs_class, code, 1);
     
     //printf("\n## lhs_type\n");
     printSchema(lhs_type, " ");
@@ -493,12 +499,20 @@ int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     Pnode id_node = lhs_node->brother;
     //lhs.id must exist... so check lhs children
     Pschema lhs_attr = lhs_type->p1;
-    printSchema(lhs_attr, " ");
+    //printSchema(lhs_attr, " ");
     int found = 0;
     while (found==0 && lhs_attr != NULL) {
         if (strcmp(id_node->value.sval, lhs_attr->id)==0) {
             *stype = lhs_attr;
             found = 1;
+            
+            if (lhs_attr->type == VECTOR || lhs_attr->type == STRUCT) {
+                *code = appcode(*code, makecode1(S_SIL, compute_size(lhs_attr)));
+            }else{
+                *code = appcode(*code, makecode1(S_EIL, compute_size(lhs_attr)));
+            }
+        }else{
+            *code = appcode(*code, makecode1(S_FDA, compute_size(lhs_attr)));
         }
         lhs_attr = lhs_attr->p2;
     }
@@ -520,7 +534,7 @@ int sem_indexing(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     Pschema lhs_type = *stype;
     //printf("\n##1 %d \n",(lhs_type));
     
-    ok_index = sem_left_hand_side(lhs_node, f_loc_env, &lhs_type, lhs_class, code);
+    ok_index = sem_left_hand_side(lhs_node, f_loc_env, &lhs_type, lhs_class, code, 1);
     
     //printf("\n##2 %d \n",(lhs_type));
     //printf("\n## lhs_type\n");
@@ -660,7 +674,7 @@ int sem_while_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Pschema expr_schema = new_schema_node(-1);
     Code expr_code = makecode(S_NOOP);
     int ok = sem_expr(expr_node, f_loc_env, &expr_schema, &expr_code);
-
+    
     ok = ok && (expr_schema->type == BOOL);
     if(!ok){
         sem_error(root, "Type Error, expected BOOL in WHILE clause\n");
@@ -726,13 +740,13 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     int not_used;
     Code stat_list_code = makecode(S_NOOP);
     ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
-
+    
     //in qualche modo mi serve ti tirare fuori l'ultimo oid dato, per assegnarne uno, ed il nome della variaible lo posso costruire carattereillegale+oid, e lo devo fare se no l'insert non va a buon fine, e deve dipendere dall'oid perchè con cicli annidati se no sballa
     Phash_node end_condition_expr_value = new_id_node("TO-DO", CLCONST, f_loc_env->last_oid);// l'ultimo parametro è l'oid
     end_condition_expr_value->schema = new_schema_node(INT);
     insert(end_condition_expr_value, func->locenv);
-
-
+    
+    
     *code = concode(*code,
                     expr1_code,
                     makecode2(S_STO,888,999),
@@ -788,7 +802,7 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     int not_used;
     Code stat_list_code = makecode(S_NOOP);
     ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
-
+    
     // *code = concode(*code,
     //         makecode1(S_LDI,0),
     //         makecode2(S_STO,0,999),
@@ -1511,7 +1525,7 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 		case T_NONTERMINAL:
             switch(root->value.ival){
                 case NLEFT_HAND_SIDE:
-                    expr_ok = sem_left_hand_side(root, f_loc_env, stype, &not_used, code);
+                    expr_ok = sem_left_hand_side(root, f_loc_env, stype, &not_used, code, 1);
                     break;
                 case NMATH_EXPR:
                     expr_ok = sem_math_expr(root, f_loc_env, stype, code);

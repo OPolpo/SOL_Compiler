@@ -44,7 +44,7 @@ int sem_func_body(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_stat_list(Pnode root, Phash_node f_loc_env, int * w_return, Code * code);
 int sem_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code);
 int sem_assign_stat(Pnode root, Phash_node f_loc_env, Code * code);
-int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * type, Class * lhs_class, Code * code);
+int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * type, Class * lhs_class, Code * code, int is_addr);
 int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * type, Class * lhs_class, Code * code);
 int sem_indexing(Pnode root, Phash_node f_loc_env, Pschema * type, Class * lhs_class, Code * code);
 int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code);
