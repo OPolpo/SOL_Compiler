@@ -393,7 +393,7 @@ int sem_assign_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Class lhs_class = -1; //maybe is not allocated...
     Pschema expr_schema = new_schema_node(-1);
     
-    ok = ok && sem_left_hand_side(lhs_node, f_loc_env, &lhs_schema, &lhs_class, code);
+    ok = sem_left_hand_side(lhs_node, f_loc_env, &lhs_schema, &lhs_class, code);
     ok = ok && (lhs_class == CLVAR || lhs_class == CLPAR); //not a CONST
     if (!ok) {
         sem_error(root, "Semantic error, cannot assign value to a CONST\n");//to_do
@@ -419,7 +419,7 @@ int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class 
     printf("@@ in sem_left_hand_side\n");
 #endif
     Phash_node h_node;
-    int lhs_ok;
+    int lhs_ok = 1;
     Pnode child = root->child;
     
     //printf("\n##lhs: ");
@@ -464,6 +464,7 @@ int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class 
             }
             break;
         default:
+            lhs_ok = 0;
             sem_error(child, "Some weird terminal node in lhs\n");
             break;
     }
@@ -1017,7 +1018,7 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, code);
 	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, code);
     
-	int type_ok;
+	int type_ok = 1;
 	switch(root->qualifier){
 		case EQ:
 		case NE:
@@ -1045,6 +1046,7 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
                 sem_error(root, "Type error using IN relational expression\n");//to_do
 			break;
 		default:
+            type_ok = 0;
 			sem_error(root, "Some weird qualification in relational expression\n");
 	}
     

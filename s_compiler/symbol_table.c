@@ -318,23 +318,23 @@ char * schema2format(Pschema schema){
     int i;
     switch (schema->type) {
         case CHAR:
-            str = (char *)malloc(2*sizeof(char));
+            //str = (char *)malloc(2*sizeof(char));
             str = "c";
             break;
         case INT:
-            str = (char *)malloc(2*sizeof(char));
+            //str = (char *)malloc(2*sizeof(char));
             str = "i";
             break;
         case REAL:
-            str = (char *)malloc(2*sizeof(char));
+            //str = (char *)malloc(2*sizeof(char));
             str = "r";
             break;
         case STRING:
-            str = (char *)malloc(2*sizeof(char));
+            //str = (char *)malloc(2*sizeof(char));
             str = "s";
             break;
         case BOOL:
-            str = (char *)malloc(2*sizeof(char));
+            //str = (char *)malloc(2*sizeof(char));
             str = "b";
             break;
         case VECTOR:

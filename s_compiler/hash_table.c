@@ -124,8 +124,6 @@ void print_generic_node(Phash_node node){
 
 void printSchema(Pschema root, char* father_indent){
     if(root==NULL) return;
-    
-    int i;
     Pschema p;
     
     //printf("[][][][][][]\n");

@@ -60,7 +60,6 @@ char* tabnonterm[] =
 
 void treeprint(Pnode root, char* father_indent) {
     if(root==NULL) return;
-    int i;
     Pnode p;
 
     char* my_indent = calloc(1000,sizeof(char));
