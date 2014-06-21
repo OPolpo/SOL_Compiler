@@ -818,6 +818,13 @@ int sem_read_stat(Pnode root, Phash_node f_loc_env, Code * code){
     if (!ok) {
         sem_error(root, "Variable ID in READ-STAT must be a VAR or a PAR\n");
     }
+    
+    if (is_null) {
+        *code = appcode(*code, makecode_xread(S_READ, offset, id_hash_node->oid,schema2format(id_hash_node->schema)));
+    }else{
+        *code = appcode(*code,makecode_xread(S_FREAD, offset, id_hash_node->oid, schema2format(id_hash_node->schema)));
+    }
+    
     return ok;
 }
 
@@ -852,7 +859,11 @@ int sem_write_stat(Pnode root, Phash_node f_loc_env, Code * code){
     
     Pschema expr_schema = new_schema_node(-1);
     ok = ok && sem_expr(spec->brother, f_loc_env, &expr_schema, code);
-    
+    if (is_null) {
+        *code = appcode(*code, makecode_str(S_WRITE, schema2format(expr_schema)));
+    }else{
+        *code = appcode(*code,makecode_str(S_FWRITE, schema2format(expr_schema)));
+    }
     return ok;
 }
 
@@ -1161,6 +1172,11 @@ int sem_rd_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
         printf("\n## xpecifier_opt è ok \n");
         int size = 0;
         dom_ok = sem_domain(root->child->brother, f_loc_env, stype, code, &size);
+    }
+    if (is_null) {
+        *code = appcode(*code, makecode_str(S_RD, schema2format(*stype)));
+    }else{
+        *code = appcode(*code,makecode_str(S_FRD, schema2format(*stype)));
     }
     return ok && dom_ok;
 }
