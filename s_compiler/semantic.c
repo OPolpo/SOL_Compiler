@@ -744,23 +744,23 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     //in qualche modo mi serve ti tirare fuori l'ultimo oid dato, per assegnarne uno, ed il nome della variaible lo posso costruire carattereillegale+oid, e lo devo fare se no l'insert non va a buon fine, e deve dipendere dall'oid perchè con cicli annidati se no sballa
     Phash_node end_condition_expr_value = new_id_node("TO-DO", CLCONST, f_loc_env->last_oid);// l'ultimo parametro è l'oid
     end_condition_expr_value->schema = new_schema_node(INT);
-    insert(end_condition_expr_value, func->locenv);
-    
-    
+
+    insert(end_condition_expr_value, f_loc_env->locenv);
+
     *code = concode(*code,
                     expr1_code,
-                    makecode2(S_STO,888,999),
+                    makecode2(S_STO,offset,id_hash_node->oid),
                     expr2_code,
-                    makecode2(S_STO,0,999),
-                    makecode2(S_LOD,888,999),
-                    makecode2(S_LOD,0,999),
+                    makecode2(S_STO,0,end_condition_expr_value->oid),
+                    makecode2(S_LOD,offset,id_hash_node->oid),
+                    makecode2(S_LOD,0,end_condition_expr_value->oid),
                     makecode(S_ILE),
                     makecode1(S_JMF, stat_list_code.size+6),
                     stat_list_code,
-                    makecode2(S_LOD,888,999),
+                    makecode2(S_LOD,offset,id_hash_node->oid),
                     makecode1(S_LDI,1),
                     makecode(S_IPLUS),
-                    makecode2(S_LOD,888,999),
+                    makecode2(S_LOD,offset,id_hash_node->oid),
                     makecode1(S_JMP, -(stat_list_code.size+8)),
                     endcode()
                     );
