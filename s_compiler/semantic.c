@@ -767,7 +767,8 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     }
     
     Pschema expr_schema = new_schema_node(-1);
-    ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema, code);
+    Code expr_code = makecode(S_NOOP);
+    ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema, &expr_code);
     ok = ok && (expr_schema->type == VECTOR);
     if (!ok) {
         sem_error(expr_node, "Type error: expr must be a VECTOR in FOR-EACH STAT\n");
@@ -777,7 +778,31 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
         sem_error(expr_node, "Type error: ID must be of the same type of VECTOR elements in FOREACH STAT\n");
     }
     int not_used;
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, code);
+    Code stat_list_code = makecode(S_NOOP);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
+
+    // *code = concode(*code,
+    //         makecode1(S_LDI,0),
+    //         makecode2(S_STO,0,999),
+    //         expr_code,
+    //         makecode2(S_STO,0,999),
+    //         makecode2(S_LDA,0,999),
+    //         makecode2(S_LOD,0,999),
+    //         makecode1(S_IXA,777),
+    //         ###########ESIL size,
+    //         makecode2(S_STO,888,999),
+    //         stat_list_code,
+    //         makecode2(S_LOD,0,999),
+    //         makecode1(S_LDI,1),
+    //         makecode(S_IPLUS),
+    //         makecode2(S_STO,0,999),
+    //         makecode2(S_LOD,0,999),
+    //         makecode1(S_LDI,333),
+    //         makecode(S_EQU),
+    //         makecode2(S_LOD,888,999),
+    //         makecode1(S_JMP, -(stat_list_code.size+13)),
+    //         endcode()
+    //         );
     return ok;
 }
 
