@@ -17,5 +17,6 @@ int are_compatible(Pschema a, Pschema b);
 Pschema create_schema(Pnode domain, Phash_node func, char * id);
 int compute_size(Pschema schema);
 char * schema2format(Pschema schema);
+char * make_format(Pschema schema);
 
 #endif

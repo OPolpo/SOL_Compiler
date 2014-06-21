@@ -845,9 +845,9 @@ int sem_read_stat(Pnode root, Phash_node f_loc_env, Code * code){
     }
     
     if (is_null) {
-        *code = appcode(*code, makecode_xread(S_READ, offset, id_hash_node->oid,schema2format(id_hash_node->schema)));
+        *code = appcode(*code, makecode_xread(S_READ, offset, id_hash_node->oid,make_format(id_hash_node->schema)));
     }else{
-        *code = appcode(*code,makecode_xread(S_FREAD, offset, id_hash_node->oid, schema2format(id_hash_node->schema)));
+        *code = appcode(*code,makecode_xread(S_FREAD, offset, id_hash_node->oid, make_format(id_hash_node->schema)));
     }
     
     return ok;
@@ -885,9 +885,9 @@ int sem_write_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Pschema expr_schema = new_schema_node(-1);
     ok = ok && sem_expr(spec->brother, f_loc_env, &expr_schema, code);
     if (is_null) {
-        *code = appcode(*code, makecode_str(S_WRITE, schema2format(expr_schema)));
+        *code = appcode(*code, makecode_str(S_WRITE, make_format(expr_schema)));
     }else{
-        *code = appcode(*code,makecode_str(S_FWRITE, schema2format(expr_schema)));
+        *code = appcode(*code,makecode_str(S_FWRITE, make_format(expr_schema)));
     }
     return ok;
 }
@@ -1177,9 +1177,9 @@ int sem_wr_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
         expr_ok = sem_expr(root->child->brother, f_loc_env, stype, code);
     }
     if (is_null) {
-        *code = appcode(*code, makecode_str(S_WR, schema2format(*stype)));
+        *code = appcode(*code, makecode_str(S_WR, make_format(*stype)));
     }else{
-        *code = appcode(*code,makecode_str(S_FWR, schema2format(*stype)));
+        *code = appcode(*code,makecode_str(S_FWR, make_format(*stype)));
     }
     
     return ok && expr_ok;
@@ -1199,9 +1199,9 @@ int sem_rd_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
         dom_ok = sem_domain(root->child->brother, f_loc_env, stype, code, &size);
     }
     if (is_null) {
-        *code = appcode(*code, makecode_str(S_RD, schema2format(*stype)));
+        *code = appcode(*code, makecode_str(S_RD, make_format(*stype)));
     }else{
-        *code = appcode(*code,makecode_str(S_FRD, schema2format(*stype)));
+        *code = appcode(*code,makecode_str(S_FRD, make_format(*stype)));
     }
     return ok && dom_ok;
 }
