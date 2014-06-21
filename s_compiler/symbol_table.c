@@ -373,3 +373,12 @@ char * schema2format(Pschema schema){
     }
     return str;
 }
+
+char * make_format(Pschema schema){
+    char * str, * tmp_str;
+    tmp_str = schema2format(schema);
+    str = calloc(strlen(tmp_str)+3, sizeof(char));
+    sprintf(str, "\"%s\"", tmp_str);
+    return str;
+}
+
