@@ -340,7 +340,7 @@ int sem_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
 #if VERBOSE
     printf("@@ in sem_stat\n");
 #endif
-    int ok;
+    int ok = 1;
     int return_ok;
     Pnode child = root->child;
     
@@ -374,6 +374,7 @@ int sem_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
             break;
         default:
             printf("\n##%d\n", child->value.ival);
+            ok = 0;
             sem_error(child, "Some weird nonterminal node in stat\n");
             break;
     }
