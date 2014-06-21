@@ -21,17 +21,6 @@ int insert(Phash_node p, Phash_node * table){
     return 1;
 }
 
-int find_same_id(Phash_node p, Phash_node table_pos){
-    Phash_node current = table_pos;
-    while (current!= NULL) {
-        if (strcmp(p->name, current->name) == 0) {
-            return 1;
-        }
-        current = current->next;
-    }
-    return 0;
-}
-
 Phash_node getNode(char * id, Phash_node * table){
     int pos = hash(id);
     Phash_node node = table[pos];
