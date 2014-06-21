@@ -129,7 +129,7 @@ void printSchema(Pschema root, char* father_indent){
     Pschema p;
     
     //printf("[][][][][][]\n");
-    printf("%s",schema2format(root));
+    //printf("%s\n",schema2format(root));
     
     //--Indent Stuff
     char* my_indent = calloc(1000,sizeof(char));

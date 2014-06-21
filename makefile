@@ -6,7 +6,7 @@ COMP_PATH_PARSER = s_compiler
 
 OBJ = $(COMP_PATH_LEXER)/lex.o $(COMP_PATH_PARSER)/parser.o $(COMP_PATH)/tree.o $(COMP_PATH)/hash_table.o $(COMP_PATH)/symbol_table.o $(COMP_PATH)/semantic.o $(COMP_PATH)/code_gen.o
 
-all: compiler clean
+all: compiler
 
 $(COMP_PATH_LEXER)/lexer: $(COMP_PATH_LEXER)/lex.c $(COMP_PATH_PARSER)/parser.h
 	cc -o lexer $(COMP_PATH_LEXER)/lex.c -DLEXER

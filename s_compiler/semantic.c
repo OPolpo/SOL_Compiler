@@ -806,7 +806,8 @@ int sem_read_stat(Pnode root, Phash_node f_loc_env, Code * code){
 #endif
     Pnode spec = root->child;
     Pnode id_node = spec->brother;
-    int ok = sem_specifier_opt(spec, f_loc_env, code);
+    int is_null;
+    int ok = sem_specifier_opt(spec, f_loc_env, code, &is_null);
     int offset;
     Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env, &offset);
     if (id_hash_node == NULL) {
@@ -820,14 +821,15 @@ int sem_read_stat(Pnode root, Phash_node f_loc_env, Code * code){
     return ok;
 }
 
-int sem_specifier_opt(Pnode root, Phash_node f_loc_env, Code * code){ // NULL or STRING
+int sem_specifier_opt(Pnode root, Phash_node f_loc_env, Code * code, int * is_null){ // NULL or STRING
 #if VERBOSE
     printf("@@ in sem_specifier_opt\n");
 #endif
     Pnode specifier = root->child;
     Pschema type_spec = new_schema_node(-1);
     int ok = 1;
-    int spec_ok = (specifier == NULL);
+    *is_null = (specifier == NULL);
+    int spec_ok = *is_null;
     if (!spec_ok) {
         ok = sem_expr(specifier, f_loc_env, &type_spec, code);
         spec_ok = (type_spec->type == STRING);
@@ -845,7 +847,8 @@ int sem_write_stat(Pnode root, Phash_node f_loc_env, Code * code){
     printf("@@ in sem_write_stat\n");
 #endif
     Pnode spec = root->child;
-    int ok = sem_specifier_opt(spec, f_loc_env, code);
+    int is_null;
+    int ok = sem_specifier_opt(spec, f_loc_env, code, &is_null);
     
     Pschema expr_schema = new_schema_node(-1);
     ok = ok && sem_expr(spec->brother, f_loc_env, &expr_schema, code);
@@ -1131,11 +1134,18 @@ int sem_wr_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 #if VERBOSE
     printf("@@ in sem_wr_expr\n");
 #endif
-    int ok = sem_specifier_opt(root->child, f_loc_env, code);
+    int is_null;
+    int ok = sem_specifier_opt(root->child, f_loc_env, code, &is_null);
     int expr_ok = 1;
     if (ok) {
         expr_ok = sem_expr(root->child->brother, f_loc_env, stype, code);
     }
+    if (is_null) {
+        *code = appcode(*code, makecode_str(S_WR, schema2format(*stype)));
+    }else{
+        *code = appcode(*code,makecode_str(S_FWR, schema2format(*stype)));
+    }
+    
     return ok && expr_ok;
 }
 
@@ -1143,7 +1153,8 @@ int sem_rd_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 #if VERBOSE
     printf("@@ in sem_rd_expr\n");
 #endif
-    int ok = sem_specifier_opt(root->child, f_loc_env, code);
+    int is_null;
+    int ok = sem_specifier_opt(root->child, f_loc_env, code, &is_null);
     printf("\n## dopo specifier_opt\n");
     int dom_ok = 1;
     if (ok) {

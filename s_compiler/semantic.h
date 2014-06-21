@@ -54,7 +54,7 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_return_stat(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_read_stat(Pnode root, Phash_node f_loc_env, Code * code);
-int sem_specifier_opt(Pnode specifier_opt, Phash_node f_loc_env, Code * code);
+int sem_specifier_opt(Pnode specifier_opt, Phash_node f_loc_env, Code * code, int * is_null);
 int sem_write_stat(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
 int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);

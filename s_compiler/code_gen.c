@@ -80,13 +80,13 @@ void relocate_address(Code code, int offset){
 
 Code appcode(Code code1, Code code2){
     Code rescode;
-    
+    /*
     printf("********\nAppendo a: \n");
     print_code(stdout, &code1);
     printf("\nQUESTO: \n");
     print_code(stdout, &code2);
     printf("\nOttengo: \n");
-    
+    */
     if (code1.head == code2.head && code1.tail == code2.tail) {
         printf("Trying to concatenate a list with itself <==============\n");
         return code1;
@@ -96,16 +96,20 @@ Code appcode(Code code1, Code code2){
         if (code1.tail != code1.head) {
             fprintf(stderr, "********* Strange code starting with NOOP\n");
         }
+        /*
         print_code(stdout, &code2);
         printf("FINE append-> coda2. \n********\n");
+        */
         return code2;
     }
     else if (code2.head->op == S_NOOP) {
         if (code2.tail != code2.head) {
             fprintf(stderr, "********* Strange code starting with NOOP\n");
         }
+        /*
         print_code(stdout, &code1);
         printf("FINE append-> coda1. \n********\n");
+         */
         return code1;
     }
     else{
@@ -114,10 +118,10 @@ Code appcode(Code code1, Code code2){
         rescode.tail = code2.tail;
         code1.tail->next = code2.head;
         rescode.size = code1.size + code2.size;
-        
+        /*
         print_code(stdout, &rescode);
         printf("FINE append. \n********\n");
-        
+        */
         return rescode;
     }
 }
