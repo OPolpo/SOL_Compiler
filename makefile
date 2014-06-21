@@ -1,5 +1,5 @@
 CC = cc -g $(CFLAGS)
-CFLAGS = -c -Wall -Wextra
+CFLAGS = -Wall -Wextra
 COMP_PATH = s_compiler
 COMP_PATH_LEXER = s_compiler
 COMP_PATH_PARSER = s_compiler
