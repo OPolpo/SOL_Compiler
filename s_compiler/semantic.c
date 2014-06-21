@@ -727,8 +727,10 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Code stat_list_code = makecode(S_NOOP);
     ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
 
-    //in qualche modo mi serve ti tirare fuori l'ultimo oid dato, per assegnarne uno, ed il nome della variaible lo posso costruire carattereillegale+oid, e lo devo fare se no l'insert non va a buon fine, e deve dipendere dall'oid perchè con cicli annidati se no sballa
-    Phash_node end_condition_expr_value = new_id_node("TO-DO", CLCONST, f_loc_env->last_oid);// l'ultimo parametro è l'oid
+    char * id_aux;
+    asprintf(&id_aux, "0_AUX_%d", f_loc_env->last_oid);
+    Phash_node end_condition_expr_value = new_id_node(id_aux, CLCONST, f_loc_env->last_oid); //todo
+    f_loc_env->last_oid++;
     end_condition_expr_value->schema = new_schema_node(INT);
     insert(end_condition_expr_value, f_loc_env->locenv);
 
@@ -789,28 +791,47 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Code stat_list_code = makecode(S_NOOP);
     ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
 
-    // *code = concode(*code,
-    //         makecode1(S_LDI,0),
-    //         makecode2(S_STO,0,999),
-    //         expr_code,
-    //         makecode2(S_STO,0,999),
-    //         makecode2(S_LDA,0,999),
-    //         makecode2(S_LOD,0,999),
-    //         makecode1(S_IXA,777),
-    //         ###########ESIL size,
-    //         makecode2(S_STO,888,999),
-    //         stat_list_code,
-    //         makecode2(S_LOD,0,999),
-    //         makecode1(S_LDI,1),
-    //         makecode(S_IPLUS),
-    //         makecode2(S_STO,0,999),
-    //         makecode2(S_LOD,0,999),
-    //         makecode1(S_LDI,333),
-    //         makecode(S_EQU),
-    //         makecode2(S_LOD,888,999),
-    //         makecode1(S_JMP, -(stat_list_code.size+13)),
-    //         endcode()
-    //         );
+    char * id_aux_1;
+    asprintf(&id_aux_1, "0_AUX_%d", f_loc_env->last_oid);
+    Phash_node expr_value = new_id_node(id_aux_1, CLCONST, f_loc_env->last_oid);//todo
+    f_loc_env->last_oid++;
+    expr_value->schema = new_schema_node(INT);
+    insert(expr_value, f_loc_env->locenv);
+
+    char * id_aux_2;
+    asprintf(&id_aux_2, "0_AUX_%d", f_loc_env->last_oid);
+    Phash_node index = new_id_node(id_aux_2, CLCONST, f_loc_env->last_oid);//todo
+    f_loc_env->last_oid++;
+    index->schema = new_schema_node(INT);
+    insert(index, f_loc_env->locenv);
+
+    Code e_s_il_code;
+    if(expr_schema->type == STRUCT || expr_schema->type == VECTOR)
+        e_s_il_code = makecode1(S_SIL, compute_size(expr_schema->p1));
+    else
+        e_s_il_code = makecode1(S_EIL, compute_size(expr_schema->p1));
+
+    *code = concode(*code,
+            makecode1(S_LDI,0),
+            makecode2(S_STO,0,index->oid),
+            expr_code,
+            makecode2(S_STO,0,expr_value->oid),
+            makecode2(S_LDA,0,expr_value->oid),
+            makecode2(S_LOD,0,index->oid),
+            makecode1(S_IXA,compute_size(expr_schema->p1)),
+            e_s_il_code,
+            makecode2(S_STO,offset,id_hash_node->oid),
+            stat_list_code,
+            makecode2(S_LOD,0,index->oid),
+            makecode1(S_LDI,1),
+            makecode(S_IPLUS),
+            makecode2(S_STO,0,index->oid),
+            makecode2(S_LOD,0,index->oid),
+            makecode1(S_LDI,expr_schema->size),
+            makecode(S_EQU),
+            makecode1(S_JMF, -(stat_list_code.size+12)),
+            endcode()
+            );
     return ok;
 }
 
