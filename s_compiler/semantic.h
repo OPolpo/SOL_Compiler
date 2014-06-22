@@ -41,7 +41,7 @@ int sem_var_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_ob
 int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects);
 int sem_func_list_opt(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_func_body(Pnode root, Phash_node f_loc_env, Code * code);
-int sem_stat_list(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, int called_from_funct);
+int sem_stat_list(Pnode root, Phash_node f_loc_env, int * w_return, Code * code);
 int sem_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code);
 int sem_assign_stat(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * type, Class * lhs_class, Code * code, int is_addr, int * is_s);
@@ -67,6 +67,7 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
 int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int * offset_to_exit);
 int sem_built_in_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
+void cleanup_return(Code * code);
 
 int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int is_addr);
 void sem_error(Pnode node, char * msg);

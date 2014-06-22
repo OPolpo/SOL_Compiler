@@ -66,6 +66,7 @@ char * tabOperator[]={
     "HALT",
     "SCODE",
     "RETURN",
+    "S_FAKE_RETURN",
     "---"
 };
 
@@ -334,6 +335,7 @@ void print_stat(FILE * stream, Stat * stat){
         case S_NEQ:
         case S_IST:
         case S_RETURN:
+        case S_FAKE_RETURN:
         case S_NOOP:
             break;
             

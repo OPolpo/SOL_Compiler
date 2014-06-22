@@ -70,6 +70,7 @@ typedef enum{
     S_HALT,
     S_SCODE,
     S_RETURN,
+    S_FAKE_RETURN,
     S_NOOP
 } Operator;
 
