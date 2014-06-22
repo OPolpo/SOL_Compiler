@@ -6,6 +6,7 @@
 
 char error_msg[100];
 char convert_bool[] = {'0','1'};
+int last_statement_of_function = 0; // we need this parameter for segnaling to return statement if we need return or jmp
 
 
 int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
@@ -73,7 +74,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     Code func_body_code = makecode(S_NOOP);
 	int func_body_ok = sem_func_body(current, new_f_loc_env, &func_body_code);
     *code = appcode(*code, func_body_code);
-    
+
     *num_objects = var_num_objects + const_num_objects + decl_num_objects;
     return decl_list_opt_ok && domain_ok && type_sect_opt_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
 }
@@ -307,9 +308,9 @@ int sem_func_body(Pnode root, Phash_node f_loc_env, Code * code){
     if (!ok) {
         sem_error(id1, "Function ID different from ID in function body BEGIN\n");
     }
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &return_ok, code);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &return_ok, code, 1);
     
-    ok = /*ok &&*/ (strcmp(id1->value.sval, id2->value.sval) == 0);
+    ok = ok && (strcmp(id1->value.sval, id2->value.sval) == 0);
     if (!ok) {
         printf("##%s %s\n\n",id1->value.sval, id2->value.sval);
         sem_error(id2, "Function ID different from ID in function body END\n");
@@ -318,17 +319,24 @@ int sem_func_body(Pnode root, Phash_node f_loc_env, Code * code){
     if (!return_ok) {
         sem_error(id2, "Control may reach end of FUNC without a RETURN\n");
     }
+
     return ok;
 }
 
-int sem_stat_list(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
+int sem_stat_list(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, int called_from_funct){
 #if VERBOSE
     printf("@@ in sem_stat_list\n");
 #endif
     Pnode stat_node = root->child;
     int ok = 1;
     int w_return_stat = 0;
-    while (stat_node != NULL) {
+
+    while(stat_node != NULL){
+
+        if(called_from_funct)
+            if(stat_node->brother == NULL && (stat_node->child)->value.ival==NRETURN_STAT)//if true this is the last statement of statlist in function and it's a return
+                last_statement_of_function=1;
+
         ok = ok && sem_stat(stat_node, f_loc_env, &w_return_stat, code);
         stat_node = stat_node->brother;
         *w_return = *w_return || w_return_stat;
@@ -606,12 +614,12 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
     int return_elsif_stat_list_opt = 0;
     
     Code if_stat_list_code = makecode(S_NOOP);
-    int if_stat_list_ok = sem_stat_list(if_stat_list_node, f_loc_env, &return_if_stat_list, &if_stat_list_code);
+    int if_stat_list_ok = sem_stat_list(if_stat_list_node, f_loc_env, &return_if_stat_list, &if_stat_list_code, 0);
     
     Code else_stat_list_code = makecode(S_NOOP);
     int else_stat_list_ok = 1;
     if (else_stat_list_node) {
-        else_stat_list_ok = sem_stat_list(else_stat_list_node, f_loc_env, &return_else_list, &else_stat_list_code);
+        else_stat_list_ok = sem_stat_list(else_stat_list_node, f_loc_env, &return_else_list, &else_stat_list_code, 0);
     }
     else {
         return_else_list = 1;
@@ -666,7 +674,7 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
         }
         int return_stat = 0;
         Code stat_list_code = makecode(S_NOOP);
-        stat_list_ok = sem_stat_list(stat_list_node, f_loc_env, &return_stat, &stat_list_code);
+        stat_list_ok = sem_stat_list(stat_list_node, f_loc_env, &return_stat, &stat_list_code, 0);
         
         *w_return = return_stat && *w_return;
         *ptemp_code = concode(*ptemp_code,
@@ -709,7 +717,7 @@ int sem_while_stat(Pnode root, Phash_node f_loc_env, Code * code){
     
     Code stat_list_code = makecode(S_NOOP);
     int not_used;
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code, 0);
     
     *code = concode(*code,
                     expr_code,
@@ -766,7 +774,7 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     
     int not_used;
     Code stat_list_code = makecode(S_NOOP);
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code, 0);
 
     char * id_aux;
     asprintf(&id_aux, "0_AUX_%d", f_loc_env->last_oid);
@@ -829,7 +837,7 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     }
     int not_used;
     Code stat_list_code = makecode(S_NOOP);
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code, 0);
 
     char * id_aux_1;
     asprintf(&id_aux_1, "0_AUX_%d", f_loc_env->last_oid);
@@ -891,6 +899,11 @@ int sem_return_stat(Pnode root, Phash_node f_loc_env, Code * code){
         print_sch(f_loc_env->schema);
         sem_error(expr_node, "Type error: RETURN-EXPR type must be the same as in function definition\n");
     }
+    if(last_statement_of_function)
+        *code = appcode(*code, makecode(S_RETURN));
+    else
+        *code = appcode(*code, makecode1(S_JMP, 999999));
+
     return ok;
 }
 
