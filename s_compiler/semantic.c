@@ -71,9 +71,12 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
 	int func_list_opt_ok = sem_func_list_opt(current, new_f_loc_env, code);
 	current = current->brother;
     
+    Stat * start = code->tail; //we save the pointer to first stat of the code to sanitize // this is for optimixe sanitization process of return
+    int code_len = code->size; //we save the size of the code at the start point // this is for optimixe sanitization process of return
     Code func_body_code = makecode(S_NOOP);
 	int func_body_ok = sem_func_body(current, new_f_loc_env, &func_body_code);
     *code = appcode(*code, func_body_code);
+    cleanup_return(start, code_len, code); //sanitize
 
     *num_objects = var_num_objects + const_num_objects + decl_num_objects;
     return decl_list_opt_ok && domain_ok && type_sect_opt_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
@@ -319,7 +322,6 @@ int sem_func_body(Pnode root, Phash_node f_loc_env, Code * code){
     if (!return_ok) {
         sem_error(id2, "Control may reach end of FUNC without a RETURN\n");
     }
-    cleanup_return(code);
     return ok;
 }
 
@@ -1629,12 +1631,13 @@ void sem_error(Pnode node, char * msg){
     exit(EXIT_FAILURE);
 }
 
-void cleanup_return(Code * code){
-    Stat * stat = code->head;
+// this method scan every time all the code previusly generated, we can make it more smart
+void cleanup_return(Stat * start, int code_len,Code * code){
+    Stat * stat = start;
     int i = 1;
     if((code->tail)->op==S_FAKE_RETURN){
         (code->tail)->op=S_RETURN;
-        stat->args[0].ival=0;//useless
+        (code->tail)->args[0].ival=0;//useless
     }
     else
         *code = appcode(*code,makecode(S_RETURN));
@@ -1642,7 +1645,7 @@ void cleanup_return(Code * code){
     while(stat){
         if(stat->op==S_FAKE_RETURN){
             stat->op=S_JMP;
-            stat->args[0].ival=code->size-i;
+            stat->args[0].ival=code->size-code_len-i;
         }
         i++;
         stat = stat->next;
