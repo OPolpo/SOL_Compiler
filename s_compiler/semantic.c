@@ -6,7 +6,7 @@
 
 char error_msg[100];
 char convert_bool[] = {'0','1'};
-int last_statement_of_function = 0; // we need this parameter for segnaling to return statement if we need return or jmp
+
 
 
 int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
@@ -43,11 +43,25 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     else
         new_f_loc_env = f_loc_env;
     
+    // Pnode gencodeAuxNode = current->child; //this is the first decl of decl list maybe null
     int decl_num_objects = 0;
     Code decl_code = makecode(S_NOOP);
 	int decl_list_opt_ok = sem_decl_list_opt(current, new_f_loc_env, &decl_code, &decl_num_objects);
     *code = appcode(*code, decl_code);
 	current = current->brother;
+
+    // Code sto_code = makecode(S_NOOP);
+    // while(gencodeAuxNode){
+    //     Pnode gencodeAuxNode_id = (gencodeAuxNode->child)->child;//idlist can't be null
+    //     while(gencodeAuxNode_id){
+    //         sto_code = appcode(sto_code, makecode(sto,find_visible_node()));
+    //         gencodeAuxNode_id = gencodeAuxNode_id->brother;
+    //     }
+    //     gencodeAuxNode = gencodeAuxNode->brother;
+    // }
+
+
+
     
     Pschema domain_schema = new_schema_node(-1);
     int size = 0;
