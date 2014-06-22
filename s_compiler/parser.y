@@ -303,6 +303,8 @@ int main(){
 	int result;
 	yyin = stdin;
 	if((result = yyparse()) == 0){
+        printf("sizeof\nchar:\t%lu\nint:\t%lu\nfloat:\t%lu\nstring:\t%lu\n", sizeof(char), sizeof(int), sizeof(float), sizeof(char *));
+        
 		treeprint(root, " ");
 		Phash_node symtab = create_symbol_table(root, NULL);
         
