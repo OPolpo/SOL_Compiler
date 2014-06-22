@@ -386,7 +386,7 @@ int sem_assign_stat(Pnode root, Phash_node f_loc_env, Code * code){
     printf("@@ in sem_assign_stat\n");
 #endif
     Pnode lhs_node = root->child;
-    // Pnode expr_node = lhs_node->brother;
+    Pnode expr_node = lhs_node->brother;
     int ok = 1;
     
     Pschema lhs_schema;
