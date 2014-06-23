@@ -36,7 +36,6 @@ int sem_id_list(Pnode root, int * num_objects);
 int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
 int sem_struct_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
 int sem_vector_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
-int sem_type_sect_opt();
 int sem_var_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects);
 int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects);
 int sem_func_list_opt(Pnode root, Phash_node f_loc_env, Code * code, Poid2address * func_table);

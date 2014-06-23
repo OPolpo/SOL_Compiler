@@ -74,8 +74,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
 	int domain_ok = sem_domain(current, new_f_loc_env, &domain_schema, code);
 	current = current->brother;
     
-	int type_sect_opt_ok = sem_type_sect_opt();
-	current = current->brother;
+	current = current->brother;// with this we skip type_sec_op cause there are not control or code action to do
     
     int var_num_objects = 0;
     Code var_code = makecode(S_NOOP);
@@ -98,7 +97,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     *code = appcode(*code, func_body_code);
     cleanup_return(start, code_len, code); //sanitize
     
-    return decl_list_opt_ok && domain_ok && type_sect_opt_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
+    return decl_list_opt_ok && domain_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
 }
 
 int sem_decl_list_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects){
@@ -236,13 +235,6 @@ int sem_vector_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
     (*stype)->p1 = new_schema_node(-1);
     ok = ok && sem_domain(root->child->brother, f_loc_env, &(*stype)->p1, code);
     return ok;
-}
-
-int sem_type_sect_opt(){
-#if VERBOSE
-    printf("@@ in sem_type_sect_opt\n");
-#endif
-    return 1;
 }
 
 int sem_var_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects){
