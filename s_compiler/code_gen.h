@@ -2,6 +2,7 @@
 #define SOL_compilers_code_gen_h
 
 #include "def.h"
+#include "hash_table.h"
 #include <stdio.h>
 
 
@@ -115,4 +116,17 @@ typedef struct snode_stack{
 
 void StackPush(Stack_node_code ** stackPtr, Code * element);
 Code * StackPop(Stack_node_code ** stackPtr);
+
+typedef struct sfunc_oid{
+    int oid;
+    int address;
+    struct sfunc_oid * next;
+} Oid2address, *Poid2address;
+
+Poid2address * new_oid2address();
+int insert_o2a(Poid2address p, Poid2address * table);
+int get_f_addr_by_oid(int oid, Poid2address * table);
+Poid2address new_o2a(int oid, int addr);
+void destroy_o2a(Poid2address * table);
+
 #endif
