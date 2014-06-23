@@ -455,14 +455,31 @@ void destroy_o2a(Poid2address * table){
     int i=0;
     for (i=0; i<TOT; i++) {
         if (table[i]!= NULL) {
-            free_list(table[i]);
+            //free_list(table[i]);
+            Poid2address newhead = table[i]->next;
+            while(newhead){
+                free(table[i]);//free old head
+                table[i] = newhead;
+                newhead=newhead->next;
+            }
+            free(table[i]);
         }
     }
 }
 
-void free_list(Poid2address list){
-    Poid2address newhead = list->next;
-    free(list);
-    if(newhead!=NULL)
-        free_list(newhead);
-}
+// void free_list(Poid2address list){
+//     Poid2address newhead = list->next;
+//     free(list);
+//     if(newhead!=NULL)
+//         free_list(newhead);
+// }
+
+// void free_list_it(Poid2address list){
+//     Poid2address newhead = list->next;
+//     while(newhead){
+//         free(list)//free old head
+//         list = newhead;
+//         newhead=newhead->next;
+//     }
+//     free(list);
+// }
