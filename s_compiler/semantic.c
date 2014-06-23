@@ -10,11 +10,13 @@ char convert_bool[] = {'0','1'};
 
 
 int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
+    Poid2address * func_table = new_o2a_table();
+
 #if VERBOSE
     printf("@@ in sem_program\n");
 #endif
     Code func_decl_code = makecode(S_NOOP);
-    int ok = sem_func_decl(root->child, f_loc_env, not_first, &func_decl_code);
+    int ok = sem_func_decl(root->child, f_loc_env, not_first, &func_decl_code, func_table);
     
     //print_code(stderr, &func_decl_code);
     *code = concode(makecode1(S_SCODE, func_decl_code.size+4),
@@ -25,11 +27,13 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     
     //int ok = sem_func_decl(root->child, f_loc_env, not_first, code);
     
-    cleanup_goto(code);
+   
+    cleanup_goto(code, func_table);
+    destroy_o2a(func_table);
     return ok;
 }
 
-int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
+int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, Poid2address * func_table){
 #if VERBOSE
     printf("@@ in sem_func_decl\n");
 #endif
@@ -42,9 +46,11 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
         new_f_loc_env = getNode(id->value.sval, f_loc_env->aux->locenv);
     else
         new_f_loc_env = f_loc_env;
+
+    insert_o2a(new_o2a(new_f_loc_env->oid, &(code->tail->address)),func_table);
     
     *code = appcode(*code, makecode1(S_FUNC, new_f_loc_env->oid));
-    f_loc_env->aux->abs_addr = &(code->tail->address);
+    //f_loc_env->aux->abs_addr = &(code->tail->address);
     //printf("%d %p<=================%s\n",code->tail->address, &(code->tail->address),id->value.sval);
 
 
@@ -80,7 +86,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     int const_sect_opt_ok = sem_const_sect_opt(current, new_f_loc_env, code, &const_num_objects);
 	current = current->brother;
     
-	int func_list_opt_ok = sem_func_list_opt(current, new_f_loc_env, code);
+	int func_list_opt_ok = sem_func_list_opt(current, new_f_loc_env, code, func_table);
 	current = current->brother;
     
     Stat * start = code->tail; //we save the pointer to first stat of the code to sanitize // this is for optimixe sanitization process of return
@@ -291,7 +297,7 @@ int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_
     return ok;
 }
 
-int sem_func_list_opt(Pnode root, Phash_node f_loc_env, Code * code){
+int sem_func_list_opt(Pnode root, Phash_node f_loc_env, Code * code, Poid2address * func_table){
 #if VERBOSE
     printf("@@ in sem_func_list_opt\n");
 #endif
@@ -301,7 +307,7 @@ int sem_func_list_opt(Pnode root, Phash_node f_loc_env, Code * code){
         return ok;
     }
     while (func_decl_node != NULL) {
-        ok = ok && sem_func_decl(func_decl_node, f_loc_env, 1, code);
+        ok = ok && sem_func_decl(func_decl_node, f_loc_env, 1, code, func_table);
         func_decl_node = func_decl_node->brother;
     }
     return ok;
@@ -1668,12 +1674,12 @@ void cleanup_return(Stat * start, int code_len,Code * code){
     
 }
 
-void cleanup_goto(Code * code){
+void cleanup_goto(Code * code, Poid2address * func_table){
     Stat * stat = code->head;
     while(stat){
         if(stat->op==S_FAKE_GOTO){
             stat->op=S_GOTO;
-            stat->args[0].ival=get_f_addrby_oid(stat->args[0].ival);
+            stat->args[0].ival=get_f_addr_by_oid(stat->args[0].ival, func_table);
         }
         stat = stat->next;
     }
