@@ -5,7 +5,8 @@
 int oid = 1;
 char error_msg_symb[100];
 
-void handle_function_part(Pnode current, Phash_node func, int * loc_oid, Class part_class){
+void handle_function_part(Pnode current, Phash_node func, int * loc_oid, Class part_class, int * num_obj){
+    int count = (part_class == CLVAR || part_class == CLCONST);
     if (current->child != NULL) { //?_SECT_OPT
         Pnode child;
         child = current->child; //DECL
@@ -18,12 +19,17 @@ void handle_function_part(Pnode current, Phash_node func, int * loc_oid, Class p
                 Phash_node id_node = new_id_node(id->value.sval, part_class, *loc_oid);
                 (*loc_oid)++;
                 id_node->schema = domain_sch;
+                if (count) {
+                    (*num_obj)++;
+                }
+                
                 if(!insert(id_node, (func->aux)->locenv)){
                     sprintf(error_msg_symb, "ID \"%s\" already defined in same environment\n", id->value.sval);
                     sem_error(id, error_msg_symb);
                 }
                 id = id->brother;
             }
+            
             child = child->brother;
             if (part_class == CLCONST)
                 child = child->brother;
@@ -86,20 +92,22 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                             }
                             child = child->brother; //next DECL
                         }
-                        
                     }
+                    func->aux->num_obj = func->aux->formals_num;
                     
                     current = current->brother; //DOMAIN
                     func->schema = create_schema(current, func->father, NULL);
                     
                     current = current->brother; //TYPE_SECT_OPT
-                    handle_function_part(current, func, &((func->aux)->last_oid), CLTYPE);
+                    handle_function_part(current, func, &((func->aux)->last_oid), CLTYPE, &(func->aux->num_obj));
                     
                     current = current->brother; //VAR_SECT_OPT
-                    handle_function_part(current, func, &((func->aux)->last_oid), CLVAR);
+                    handle_function_part(current, func, &((func->aux)->last_oid), CLVAR, &(func->aux->num_obj));
                     
                     current = current->brother; //CONST_SECT_OPT
-                    handle_function_part(current, func, &((func->aux)->last_oid), CLCONST);
+                    handle_function_part(current, func, &((func->aux)->last_oid), CLCONST, &(func->aux->num_obj));
+                    
+                    
                     
                     print_func_node(func);
                     printSchema(func->schema," ");

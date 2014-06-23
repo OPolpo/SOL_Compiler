@@ -88,9 +88,6 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     *code = appcode(*code, func_body_code);
     cleanup_return(start, code_len, code); //sanitize
     
-    
-    new_f_loc_env->aux->size = var_num_objects + const_num_objects + decl_num_objects;
-    printf("%d, %s...%d\n",new_f_loc_env->oid, new_f_loc_env->name, new_f_loc_env->aux->size);
     return decl_list_opt_ok && domain_ok && type_sect_opt_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
 }
 
@@ -1400,7 +1397,7 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     (*stype) = h_id_node->schema;
 
     *code = concode(*code,
-                    make_push_pop(h_id_node->aux->size, offset , h_id_node->aux->abs_addr),
+                    make_push_pop(h_id_node->aux->num_obj, offset , h_id_node->aux->abs_addr),
                     endcode());
     return id_ok && expr_ok && param_ok;
 }
