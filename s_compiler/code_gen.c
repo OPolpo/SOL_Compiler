@@ -420,7 +420,7 @@ Code * StackPop(Stack_node_code ** top){
     return element;
 }
 
-Poid2address * new_oid2address(){
+Poid2address * new_o2a_table(){
     Poid2address * table = calloc(TOT, sizeof(Poid2address));
     return table;
 }
@@ -432,7 +432,7 @@ int insert_o2a(Poid2address p, Poid2address * table){
     return 1;
 }
 
-int get_f_addr_by_oid(int oid, Poid2address * table){
+int* get_f_addr_by_oid(int oid, Poid2address * table){
     int pos = oid % TOT;
     Poid2address node = table[pos];
     while(node){
@@ -441,10 +441,10 @@ int get_f_addr_by_oid(int oid, Poid2address * table){
         }
         node = node->next;
     }
-    return -1;
+    return NULL;
 }
 
-Poid2address new_o2a(int oid, int addr){
+Poid2address new_o2a(int oid, int *addr){
     Poid2address res = calloc(1, sizeof(Oid2address));
     res->address = addr;
     res->oid = oid;
