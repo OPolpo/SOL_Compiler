@@ -18,7 +18,7 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     
     //print_code(stderr, &func_decl_code);
     *code = concode(makecode1(S_SCODE, func_decl_code.size+4),
-                    make_push_pop(0, -1, 5),
+                    make_push_pop(0, -1, f_loc_env->oid),
                     makecode(S_HALT),
                     func_decl_code,
                     endcode());
@@ -43,7 +43,9 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
         new_f_loc_env = f_loc_env;
     
     *code = appcode(*code, makecode1(S_FUNC, new_f_loc_env->oid));
-    f_loc_env->aux->abs_addr = code->tail->address;
+    f_loc_env->aux->abs_addr = &(code->tail->address);
+    printf("%d %p<=================%s\n",code->tail->address, &(code->tail->address),id->value.sval);
+
 
     int decl_num_objects = 0;
     Code decl_code = makecode(S_NOOP);
@@ -1390,8 +1392,9 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     }
     (*stype) = h_id_node->schema;
 
+    //printf("%p<=================\n", h_id_node->aux->abs_addr);
     *code = concode(*code,
-                    make_push_pop(h_id_node->aux->num_obj, offset , h_id_node->aux->abs_addr),
+                    make_push_pop(h_id_node->aux->num_obj, offset , h_id_node->oid),
                     endcode());
     return id_ok && expr_ok && param_ok;
 }
