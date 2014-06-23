@@ -1648,9 +1648,9 @@ void sem_error(Pnode node, char * msg){
 // this method scan every time all the code previusly generated, we can make it more smart
 void cleanup_return(Stat * start, int code_len,Code * code){
     Stat * stat = start;
-    int i = 1;
+    int i = 0;
     if((code->tail)->op==S_FAKE_RETURN){
-        (code->tail)->op=S_RETURN;
+        (code->tail)->op=S_RETURN;  
         (code->tail)->args[0].ival=0;//useless
     }
     else
