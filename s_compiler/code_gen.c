@@ -66,8 +66,9 @@ char * tabOperator[]={
     "HALT",
     "SCODE",
     "RETURN",
-    "S_FAKE_RETURN",
-    "---"
+    "FAKE_RETURN",
+    "---",
+    "FAKE_GOTO"
 };
 
 
@@ -261,7 +262,7 @@ Code makecode_xread(Operator op, int arg1, int arg2, char * arg3){
 
 Code make_push_pop(int size, int chain, int entry){
     return concode(makecode2(S_PUSH, size, chain),
-                   makecode1(S_GOTO, entry),
+                   makecode1(S_FAKE_GOTO, entry),
                    makecode(S_POP),
                    endcode());
 }

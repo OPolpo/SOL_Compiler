@@ -25,6 +25,7 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     
     //int ok = sem_func_decl(root->child, f_loc_env, not_first, code);
     
+    cleanup_goto(code);
     return ok;
 }
 
@@ -44,7 +45,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     
     *code = appcode(*code, makecode1(S_FUNC, new_f_loc_env->oid));
     f_loc_env->aux->abs_addr = &(code->tail->address);
-    printf("%d %p<=================%s\n",code->tail->address, &(code->tail->address),id->value.sval);
+    //printf("%d %p<=================%s\n",code->tail->address, &(code->tail->address),id->value.sval);
 
 
     int decl_num_objects = 0;
@@ -1662,6 +1663,18 @@ void cleanup_return(Stat * start, int code_len,Code * code){
             stat->args[0].ival=code->size-code_len-i;
         }
         i++;
+        stat = stat->next;
+    }
+    
+}
+
+void cleanup_goto(Code * code){
+    Stat * stat = code->head;
+    while(stat){
+        if(stat->op==S_FAKE_GOTO){
+            stat->op=S_GOTO;
+            stat->args[0].ival=get_f_addrby_oid(stat->args[0].ival);
+        }
         stat = stat->next;
     }
     
