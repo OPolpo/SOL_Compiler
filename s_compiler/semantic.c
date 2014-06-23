@@ -1361,10 +1361,10 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     int id_ok, expr_ok = 1, param_ok = 0;
     int offset;
     Phash_node h_id_node = find_visible_node(id_node->value.sval, f_loc_env, &offset);
-    id_ok = (h_id_node != NULL);
-    
+    id_ok = (h_id_node != NULL) && (h_id_node->class_node == CLFUNC);
     if (!id_ok) {
-        sem_error(id_node, "Call of not visibile FUNC\n");
+        sprintf(error_msg, "\"%s\" is not a visible FUNC name\n", id_node->value.sval);
+        sem_error(id_node, error_msg);
     }
 #if VERBOSE
     print_func_node(h_id_node);
