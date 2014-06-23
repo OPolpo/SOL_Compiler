@@ -50,18 +50,14 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     *code = appcode(*code, decl_code);
 	current = current->brother;
 
-    // Code sto_code = makecode(S_NOOP);
-    // while(gencodeAuxNode){
-    //     Pnode gencodeAuxNode_id = (gencodeAuxNode->child)->child;//idlist can't be null
-    //     while(gencodeAuxNode_id){
-    //         sto_code = appcode(sto_code, makecode(sto,find_visible_node()));
-    //         gencodeAuxNode_id = gencodeAuxNode_id->brother;
-    //     }
-    //     gencodeAuxNode = gencodeAuxNode->brother;
-    // }
-
-
-
+    Code sto_code = makecode(S_NOOP);
+    
+    Formal * current_formal = new_f_loc_env->formal;
+    while(current_formal){
+        sto_code = appcode(makecode2(S_STO, 0, (current_formal->formal)->oid), sto_code);
+        current_formal = current_formal->next;
+    }
+    *code = appcode(*code, sto_code);
     
     Pschema domain_schema = new_schema_node(-1);
     int size = 0;
