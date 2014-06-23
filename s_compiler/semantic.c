@@ -865,7 +865,7 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     insert(index, f_loc_env->locenv);
 
     Code e_s_il_code;
-    if(expr_schema->type == STRUCT || expr_schema->type == VECTOR)
+    if((expr_schema->p1)->type == STRUCT || (expr_schema->p1)->type == VECTOR)
         e_s_il_code = makecode1(S_SIL, compute_size(expr_schema->p1));
     else
         e_s_il_code = makecode1(S_EIL, compute_size(expr_schema->p1));
