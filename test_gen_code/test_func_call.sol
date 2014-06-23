@@ -1,10 +1,18 @@
 func alpha(x: int;):int
 	var i,j,k:int;
-	r:struct(a:int;b:string;);
-func f(a,x:int; s:string;):int
+	r:struct(aa:int;b:string;);
+
+func f(an,x:int; s:string;):int
 begin f
-	return a+x;
+	r.b = a(10);
+	return an+x;
 end f
+
+func a(po:int;):string
+begin a
+return "funzione aa";
+end a
+
 begin alpha
 	k= j-f(i+j,x,r.b);
 	return 1000;
