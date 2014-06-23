@@ -432,16 +432,16 @@ int insert_o2a(Poid2address p, Poid2address * table){
     return 1;
 }
 
-int* get_f_addr_by_oid(int oid, Poid2address * table){
+int get_f_addr_by_oid(int oid, Poid2address * table){
     int pos = oid % TOT;
     Poid2address node = table[pos];
     while(node){
         if (node->oid == oid) {
-            return node->address;
+            return *(node->address);
         }
         node = node->next;
     }
-    return NULL;
+    return -1;
 }
 
 Poid2address new_o2a(int oid, int *addr){
