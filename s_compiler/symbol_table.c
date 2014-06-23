@@ -236,6 +236,9 @@ Pschema new_schema_node(int _type){
 
 int are_compatible(Pschema a, Pschema b){
     int ok;
+    if (a == NULL && b == NULL) {
+        return 1;
+    }
     if (a == NULL || b == NULL) {
         return 0;
     }
