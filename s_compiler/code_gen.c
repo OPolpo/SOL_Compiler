@@ -455,7 +455,14 @@ void destroy_o2a(Poid2address * table){
     int i=0;
     for (i=0; i<TOT; i++) {
         if (table[i]!= NULL) {
-            free(table[i]);
+            free_list(table[i]);
         }
     }
+}
+
+void free_list(Poid2address list){
+    Poid2address newhead = list->next;
+    free(list);
+    if(newhead!=NULL)
+        free_list(newhead);
 }
