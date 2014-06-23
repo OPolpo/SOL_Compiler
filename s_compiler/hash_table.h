@@ -15,6 +15,13 @@ typedef enum{
     CLCOUNT
 } Class;
 
+typedef struct saux_fun_param{
+    int abs_addr;
+    int last_oid;
+    struct shash_node ** locenv;
+    int formals_num;
+    Formal * formal;
+} Aux_fun_param, *Paux_fun_param;
 
 typedef struct sformalsnode{
     struct shash_node * formal;
@@ -30,13 +37,10 @@ typedef struct sschema{
 
 typedef struct shash_node{
     char * name;
-    int oid;
-    int last_oid;
+    int oid; 
     Class class_node; //TYPE, VAR, CONST, FUNC, PAR
     Pschema schema;
-    struct shash_node ** locenv;
-        int formals_num;
-    Formal * formal;
+    Paux_fun_param * aux;
     struct shash_node * father;
     struct shash_node * next;
 } Hash_node, * Phash_node;

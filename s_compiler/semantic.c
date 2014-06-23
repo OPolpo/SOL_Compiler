@@ -1397,6 +1397,10 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
         sem_error(id_node, "Formal parameter must be compatible with actual parameter in function call\n");
     }
     (*stype) = h_id_node->schema;
+
+    *code = concode(*code,
+                    make_push_pop( 999,999 , 999),
+                    endcode());
     return id_ok && expr_ok && param_ok;
 }
 
