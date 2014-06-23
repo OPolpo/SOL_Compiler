@@ -43,7 +43,8 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     else
         new_f_loc_env = f_loc_env;
     
-    // Pnode gencodeAuxNode = current->child; //this is the first decl of decl list maybe null
+    *code = appcode(*code, makecode1(S_FUNC, new_f_loc_env->oid));
+
     int decl_num_objects = 0;
     Code decl_code = makecode(S_NOOP);
 	int decl_list_opt_ok = sem_decl_list_opt(current, new_f_loc_env, &decl_code, &decl_num_objects);
