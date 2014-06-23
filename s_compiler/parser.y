@@ -313,6 +313,7 @@ int main(){
         sem_program(root, symtab, 0, &code);
         printf("## END\n");
         print_code(stdout, &code);
+        destroy_code(&code);
         
         
 	}

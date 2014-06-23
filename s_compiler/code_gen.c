@@ -467,6 +467,8 @@ void destroy_o2a(Poid2address * table){
     }
 }
 
+//recursive solution for free the 
+
 // void free_list(Poid2address list){
 //     Poid2address newhead = list->next;
 //     free(list);
@@ -474,12 +476,14 @@ void destroy_o2a(Poid2address * table){
 //         free_list(newhead);
 // }
 
-// void free_list_it(Poid2address list){
-//     Poid2address newhead = list->next;
-//     while(newhead){
-//         free(list)//free old head
-//         list = newhead;
-//         newhead=newhead->next;
-//     }
-//     free(list);
-// }
+void destroy_code(Code *code){
+    Stat * to_free = code->head;
+    Stat * newhead = to_free->next;
+    while(newhead){
+        free(to_free);//free old head
+        to_free = newhead;
+        newhead=newhead->next;
+    }
+    free(to_free);
+}
+
