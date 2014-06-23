@@ -50,7 +50,6 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
 	int decl_list_opt_ok = sem_decl_list_opt(current, new_f_loc_env, &decl_code, &decl_num_objects);
     *code = appcode(*code, decl_code);
 	current = current->brother;
-
     Code sto_code = makecode(S_NOOP);
     
     Formal * current_formal = new_f_loc_env->formal;
@@ -88,7 +87,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
 	int func_body_ok = sem_func_body(current, new_f_loc_env, &func_body_code);
     *code = appcode(*code, func_body_code);
     cleanup_return(start, code_len, code); //sanitize
-
+    
     *num_objects = var_num_objects + const_num_objects + decl_num_objects;
     return decl_list_opt_ok && domain_ok && type_sect_opt_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
 }
@@ -267,6 +266,7 @@ int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_
         Pnode decl_node = root->child;
         Pnode expr_node;
         Code expr_code = makecode(S_NOOP);
+        Phash_node id_h_node;
         while (decl_node != NULL) {
             expr_node = decl_node->brother;
             Pschema domain_schema = new_schema_node(-1);
@@ -275,9 +275,13 @@ int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_
             (*num_objects) += const_num_objects;
             
             Pschema expr_schema = new_schema_node(-1);
-            int i;
-            for(i=0;i<const_num_objects;i++)
+            Pnode id_node = decl_node->child->child;
+            while (id_node) {
                 ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema, &expr_code, 0);
+                id_h_node = getNode(id_node->value.sval, f_loc_env->locenv);
+                expr_code = appcode(expr_code, makecode2(S_STO, 0, id_h_node->oid));
+                id_node = id_node->brother;
+            }
             
             ok = ok && are_compatible(domain_schema, expr_schema);
             if(!ok){
@@ -343,7 +347,7 @@ int sem_stat_list(Pnode root, Phash_node f_loc_env, int * w_return, Code * code)
     Pnode stat_node = root->child;
     int ok = 1;
     int w_return_stat = 0;
-
+    
     while(stat_node != NULL){
         ok = ok && sem_stat(stat_node, f_loc_env, &w_return_stat, code);
         stat_node = stat_node->brother;
@@ -416,7 +420,7 @@ int sem_assign_stat(Pnode root, Phash_node f_loc_env, Code * code){
     if (!ok) {
         sem_error(root, "Semantic error, cannot assign value to a CONST\n");//to_do
     }
-
+    
     Code expr_code = makecode(S_NOOP);
     ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema, &expr_code, 0);
     
@@ -783,7 +787,7 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     int not_used;
     Code stat_list_code = makecode(S_NOOP);
     ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
-
+    
     char * id_aux;
     asprintf(&id_aux, "0_AUX_%d", f_loc_env->last_oid);
     Phash_node end_condition_expr_value = new_id_node(id_aux, CLCONST, f_loc_env->last_oid); //todo
@@ -846,48 +850,48 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     int not_used;
     Code stat_list_code = makecode(S_NOOP);
     ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
-
+    
     char * id_aux_1;
     asprintf(&id_aux_1, "0_AUX_%d", f_loc_env->last_oid);
     Phash_node expr_value = new_id_node(id_aux_1, CLCONST, f_loc_env->last_oid);//todo
     f_loc_env->last_oid++;
     expr_value->schema = new_schema_node(INT);
     insert(expr_value, f_loc_env->locenv);
-
+    
     char * id_aux_2;
     asprintf(&id_aux_2, "0_AUX_%d", f_loc_env->last_oid);
     Phash_node index = new_id_node(id_aux_2, CLCONST, f_loc_env->last_oid);//todo
     f_loc_env->last_oid++;
     index->schema = new_schema_node(INT);
     insert(index, f_loc_env->locenv);
-
+    
     Code e_s_il_code;
     if((expr_schema->p1)->type == STRUCT || (expr_schema->p1)->type == VECTOR)
         e_s_il_code = makecode1(S_SIL, compute_size(expr_schema->p1));
     else
         e_s_il_code = makecode1(S_EIL, compute_size(expr_schema->p1));
-
+    
     *code = concode(*code,
-            makecode1(S_LDI,0),
-            makecode2(S_STO,0,index->oid),
-            expr_code,
-            makecode2(S_STO,0,expr_value->oid),
-            makecode2(S_LDA,0,expr_value->oid),
-            makecode2(S_LOD,0,index->oid),
-            makecode1(S_IXA,compute_size(expr_schema->p1)),
-            e_s_il_code,
-            makecode2(S_STO,offset,id_hash_node->oid),
-            stat_list_code,
-            makecode2(S_LOD,0,index->oid),
-            makecode1(S_LDI,1),
-            makecode(S_IPLUS),
-            makecode2(S_STO,0,index->oid),
-            makecode2(S_LOD,0,index->oid),
-            makecode1(S_LDI,expr_schema->size),
-            makecode(S_EQU),
-            makecode1(S_JMF, -(stat_list_code.size+12)),
-            endcode()
-            );
+                    makecode1(S_LDI,0),
+                    makecode2(S_STO,0,index->oid),
+                    expr_code,
+                    makecode2(S_STO,0,expr_value->oid),
+                    makecode2(S_LDA,0,expr_value->oid),
+                    makecode2(S_LOD,0,index->oid),
+                    makecode1(S_IXA,compute_size(expr_schema->p1)),
+                    e_s_il_code,
+                    makecode2(S_STO,offset,id_hash_node->oid),
+                    stat_list_code,
+                    makecode2(S_LOD,0,index->oid),
+                    makecode1(S_LDI,1),
+                    makecode(S_IPLUS),
+                    makecode2(S_STO,0,index->oid),
+                    makecode2(S_LOD,0,index->oid),
+                    makecode1(S_LDI,expr_schema->size),
+                    makecode(S_EQU),
+                    makecode1(S_JMF, -(stat_list_code.size+12)),
+                    endcode()
+                    );
     return ok;
 }
 
@@ -1647,12 +1651,12 @@ void cleanup_return(Stat * start, int code_len,Code * code){
     Stat * stat = start;
     int i = 0;
     if((code->tail)->op==S_FAKE_RETURN){
-        (code->tail)->op=S_RETURN;  
+        (code->tail)->op=S_RETURN;
         (code->tail)->args[0].ival=0;//useless
     }
     else
         *code = appcode(*code,makecode(S_RETURN));
-
+    
     while(stat){
         if(stat->op==S_FAKE_RETURN){
             stat->op=S_JMP;
@@ -1661,5 +1665,5 @@ void cleanup_return(Stat * start, int code_len,Code * code){
         i++;
         stat = stat->next;
     }
-
+    
 }
