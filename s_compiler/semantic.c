@@ -39,7 +39,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     Phash_node new_f_loc_env;
     
     if (not_first)
-        new_f_loc_env = getNode(id->value.sval, f_loc_env->locenv);
+        new_f_loc_env = getNode(id->value.sval, f_loc_env->aux->locenv);
     else
         new_f_loc_env = f_loc_env;
     
@@ -52,7 +52,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
 	current = current->brother;
     Code sto_code = makecode(S_NOOP);
     
-    Formal * current_formal = new_f_loc_env->formal;
+    Formal * current_formal = new_f_loc_env->aux->formal;
     while(current_formal){
         sto_code = appcode(makecode2(S_STO, 0, (current_formal->formal)->oid), sto_code);
         current_formal = current_formal->next;
@@ -278,7 +278,7 @@ int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_
             Pnode id_node = decl_node->child->child;
             while (id_node) {
                 ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema, &expr_code, 0);
-                id_h_node = getNode(id_node->value.sval, f_loc_env->locenv);
+                id_h_node = getNode(id_node->value.sval, f_loc_env->aux->locenv);
                 expr_code = appcode(expr_code, makecode2(S_STO, 0, id_h_node->oid));
                 id_node = id_node->brother;
             }
@@ -789,11 +789,11 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
     
     char * id_aux;
-    asprintf(&id_aux, "0_AUX_%d", f_loc_env->last_oid);
-    Phash_node end_condition_expr_value = new_id_node(id_aux, CLCONST, f_loc_env->last_oid); //todo
-    f_loc_env->last_oid++;
+    asprintf(&id_aux, "0_AUX_%d", f_loc_env->aux->last_oid);
+    Phash_node end_condition_expr_value = new_id_node(id_aux, CLCONST, f_loc_env->aux->last_oid); //todo
+    f_loc_env->aux->last_oid++;
     end_condition_expr_value->schema = new_schema_node(INT);
-    insert(end_condition_expr_value, f_loc_env->locenv);
+    insert(end_condition_expr_value, f_loc_env->aux->locenv);
     
     *code = concode(*code,
                     expr1_code,
@@ -852,18 +852,18 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
     
     char * id_aux_1;
-    asprintf(&id_aux_1, "0_AUX_%d", f_loc_env->last_oid);
-    Phash_node expr_value = new_id_node(id_aux_1, CLCONST, f_loc_env->last_oid);//todo
-    f_loc_env->last_oid++;
+    asprintf(&id_aux_1, "0_AUX_%d", f_loc_env->aux->last_oid);
+    Phash_node expr_value = new_id_node(id_aux_1, CLCONST, f_loc_env->aux->last_oid);//todo
+    f_loc_env->aux->last_oid++;
     expr_value->schema = new_schema_node(INT);
-    insert(expr_value, f_loc_env->locenv);
+    insert(expr_value, f_loc_env->aux->locenv);
     
     char * id_aux_2;
-    asprintf(&id_aux_2, "0_AUX_%d", f_loc_env->last_oid);
-    Phash_node index = new_id_node(id_aux_2, CLCONST, f_loc_env->last_oid);//todo
-    f_loc_env->last_oid++;
+    asprintf(&id_aux_2, "0_AUX_%d", f_loc_env->aux->last_oid);
+    Phash_node index = new_id_node(id_aux_2, CLCONST, f_loc_env->aux->last_oid);//todo
+    f_loc_env->aux->last_oid++;
     index->schema = new_schema_node(INT);
-    insert(index, f_loc_env->locenv);
+    insert(index, f_loc_env->aux->locenv);
     
     Code e_s_il_code;
     if((expr_schema->p1)->type == STRUCT || (expr_schema->p1)->type == VECTOR)
@@ -1374,7 +1374,7 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 #if VERBOSE
     print_func_node(h_id_node);
 #endif
-    Formal * current_formal = h_id_node->formal;
+    Formal * current_formal = (h_id_node->aux)->formal;
     Pschema current_schema;
     
     while (param_node != NULL && current_formal != NULL) {
