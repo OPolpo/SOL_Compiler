@@ -18,7 +18,7 @@ void handle_function_part(Pnode current, Phash_node func, int * loc_oid, Class p
                 Phash_node id_node = new_id_node(id->value.sval, part_class, *loc_oid);
                 (*loc_oid)++;
                 id_node->schema = domain_sch;
-                if(!insert(id_node, func->locenv)){
+                if(!insert(id_node, (func->aux)->locenv)){
                     sprintf(error_msg_symb, "ID \"%s\" already defined in same environment\n", id->value.sval);
                     sem_error(id, error_msg_symb);
                 }
@@ -45,25 +45,25 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     Phash_node func = new_function_node(current->value.sval);
                     func->father = father;
                     Phash_node * loc = new_hash_table();
-                    func->locenv = loc;
-                    func->last_oid = 1;
+                    (func->aux)->locenv = loc;
+                    (func->aux)->last_oid = 1;
                     
-                    func->formals_num = 0;
+                    (func->aux)->formals_num = 0;
                     current = current->brother; //DECL_LIST_OPT
                     
                     if (current->child != NULL) {//handle parameters
                         child = current->child; //DECL
-                        Formal * last_formal = func->formal;
+                        Formal * last_formal = (func->aux)->formal;
                         while (child != NULL) { //loop on DECL
                             Pnode id_list = child->child;
                             Pschema domain_sch = create_schema(id_list->brother, func, NULL);
                             
                             Pnode id = id_list->child;
                             while (id != NULL){ //loop on IDs
-                                Phash_node id_node = new_id_node(id->value.sval, CLPAR, (func->last_oid));
-                                (func->last_oid)++;//non sono convinto
+                                Phash_node id_node = new_id_node(id->value.sval, CLPAR, ((func->aux)->last_oid));
+                                ((func->aux)->last_oid)++;//non sono convinto
                                 id_node->schema = domain_sch;
-                                if (!insert(id_node, func->locenv)) {
+                                if (!insert(id_node, (func->aux)->locenv)) {
                                     sprintf(error_msg_symb, "Name of formal parameters must be unique, \"%s\" already declared\n", id->value.sval);
                                     sem_error(id, error_msg_symb);
                                 }
@@ -72,7 +72,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                                 to_add->formal = id_node;
                                 
                                 if(last_formal==NULL){
-                                    func->formal=to_add;
+                                    (func->aux)->formal=to_add;
                                     //printf("last_formal==NULL %d\n", func->formal);
                                 }
                                 else {
@@ -81,7 +81,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                                 }
                                 last_formal = to_add;
                                 
-                                func->formals_num++;//on single ID
+                                (func->aux)->formals_num++;//on single ID
                                 id = id->brother;
                             }
                             child = child->brother; //next DECL
@@ -93,23 +93,23 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     func->schema = create_schema(current, func->father, NULL);
                     
                     current = current->brother; //TYPE_SECT_OPT
-                    handle_function_part(current, func, &(func->last_oid), CLTYPE);
+                    handle_function_part(current, func, &((func->aux)->last_oid), CLTYPE);
                     
                     current = current->brother; //VAR_SECT_OPT
-                    handle_function_part(current, func, &(func->last_oid), CLVAR);
+                    handle_function_part(current, func, &((func->aux)->last_oid), CLVAR);
                     
                     current = current->brother; //CONST_SECT_OPT
-                    handle_function_part(current, func, &(func->last_oid), CLCONST);
+                    handle_function_part(current, func, &((func->aux)->last_oid), CLCONST);
                     
                     print_func_node(func);
                     printSchema(func->schema," ");
-                    print_hash_content(func->locenv);
+                    print_hash_content((func->aux)->locenv);
                     
                     current = current->brother; //FUNC_LIST_OPT
                     if (current->child != NULL) {
                         child = current->child; // FUNC DECL
                         while (child != NULL) {//loop on FUNC DECL
-                            if (!insert(create_symbol_table(child, func), func->locenv)) {
+                            if (!insert(create_symbol_table(child, func), (func->aux)->locenv)) {
                                 sprintf(error_msg_symb, "Function names must be unique, \"%s\" already declared\n", child->value.sval);
                                 sem_error(child, error_msg_symb);
                             }
@@ -133,6 +133,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
 
 Phash_node new_function_node(char * _name){
     Phash_node node = (Phash_node) calloc (1,sizeof(Hash_node));
+    node->aux = calloc(1, sizeof(Aux_fun_param));
     node->name = _name;
     node->oid = oid;
     oid++;
@@ -204,7 +205,7 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
             break;
         case T_ID:
             while (func != NULL) {
-                type_decl = getNode(dom_child->value.sval, func->locenv);
+                type_decl = getNode(dom_child->value.sval, (func->aux)->locenv);
                 if (type_decl != NULL){
                     node = type_decl->schema;
                     break;

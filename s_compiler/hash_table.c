@@ -41,7 +41,7 @@ Phash_node find_visible_node(char * id, Phash_node func_node, int * offset){
         //print_func_node(f);
         //print_hash_content(f->locenv);
         
-        Phash_node node = getNode(id, f->locenv);
+        Phash_node node = getNode(id, (f->aux)->locenv);
         if (node != NULL) {
             //print_generic_node(node);
             //printSchema(node->schema, " ");
@@ -64,21 +64,21 @@ void print_func_node(Phash_node node){
     printf("[%d] %s | ", node->oid, node->name);
     if (node->class_node == CLFUNC) {
         printf("FUNC ");
+        (node->schema != NULL)? printf("ok schema |"): printf("no schema |");
+        ((node->aux)->locenv != NULL)? printf("ok env |"): printf("no env |");
+        printf ("%d :", (node->aux)->formals_num);
+        
+        Formal * f = (node->aux)->formal;
+        while (f!= NULL) {
+            printf ("[%d]", f->formal->oid);
+            printf ("(%s) ", f->formal->name);
+            f = f->next;
+        }
+        if(node->father)
+            printf(" | F_oid: %d", node->father->oid);
+        else
+            printf(" | F_oid: NULL");
     }
-    (node->schema != NULL)? printf("ok schema |"): printf("no schema |");
-    (node->locenv != NULL)? printf("ok env |"): printf("no env |");
-    printf ("%d :", node->formals_num);
-    
-    Formal * f = node->formal;
-    while (f!= NULL) {
-        printf ("[%d]", f->formal->oid);
-        printf ("(%s) ", f->formal->name);
-        f = f->next;
-    }
-    if(node->father)
-        printf(" | F_oid: %d", node->father->oid);
-    else
-        printf(" | F_oid: NULL");
     printf ("\n");
 }
 
