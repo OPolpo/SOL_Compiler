@@ -60,8 +60,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     *code = appcode(*code, sto_code);
     
     Pschema domain_schema = new_schema_node(-1);
-    int size = 0;
-	int domain_ok = sem_domain(current, new_f_loc_env, &domain_schema, code, &size);
+	int domain_ok = sem_domain(current, new_f_loc_env, &domain_schema, code);
 	current = current->brother;
     
 	int type_sect_opt_ok = sem_type_sect_opt(current, new_f_loc_env, code);
@@ -115,16 +114,15 @@ int sem_decl(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int
     printf("@@ in sem_decl\n");
 #endif
     Pnode domain_node = root->child->brother;
-    int size = 0;
-    int ok = sem_domain(domain_node, f_loc_env, stype, code, &size);
+    int ok = sem_domain(domain_node, f_loc_env, stype, code);
     sem_id_list(root->child, f_loc_env, code, num_objects);
     int i;
     if((*stype)->type==STRUCT || (*stype)->type==VECTOR)
         for(i = 0; i< *num_objects; i++)
-            *code = appcode(*code, makecode1(S_NEWS,size));
+            *code = appcode(*code, makecode1(S_NEWS,compute_size(*stype)));
     else
         for(i = 0; i< *num_objects; i++)
-            *code = appcode(*code, makecode1(S_NEW,size));
+            *code = appcode(*code, makecode1(S_NEW,compute_size(*stype)));
     return ok;
 }
 
@@ -140,7 +138,7 @@ int sem_id_list(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects
     return 1;
 }
 
-int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int * size){
+int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 #if VERBOSE
     printf("@@ in sem_domain\n");
 #endif
@@ -185,7 +183,6 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, i
         default:
             break;
     }
-    *size = compute_size(*stype);
     return 1;
 }
 int sem_struct_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
@@ -206,8 +203,7 @@ int sem_struct_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
         
         while (id != NULL) {
             Pschema to_add = new_schema_node(-1);
-            int size = 0;
-            ok = ok && sem_domain(decl_domain, f_loc_env, &to_add, code, &size);
+            ok = ok && sem_domain(decl_domain, f_loc_env, &to_add, code);
             
             if(last == NULL){
                 (*stype)->p1 = to_add;
@@ -230,8 +226,7 @@ int sem_vector_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
     (*stype)->type = VECTOR;
     (*stype)->size = root->child->value.ival;
     (*stype)->p1 = new_schema_node(-1);
-    int size = 0;
-    ok = ok && sem_domain(root->child->brother, f_loc_env, &(*stype)->p1, code, &size);
+    ok = ok && sem_domain(root->child->brother, f_loc_env, &(*stype)->p1, code);
     return ok;
 }
 
@@ -1288,8 +1283,7 @@ int sem_rd_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
     int dom_ok = 1;
     if (ok) {
         printf("\n## xpecifier_opt è ok \n");
-        int size = 0;
-        dom_ok = sem_domain(root->child->brother, f_loc_env, stype, code, &size);
+        dom_ok = sem_domain(root->child->brother, f_loc_env, stype, code);
     }
     if (is_null) {
         *code = appcode(*code, makecode_str(S_RD, make_format(*stype)));
