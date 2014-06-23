@@ -47,9 +47,11 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     else
         new_f_loc_env = f_loc_env;
 
-    insert_o2a(new_o2a(new_f_loc_env->oid, &(code->tail->address)),func_table);
+    
     
     *code = appcode(*code, makecode1(S_FUNC, new_f_loc_env->oid));
+
+    insert_o2a(new_o2a(new_f_loc_env->oid, &(code->tail->address)),func_table);
     //f_loc_env->aux->abs_addr = &(code->tail->address);
     //printf("%d %p<=================%s\n",code->tail->address, &(code->tail->address),id->value.sval);
 
