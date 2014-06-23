@@ -47,6 +47,11 @@ Phash_node find_visible_node(char * id, Phash_node func_node, int * offset){
         f = f->father;
         (*offset)++;
     }
+    if (f == NULL) {
+        if (strcmp(func_node->name,id) == 0) {
+            return func_node;
+        }
+    }
     return NULL;
 }
 

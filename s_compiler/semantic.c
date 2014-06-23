@@ -20,7 +20,7 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     
     //print_code(stderr, &func_decl_code);
     *code = concode(makecode1(S_SCODE, func_decl_code.size+4),
-                    make_push_pop(0, -1, f_loc_env->oid),
+                    make_push_pop(f_loc_env->aux->num_obj, -1, f_loc_env->oid),
                     makecode(S_HALT),
                     func_decl_code,
                     endcode());

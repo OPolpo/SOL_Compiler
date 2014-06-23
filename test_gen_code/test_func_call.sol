@@ -10,10 +10,11 @@ end f
 
 func a(po:int;):string
 begin a
-return "funzione aa";
+
+return a(10000000);
 end a
 
 begin alpha
 	k= j-f(i+j,x,r.b);
-	return 1000;
+	return alpha(10);
 end alpha
