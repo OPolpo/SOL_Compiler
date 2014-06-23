@@ -14,12 +14,11 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     printf("@@ in sem_program\n");
 #endif
     Code func_decl_code = makecode(S_NOOP);
-    int num_objects = 0;
-    int ok = sem_func_decl(root->child, f_loc_env, not_first, &func_decl_code, &num_objects);
+    int ok = sem_func_decl(root->child, f_loc_env, not_first, &func_decl_code);
     
     //print_code(stderr, &func_decl_code);
     *code = concode(makecode1(S_SCODE, func_decl_code.size+4),
-                    make_push_pop(0, -1, 0),
+                    make_push_pop(0, -1, 5),
                     makecode(S_HALT),
                     func_decl_code,
                     endcode());
@@ -29,7 +28,7 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     return ok;
 }
 
-int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, int * num_objects){
+int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
 #if VERBOSE
     printf("@@ in sem_func_decl\n");
 #endif
@@ -44,6 +43,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
         new_f_loc_env = f_loc_env;
     
     *code = appcode(*code, makecode1(S_FUNC, new_f_loc_env->oid));
+    f_loc_env->aux->abs_addr = code->tail->address;
 
     int decl_num_objects = 0;
     Code decl_code = makecode(S_NOOP);
@@ -88,7 +88,9 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     *code = appcode(*code, func_body_code);
     cleanup_return(start, code_len, code); //sanitize
     
-    *num_objects = var_num_objects + const_num_objects + decl_num_objects;
+    
+    new_f_loc_env->aux->size = var_num_objects + const_num_objects + decl_num_objects;
+    printf("%d, %s...%d\n",new_f_loc_env->oid, new_f_loc_env->name, new_f_loc_env->aux->size);
     return decl_list_opt_ok && domain_ok && type_sect_opt_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
 }
 
@@ -304,8 +306,7 @@ int sem_func_list_opt(Pnode root, Phash_node f_loc_env, Code * code){
         return ok;
     }
     while (func_decl_node != NULL) {
-        int f_num_objects = 0;
-        ok = ok && sem_func_decl(func_decl_node, f_loc_env, 1, code, &f_num_objects);
+        ok = ok && sem_func_decl(func_decl_node, f_loc_env, 1, code);
         func_decl_node = func_decl_node->brother;
     }
     return ok;
@@ -1399,7 +1400,7 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     (*stype) = h_id_node->schema;
 
     *code = concode(*code,
-                    make_push_pop( 999,999 , 999),
+                    make_push_pop(h_id_node->aux->size, offset , h_id_node->aux->abs_addr),
                     endcode());
     return id_ok && expr_ok && param_ok;
 }
