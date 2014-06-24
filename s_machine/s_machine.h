@@ -3,13 +3,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../s_compiler/code_gen.h"
 #include "s_exec.h"
 
 #define MAXARGS 3
 #define ASTACK_UNIT 1000
 #define OSTACK_UNIT 1000
-#define ISTACK_UNIT 1000
+#define ISTACK_UNIT 1000000
 //TO DO listen to recording to find exact value
 
 typedef struct{
@@ -44,6 +45,7 @@ Adescr * top_astack();
 Adescr * push_astack();
 void pop_astack();
 
+Odescr * top_ostack();
 Odescr * push_ostack();
 void pop_ostack();
 
@@ -51,4 +53,15 @@ void pop_ostack();
 
 void load_scode();
 void machine_error(char * err_str);
+
+
+int pop_int();
+void push_int(int i);
+float pop_real();
+void push_real(float r);
+char pop_char();
+void push_char(char c);
+int pop_bool();
+void push_bool(int b);
+
 #endif

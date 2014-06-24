@@ -3,7 +3,6 @@
 
 #include "hash_table.h"
 #include "def.h"
-#include <math.h>
 
 
 Phash_node create_symbol_table(Pnode root, Phash_node father);
