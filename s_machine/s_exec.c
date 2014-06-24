@@ -14,70 +14,70 @@ void exec(Scode *stat) {
         case S_LDI: exec_ldi(stat->args[0].ival); break;
         case S_LDS: exec_lds(stat->args[0].sval); break;
         case S_LDR: exec_ldr(stat->args[0].rval); break;
-        case S_LOD: exce_lod(stat->args[0].ival); break;
-        case S_CAT: exce_cat(stat->args[0].ival); break;
-        case S_LDA: exce_lda(stat->args[0].ival); break;
-        case S_FDA: exce_fda(stat->args[0].ival); break;
-        case S_EIL: exce_eil(stat->args[0].ival); break;
-        case S_SIL: exce_sil(stat->args[0].ival); break;
-        case S_IXA: exce_ixa(stat->args[0].ival); break;
-        case S_STO: exce_sto(stat->args[0].ival); break;
-        case S_IST: exce_ist(stat->args[0].ival); break;
-        case S_JMF: exce_jmf(stat->args[0].ival); break;
-        case S_JMP: exce_jmp(stat->args[0].ival); break;
-        case S_EQU: exce_equ(stat->args[0].ival); break;
-        case S_NEQ: exce_neq(stat->args[0].ival); break;
-        case S_CGT: exce_cgt(stat->args[0].ival); break;
-        case S_IGT: exce_igt(stat->args[0].ival); break;
-        case S_RGT: exce_rgt(stat->args[0].ival); break;
-        case S_SGT: exce_sgt(stat->args[0].ival); break;
-        case S_CGE: exce_cge(stat->args[0].ival); break;
-        case S_IGE: exce_ige(stat->args[0].ival); break;
-        case S_RGE: exce_rge(stat->args[0].ival); break;
-        case S_SGE: exce_sge(stat->args[0].ival); break;
-        case S_CLT: exce_clt(stat->args[0].ival); break;
-        case S_ILT: exce_ilt(stat->args[0].ival); break;
-        case S_RLT: exce_rlt(stat->args[0].ival); break;
-        case S_SLT: exce_slt(stat->args[0].ival); break;
-        case S_CLE: exce_cle(stat->args[0].ival); break;
-        case S_ILE: exce_ile(stat->args[0].ival); break;
-        case S_RLE: exce_rle(stat->args[0].ival); break;
-        case S_SLE: exce_sle(stat->args[0].ival); break;
-        case S_IN: exce_in(stat->args[0].ival); break;
-        case S_IPLUS: exce_iplus(stat->args[0].ival); break;
-        case S_RPLUS: exce_rplus(stat->args[0].ival); break;
-        case S_IMINUS: exce_iminus(stat->args[0].ival); break;
-        case S_RMINUS: exce_rminus(stat->args[0].ival); break;
-        case S_ITIMES: exce_itimes(stat->args[0].ival); break;
-        case S_RTIMES: exce_rtimes(stat->args[0].ival); break;
-        case S_IDIV: exce_idiv(stat->args[0].ival); break;
-        case S_RDIV: exce_rdiv(stat->args[0].ival); break;
-        case S_IUMI: exce_iumi(stat->args[0].ival); break;
-        case S_RUMI: exce_rumi(stat->args[0].ival); break;
-        case S_NEG: exce_neg(stat->args[0].ival); break;
-        case S_WR: exce_wr(stat->args[0].ival); break;
-        case S_FWR: exce_fwr(stat->args[0].ival); break;
-        case S_PUSH: exce_push(stat->args[0].ival); break;
-        case S_GOTO: exce_goto(stat->args[0].ival); break;
-        case S_POP: exce_pop(stat->args[0].ival); break;
-        case S_RD: exce_Rd(stat->args[0].ival); break;
-        case S_FRD: exce_frd(stat->args[0].ival); break;
-        case S_TOINT: exce_toin(stat->args[0].ival); break;
-        case S_TOREAL: exce_toreal(stat->args[0].ival); break;
-        case S_READ: exce_read(stat->args[0].ival); break;
-        case S_FREAD: exce_fread(stat->args[0].ival); break;
-        case S_WRITE: exce_write(stat->args[0].ival); break;
-        case S_FWRITE: exce_fwrite(stat->args[0].ival); break;
-        case S_FUNC: exce_func(stat->args[0].ival); break;
+        case S_LOD: exec_lod(stat->args[0].ival); break;
+        case S_CAT: exec_cat(stat->args[0].ival); break;
+        case S_LDA: exec_lda(stat->args[0].ival); break;
+        case S_FDA: exec_fda(stat->args[0].ival); break;
+        case S_EIL: exec_eil(stat->args[0].ival); break;
+        case S_SIL: exec_sil(stat->args[0].ival); break;
+        case S_IXA: exec_ixa(stat->args[0].ival); break;
+        case S_STO: exec_sto(stat->args[0].ival); break;
+        case S_IST: exec_ist(stat->args[0].ival); break;
+        case S_JMF: exec_jmf(stat->args[0].ival); break;
+        case S_JMP: exec_jmp(stat->args[0].ival); break;
+        case S_EQU: exec_equ(stat->args[0].ival); break;
+        case S_NEQ: exec_neq(stat->args[0].ival); break;
+        case S_CGT: exec_cgt(stat->args[0].ival); break;
+        case S_IGT: exec_igt(stat->args[0].ival); break;
+        case S_RGT: exec_rgt(stat->args[0].ival); break;
+        case S_SGT: exec_sgt(stat->args[0].ival); break;
+        case S_CGE: exec_cge(stat->args[0].ival); break;
+        case S_IGE: exec_ige(stat->args[0].ival); break;
+        case S_RGE: exec_rge(stat->args[0].ival); break;
+        case S_SGE: exec_sge(stat->args[0].ival); break;
+        case S_CLT: exec_clt(stat->args[0].ival); break;
+        case S_ILT: exec_ilt(stat->args[0].ival); break;
+        case S_RLT: exec_rlt(stat->args[0].ival); break;
+        case S_SLT: exec_slt(stat->args[0].ival); break;
+        case S_CLE: exec_cle(stat->args[0].ival); break;
+        case S_ILE: exec_ile(stat->args[0].ival); break;
+        case S_RLE: exec_rle(stat->args[0].ival); break;
+        case S_SLE: exec_sle(stat->args[0].ival); break;
+        case S_IN: exec_in(stat->args[0].ival); break;
+        case S_IPLUS: exec_iplus(stat->args[0].ival); break;
+        case S_RPLUS: exec_rplus(stat->args[0].ival); break;
+        case S_IMINUS: exec_iminus(stat->args[0].ival); break;
+        case S_RMINUS: exec_rminus(stat->args[0].ival); break;
+        case S_ITIMES: exec_itimes(stat->args[0].ival); break;
+        case S_RTIMES: exec_rtimes(stat->args[0].ival); break;
+        case S_IDIV: exec_idiv(stat->args[0].ival); break;
+        case S_RDIV: exec_rdiv(stat->args[0].ival); break;
+        case S_IUMI: exec_iumi(stat->args[0].ival); break;
+        case S_RUMI: exec_rumi(stat->args[0].ival); break;
+        case S_NEG: exec_neg(stat->args[0].ival); break;
+        case S_WR: exec_wr(stat->args[0].ival); break;
+        case S_FWR: exec_fwr(stat->args[0].ival); break;
+        case S_PUSH: exec_push(stat->args[0].ival); break;
+        case S_GOTO: exec_goto(stat->args[0].ival); break;
+        case S_POP: exec_pop(stat->args[0].ival); break;
+        case S_RD: exec_Rd(stat->args[0].ival); break;
+        case S_FRD: exec_frd(stat->args[0].ival); break;
+        case S_TOINT: exec_toin(stat->args[0].ival); break;
+        case S_TOREAL: exec_toreal(stat->args[0].ival); break;
+        case S_READ: exec_read(stat->args[0].ival); break;
+        case S_FREAD: exec_fread(stat->args[0].ival); break;
+        case S_WRITE: exec_write(stat->args[0].ival); break;
+        case S_FWRITE: exec_fwrite(stat->args[0].ival); break;
+        case S_FUNC: exec_func(stat->args[0].ival); break;
         case S_RETURN: exec_return(); break;
         default: machine_error("Unknown operator"); break; }
 }
 
-void exce_toint(){
+void exec_toint(){
 
 }
 
-void exce_toreal(){
+void exec_toreal(){
 
 }
 
@@ -85,15 +85,15 @@ void exec_pop(){
 
 }
 
-void exce_ist(){
+void exec_ist(){
 
 }
 
-void exce_equ(){
+void exec_equ(){
 
 }
 
-void exce_neq(){
+void exec_neq(){
 
 }
 
@@ -104,67 +104,67 @@ void exec_igt(){
     push_bool(m>n);
 }
 
-void exce_cgt(){
+void exec_cgt(){
 
 }
 
-void exce_rgt(){
+void exec_rgt(){
 
 }
 
-void exce_sgt(){
+void exec_sgt(){
 
 }
 
-void exce_cge(){
+void exec_cge(){
 
 }
 
-void exce_ige(){
+void exec_ige(){
 
 }
 
-void exce_rge(){
+void exec_rge(){
 
 }
 
-void exce_sge(){
+void exec_sge(){
 
 }
 
-void exce_clt(){
+void exec_clt(){
 
 }
 
-void exce_ilt(){
+void exec_ilt(){
 
 }
 
-void exce_rlt(){
+void exec_rlt(){
 
 }
 
-void exce_slt(){
+void exec_slt(){
 
 }
 
-void exce_cle(){
+void exec_cle(){
 
 }
 
-void exce_ile(){
+void exec_ile(){
 
 }
 
-void exce_rle(){
+void exec_rle(){
 
 }
 
-void exce_sle(){
+void exec_sle(){
 
 }
 
-void exce_in(){
+void exec_in(){
 
 }
 
@@ -175,43 +175,43 @@ void exec_iplus(){
     push_int(m+n);
 }
 
-void exce_rplus(){
+void exec_rplus(){
 
 }
 
-void exce_iminus(){
+void exec_iminus(){
 
 }
 
-void exce_rminus(){
+void exec_rminus(){
 
 }
 
-void exce_itimes(){
+void exec_itimes(){
 
 }
 
-void exce_rtimes(){
+void exec_rtimes(){
 
 }
 
-void exce_idiv(){
+void exec_idiv(){
 
 }
 
-void exce_rdiv(){
+void exec_rdiv(){
 
 }
 
-void exce_iumi(){
+void exec_iumi(){
 
 }
 
-void exce_rumi(){
+void exec_rumi(){
 
 }
 
-void exce_neg(){
+void exec_neg(){
 
 }
 
@@ -219,55 +219,55 @@ void exec_return(){
     pc = top_astack()->raddr;
 }
 
-void exce_read(int arg1, int arg2, char * arg3){
+void exec_read(int arg1, int arg2, char * arg3){
 
 }
 
-void exce_fread(int arg1, int arg2, char * arg3){
+void exec_fread(int arg1, int arg2, char * arg3){
 
 }
 
-void exce_push(int arg1, int arg2){
+void exec_push(int arg1, int arg2){
 
 }
 
-void exce_sto(int arg1, int arg2){
+void exec_sto(int arg1, int arg2){
 
 }
 
-void exce_lda(int arg1, int arg2){
+void exec_lda(int arg1, int arg2){
 
 }
 
-void exce_cat(int arg1, int arg2){
+void exec_cat(int arg1, int arg2){
 
 }
 
-void exce_lod(int arg1, int arg2){
+void exec_lod(int arg1, int arg2){
 
 }
 
-void exce_write(char* arg1){
+void exec_write(char* arg1){
 
 }
 
-void exce_fwrite(char* arg1){
+void exec_fwrite(char* arg1){
 
 }
 
-void exce_Rd(char* arg1){
+void exec_Rd(char* arg1){
 
 }
 
-void exce_frd(char* arg1){
+void exec_frd(char* arg1){
 
 }
 
-void exce_wr(char* arg1){
+void exec_wr(char* arg1){
 
 }
 
-void exce_fwr(char* arg1){
+void exec_fwr(char* arg1){
 
 }
 
@@ -283,7 +283,7 @@ void exec_ldc(char arg1){
 
 }
 
-void exce_func(int arg1){
+void exec_func(int arg1){
 
 }
 
@@ -300,19 +300,19 @@ void exec_jmp(int offset){
     pc += offset-1;
 }
 
-void exce_ixa(int arg1){
+void exec_ixa(int arg1){
 
 }
 
-void exce_eil(int arg1){
+void exec_eil(int arg1){
 
 }
 
-void exce_sil(int arg1){
+void exec_sil(int arg1){
 
 }
 
-void exce_fda(int arg1){
+void exec_fda(int arg1){
 
 }
 
