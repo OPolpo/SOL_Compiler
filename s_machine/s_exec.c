@@ -71,13 +71,13 @@ void exec(Scode *stat) {
 }
 
 void exec_toint(){
-    int n = (float)pop_int());
-    push(n);
+    int n = (float)pop_int();
+    push_real(n);
 }
 
 void exec_toreal(){
     int n = (int)pop_real();
-    push(n);
+    push_int(n);
 }
 
 void exec_pop(){
@@ -171,7 +171,7 @@ void exec_rlt(){
     n = pop_real();
     m = pop_real();
     push_bool(m<n);
-
+    
 }
 
 void exec_slt(){
@@ -190,7 +190,7 @@ void exec_ile(){
     n = pop_int();
     m = pop_int();
     push_bool(m<=n);
-
+    
 }
 
 void exec_rle(){
@@ -198,7 +198,7 @@ void exec_rle(){
     n = pop_real();
     m = pop_real();
     push_bool(m<=n);
-
+    
 }
 
 void exec_sle(){
@@ -341,11 +341,11 @@ void exec_lds(char* arg1){
 }
 
 void exec_ldr(float arg1){
-    
+    push_real(arg1);
 }
 
 void exec_ldc(char arg1){
-    
+    push_char(arg1);
 }
 
 void exec_func(int arg1){
@@ -382,7 +382,7 @@ void exec_fda(int arg1){
 }
 
 void exec_ldi(int arg1){
-    
+    push_int(arg1);
 }
 
 void exec_new(int arg1){

@@ -141,7 +141,10 @@ void push_char(char c){
 }
 
 int pop_bool(){
-    int i = top_ostack()->inst.cval;
+    int i = (top_ostack()->inst.cval != '0');
+    if (i && top_ostack()->inst.cval != '1') {
+        machine_error("pop_bool()");
+    }
     pop_ostack();
     return i;
 }
@@ -150,5 +153,5 @@ void push_bool(int b){
     Odescr * new_o = push_ostack();
     new_o->mode = EMB;
     new_o->size = sizeof(char);
-    new_o->inst.ival = b; // just as in C language
+    new_o->inst.cval = b ? '1' :'0';
 }
