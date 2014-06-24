@@ -9,5 +9,6 @@ const ff,gg:int = 3;
 begin tester2
 	a = (true and false) or true;
 	grrr=struct(5,5.0);
+	grrr.c=3.9;
 	return 1;
 end tester2

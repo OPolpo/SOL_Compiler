@@ -11,7 +11,7 @@ char convert_bool[] = {'0','1'};
 
 int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     Poid2address * func_table = new_o2a_table();
-
+    
 #if VERBOSE
     printf("@@ in sem_program\n");
 #endif
@@ -25,9 +25,6 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
                     func_decl_code,
                     endcode());
     
-    //int ok = sem_func_decl(root->child, f_loc_env, not_first, code);
-    
-   
     cleanup_goto(code, func_table);
     destroy_o2a(func_table);
     return ok;
@@ -46,16 +43,16 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
         new_f_loc_env = getNode(id->value.sval, f_loc_env->aux->locenv);
     else
         new_f_loc_env = f_loc_env;
-
+    
     
     
     *code = appcode(*code, makecode1(S_FUNC, new_f_loc_env->oid));
-
+    
     insert_o2a(new_o2a(new_f_loc_env->oid, &(code->tail->address)),func_table);
     //f_loc_env->aux->abs_addr = &(code->tail->address);
     //printf("%d %p<=================%s\n",code->tail->address, &(code->tail->address),id->value.sval);
-
-
+    
+    
     int decl_num_objects = 0;
     Code decl_code = makecode(S_NOOP);
 	int decl_list_opt_ok = sem_decl_list_opt(current, new_f_loc_env, &decl_code, &decl_num_objects);
@@ -389,7 +386,6 @@ int sem_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
             ok = sem_write_stat(child, f_loc_env, code);
             break;
         default:
-            printf("\n##%d\n", child->value.ival);
             ok = 0;
             sem_error(child, "Some weird nonterminal node in stat\n");
             break;
@@ -414,7 +410,7 @@ int sem_assign_stat(Pnode root, Phash_node f_loc_env, Code * code){
     ok = sem_left_hand_side(lhs_node, f_loc_env, &lhs_schema, &lhs_class, &lhs_code, 1, &is_s);
     ok = ok && (lhs_class == CLVAR || lhs_class == CLPAR); //not a CONST
     if (!ok) {
-        sem_error(root, "Semantic error, cannot assign value to a CONST\n");//to_do
+        sem_error(root, "Cannot assign value to a CONST\n");
     }
     
     Code expr_code = makecode(S_NOOP);
@@ -423,7 +419,7 @@ int sem_assign_stat(Pnode root, Phash_node f_loc_env, Code * code){
     ok = ok && are_compatible(lhs_schema, expr_schema);
     
     if (!ok) {
-        sem_error(root, "Type error in ASSIGNMENT, type must be compatible\n");//to_do
+        sem_error(root, "Type error in ASSIGNMENT, type must be compatible\n");
     }
     
     if (is_s) {
@@ -456,8 +452,8 @@ int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class 
             h_node = find_visible_node(child->value.sval, f_loc_env, &offset);
             if (h_node == NULL) {
                 lhs_ok = 0;
-                sem_error(child, "Use of not visible ID\n");
-                //sem_error("Use of not visible ID %s\n", root->value.sval);
+                sprintf(error_msg, "Use of not visible ID \"%s\"\n", child->value.sval);
+                sem_error(child, error_msg);
             }
             lhs_ok = (h_node->class_node == CLVAR || h_node->class_node == CLPAR || h_node->class_node == CLCONST || h_node->class_node == CLCOUNT);
             if (!lhs_ok) {
@@ -552,7 +548,8 @@ int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     }
     ok_field = ok_field && found;
     if (!found) {
-        sem_error(root, "Semantic error, trying to access a non-existent field\n");//to_do
+        sprintf(error_msg, "Semantic error, trying to access a non-existent field \"%s\"\n", id_node->value.sval);
+        sem_error(root, error_msg);
     }
     return ok_field;
 }
@@ -593,8 +590,6 @@ int sem_indexing(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
             *code = appcode(*code, makecode1(S_EIL, compute_size(lhs_type->p1)));
         }
     }
-    
-    //may be the contrary
     *stype = lhs_type->p1;
     return ok_index;
 }
@@ -750,15 +745,18 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env, &offset);
     if (id_hash_node == NULL) {
         ok = 0;
-        sem_error(id_node, "Variable ID in FOR-STAT is not defined\n");
+        sprintf(error_msg, "Variable ID \"%s\" in FOR-STAT is not defined\n",id_node->value.sval);
+        sem_error(id_node, error_msg);
     }
     ok = ok && (id_hash_node->class_node == CLVAR || id_hash_node->class_node == CLPAR);
     if (!ok) {
-        sem_error(id_node, "Variable ID in FOR-STAT must be a VAR or a PAR\n");
+        sprintf(error_msg, "Variable ID \"%s\" in FOR-STAT must be a VAR or a PAR\n",id_node->value.sval);
+        sem_error(id_node, error_msg);
     }
     ok = ok && (id_hash_node->schema->type == INT);
     if (!ok) {
-        sem_error(id_node, "Variable ID in FOR-STAT must be of type INT\n");
+        sprintf(error_msg, "Variable ID \"%s\" in FOR-STAT must be of type INT\n",id_node->value.sval);
+        sem_error(id_node, error_msg);
     }
     
     Pschema expr1_schema = new_schema_node(-1);
@@ -825,11 +823,13 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env, &offset);
     if (id_hash_node == NULL) {
         ok = 0;
-        sem_error(id_node, "Variable ID in FOREACH-STAT is not defined\n");
+        sprintf(error_msg, "Variable ID \"%s\" in FOREACH-STAT is not defined\n",id_node->value.sval);
+        sem_error(id_node, error_msg);
     }
     ok = ok && (id_hash_node->class_node == CLVAR || id_hash_node->class_node == CLPAR);
     if (!ok) {
-        sem_error(id_node, "Variable ID in FOREACH-STAT must be a VAR or a PAR\n");
+        sprintf(error_msg, "Variable ID \"%s\" in FOREACH-STAT must be a VAR or a PAR\n",id_node->value.sval);
+        sem_error(id_node, error_msg);
     }
     
     Pschema expr_schema = new_schema_node(-1);
@@ -841,7 +841,8 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     }
     ok = ok && are_compatible(expr_schema->p1, id_hash_node->schema);
     if (!ok) {
-        sem_error(expr_node, "Type error: ID must be of the same type of VECTOR elements in FOREACH STAT\n");
+        sprintf(error_msg, "Variable ID \"%s\" must be of the same type of VECTOR elements in FOREACH STAT\n",id_node->value.sval);
+        sem_error(id_node, error_msg);
     }
     int not_used;
     Code stat_list_code = makecode(S_NOOP);
@@ -901,10 +902,6 @@ int sem_return_stat(Pnode root, Phash_node f_loc_env, Code * code){
     int ok = sem_expr(expr_node, f_loc_env, &expr_schema, code, 0);
     ok = ok && are_compatible(expr_schema, f_loc_env->schema);
     if(!ok) {
-        printf("expr");
-        print_sch(expr_schema);
-        printf("func");
-        print_sch(f_loc_env->schema);
         sem_error(expr_node, "Type error: RETURN-EXPR type must be the same as in function definition\n");
     }
     
@@ -924,11 +921,13 @@ int sem_read_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env, &offset);
     if (id_hash_node == NULL) {
         ok = 0;
-        sem_error(root, "Variable ID in READ-STAT is not defined\n");
+        sprintf(error_msg, "Variable ID \"%s\" in READ-STAT is not defined\n",id_node->value.sval);
+        sem_error(id_node, error_msg);
     }
     ok = ok && (id_hash_node->class_node == CLVAR || id_hash_node->class_node == CLPAR);
     if (!ok) {
-        sem_error(root, "Variable ID in READ-STAT must be a VAR or a PAR\n");
+        sprintf(error_msg, "Variable ID \"%s\" in READ-STAT must be a VAR or a PAR\n",id_node->value.sval);
+        sem_error(id_node, error_msg);
     }
     
     if (is_null) {
@@ -957,7 +956,6 @@ int sem_specifier_opt(Pnode root, Phash_node f_loc_env, Code * code, int * is_nu
     if (!spec_ok) {
         sem_error(specifier, "Type error, specifier in wr/write/rd/read call must be a STRING or NULL\n");//to_do
     }
-    printf("##%d %d\n", ok, spec_ok);
     return ok && spec_ok;
 }
 
@@ -1227,7 +1225,8 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 	int expr_ok = sem_expr(root->child, f_loc_env, &expr_type, code, 0);
 	switch(root->qualifier){
 		case '-':
-			if(expr_type->type != INT || expr_type->type != REAL){
+            print_sch(expr_type);
+			if(expr_type->type != INT && expr_type->type != REAL){
 				//sprintf(error_msg,"Type error, expected INT | REAL instead of %s \n", tabsem_types[expr_type]);//
 				sprintf(error_msg,"Type error, expected INT | REAL\n");
 				sem_error(root->child, error_msg);
@@ -1337,7 +1336,7 @@ int sem_instance_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
 				Pschema next = new_schema_node(-1);
 				expr_ok = expr_ok && sem_expr(current_node, f_loc_env, &next, code, 0);
 				if(!are_compatible(next,current_schema)){
-					sem_error(current_node, "Type Error, Vector type are non uniform\n");
+					sem_error(current_node, "Type Error, Vector type elements must be uniform\n");
 					break;
 				}
 				current_node = current_node->brother;
@@ -1392,7 +1391,7 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
         sem_error(id_node, "Formal parameter must be compatible with actual parameter in function call\n");
     }
     (*stype) = h_id_node->schema;
-
+    
     //printf("%p<=================\n", h_id_node->aux->abs_addr);
     *code = concode(*code,
                     make_push_pop(h_id_node->aux->num_obj, offset , h_id_node->oid),
