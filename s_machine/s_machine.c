@@ -1,40 +1,15 @@
-
-
-
-typedef struct{
-    Operator op;
-    Lexval args[MAXARGS];
-} Scode;
-Scode *prog;
-
-typedef struct adescr {
-    int numobj;
-    Odescr *objects;
-    int raddr;
-    struct adescr *alink;
-} Adescr;
-Adescr **astack;
-
-typedef enum {
-    EMB,
-    STA
-} Mode;
-
-typedef struct {
-    Mode mode;
-    int size;
-    Lexval inst;
-} Odescr;
-Odescr ** ostack;
+#include "s_machine.h"
 
 char *istack;
 
-main(int argc, char* argv[]){
+int main(int argc, char* argv[]){
 	Scode * stat;
 	start_machine();
 	while((stat = &prog[pc++])->op != S_HALT)
         exec(stat);
     end_machine();
+    
+    return 1;
 }
 
 extern Scode *prog;
