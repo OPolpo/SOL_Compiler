@@ -7,70 +7,76 @@
 
 void exec(Scode *stat);
 
-void exec_goto(int addr);
-void exec_jmp(int offset);
-void exec_jmf(int offset);
-void exec_return();
-void exec_iplus();
+void exce_toint();
+void exce_toreal();
+void exec_pop();
+void exce_ist();
+void exce_equ();
+void exce_neq();
 void exec_igt();
-void exec_new(int size);
+void exce_cgt();
+void exce_rgt();
+void exce_sgt();
+void exce_cge();
+void exce_ige();
+void exce_rge();
+void exce_sge();
+void exce_clt();
+void exce_ilt();
+void exce_rlt();
+void exce_slt();
+void exce_cle();
+void exce_ile();
+void exce_rle();
+void exce_sle();
+void exce_in();
+void exec_iplus();
+void exce_rplus();
+void exce_iminus();
+void exce_rminus();
+void exce_itimes();
+void exce_rtimes();
+void exce_idiv();
+void exce_rdiv();
+void exce_iumi();
+void exce_rumi();
+void exce_neg();
+void exec_return();
 
-void exec_news(stat->args[0].ival);
-void exec_ldc(stat->args[0].ival);
-void exec_ldi(stat->args[0].ival);
-void exec_lds(stat->args[0].sval);
-void exec_ldr(stat->args[0].rval);
-void exce_lod(stat->args[0].ival);
-void exce_cat(stat->args[0].ival);
-void exce_lda(stat->args[0].ival);
-void exce_fda(stat->args[0].ival);
-void exce_eil(stat->args[0].ival);
-void exce_sil(stat->args[0].ival);
-void exce_ixa(stat->args[0].ival);
-void exce_sto(stat->args[0].ival);
-void exce_ist(stat->args[0].ival);
-void exce_equ(stat->args[0].ival);
-void exce_neq(stat->args[0].ival);
-void exce_cgt(stat->args[0].ival);
-void exce_rgt(stat->args[0].ival);
-void exce_sgt(stat->args[0].ival);
-void exce_cge(stat->args[0].ival);
-void exce_ige(stat->args[0].ival);
-void exce_rge(stat->args[0].ival);
-void exce_sge(stat->args[0].ival);
-void exce_clt(stat->args[0].ival);
-void exce_ilt(stat->args[0].ival);
-void exce_rlt(stat->args[0].ival);
-void exce_slt(stat->args[0].ival);
-void exce_cle(stat->args[0].ival);
-void exce_ile(stat->args[0].ival);
-void exce_rle(stat->args[0].ival);
-void exce_sle(stat->args[0].ival);
-void exce_in(stat->args[0].ival);
-void exce_rplus(stat->args[0].ival);
-void exce_iminus(stat->args[0].ival);
-void exce_rminus(stat->args[0].ival);
-void exce_itimes(stat->args[0].ival);
-void exce_rtimes(stat->args[0].ival);
-void exce_idiv(stat->args[0].ival);
-void exce_rdiv(stat->args[0].ival);
-void exce_iumi(stat->args[0].ival);
-void exce_rumi(stat->args[0].ival);
-void exce_neg(stat->args[0].ival);
-void exce_wr(stat->args[0].ival);
-void exce_fwr(stat->args[0].ival);
-void exce_push(stat->args[0].ival);
-void exce_pop(stat->args[0].ival);
-void exce_Rd(stat->args[0].ival);
-void exce_frd(stat->args[0].ival);
-void exce_toin(stat->args[0].ival);
-void exce_toreal(stat->args[0].ival);
-void exce_read(stat->args[0].ival);
-void exce_fread(stat->args[0].ival);
-void exce_write(stat->args[0].ival);
-void exce_fwrite(stat->args[0].ival);
-void exce_func(stat->args[0].ival);
-void exce_halt(stat->args[0].ival);
+void exce_read(int arg1, int arg2, char * arg3);
+void exce_fread(int arg1, int arg2, char * arg3);
+
+void exce_push(int arg1, int arg2);
+void exce_sto(int arg1, int arg2);
+void exce_lda(int arg1, int arg2);
+void exce_cat(int arg1, int arg2);
+void exce_lod(int arg1, int arg2);
+
+void exce_write(char* arg1);
+void exce_fwrite(char* arg1);
+void exce_Rd(char* arg1);
+void exce_frd(char* arg1);
+void exce_wr(char* arg1);
+void exce_fwr(char* arg1);
+void exec_lds(char* arg1);
+
+void exec_ldr(float arg1);
+
+void exec_ldc(char arg1);
+
+
+void exce_func(int arg1);
+void exec_goto(int arg1);
+void exec_jmf(int arg1);
+void exec_jmp(int arg1);
+void exce_ixa(int arg1);
+void exce_eil(int arg1);
+void exce_sil(int arg1);
+void exce_fda(int arg1);
+void exec_ldi(int arg1);
+void exec_new(int arg1);
+void exec_news(int arg1);
+
 
 
 

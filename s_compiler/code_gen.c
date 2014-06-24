@@ -372,6 +372,7 @@ void print_stat(FILE * stream, Stat * stat){
             
         case S_FUNC:
         case S_GOTO:
+        case S_FAKE_GOTO:
         case S_JMF:
         case S_JMP:
         case S_IXA:
