@@ -786,6 +786,7 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     asprintf(&id_aux, "0_AUX_%d", f_loc_env->aux->last_oid);
     Phash_node end_condition_expr_value = new_id_node(id_aux, CLCONST, f_loc_env->aux->last_oid); //todo
     f_loc_env->aux->last_oid++;
+    f_loc_env->aux->num_obj++;
     end_condition_expr_value->schema = new_schema_node(INT);
     insert(end_condition_expr_value, f_loc_env->aux->locenv);
     
