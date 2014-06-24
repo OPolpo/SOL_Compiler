@@ -46,6 +46,7 @@ Adescr * push_astack();
 void pop_astack();
 
 Odescr * top_ostack();
+Odescr * under_top_ostack();
 Odescr * push_ostack();
 void pop_ostack();
 
@@ -63,5 +64,8 @@ char pop_char();
 void push_char(char c);
 int pop_bool();
 void push_bool(int b);
+
+char * pop_charp();
+void push_charp(char *);
 
 #endif

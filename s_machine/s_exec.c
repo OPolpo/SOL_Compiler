@@ -89,17 +89,35 @@ void exec_ist(){
 }
 
 void exec_equ(){
-    // int n, m;
-    // n = pop_int();
-    // m = pop_int();
-    // push_bool(m==n);
+    void * n, * m;
+    if (top_ostack()->mode == EMB){
+        n = &(top_ostack()->inst);
+        m = &(under_top_ostack()->inst);
+    }
+    else{
+        n = (top_ostack()->inst).sval;
+        m = (under_top_ostack()->inst).sval;
+    }
+    int res = memcmp(n, m, top_ostack()->size);
+    pop_ostack();
+    pop_ostack();
+    push_bool(res);
 }
 
 void exec_neq(){
-    // int n, m;
-    // n = pop_int();
-    // m = pop_int();
-    // push_bool(m==n);
+    void * n, * m;
+    if (top_ostack()->mode == EMB){
+        n = &(top_ostack()->inst);
+        m = &(under_top_ostack()->inst);
+    }
+    else{
+        n = (top_ostack()->inst).sval;
+        m = (under_top_ostack()->inst).sval;
+    }
+    int res = !memcmp(n, m, top_ostack()->size);
+    pop_ostack();
+    pop_ostack();
+    push_bool(res);
 }
 
 void exec_cgt(){
@@ -124,7 +142,10 @@ void exec_rgt(){
 }
 
 void exec_sgt(){
-    
+    char * n, * m;
+    n = pop_charp();
+    m = pop_charp();
+    push_bool(strcmp(m, n) > 0);
 }
 
 void exec_cge(){
@@ -149,7 +170,10 @@ void exec_rge(){
 }
 
 void exec_sge(){
-    
+    char * n, * m;
+    n = pop_charp();
+    m = pop_charp();
+    push_bool(strcmp(m, n) >= 0);
 }
 
 void exec_clt(){
@@ -175,7 +199,10 @@ void exec_rlt(){
 }
 
 void exec_slt(){
-    
+    char * n, * m;
+    n = pop_charp();
+    m = pop_charp();
+    push_bool(strcmp(m, n) < 0);
 }
 
 void exec_cle(){
@@ -190,7 +217,6 @@ void exec_ile(){
     n = pop_int();
     m = pop_int();
     push_bool(m<=n);
-    
 }
 
 void exec_rle(){
@@ -198,11 +224,13 @@ void exec_rle(){
     n = pop_real();
     m = pop_real();
     push_bool(m<=n);
-    
 }
 
 void exec_sle(){
-    
+    char * n, * m;
+    n = pop_charp();
+    m = pop_charp();
+    push_bool(strcmp(m, n) <= 0);
 }
 
 void exec_in(){
@@ -320,7 +348,7 @@ void exec_fwrite(char* arg1){
     
 }
 
-void exec_Rd(char* arg1){
+void exec_rd(char* arg1){
     
 }
 

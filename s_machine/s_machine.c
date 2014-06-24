@@ -83,6 +83,13 @@ Odescr * top_ostack(){
     return ostack[op-1];
 }
 
+Odescr * under_top_ostack(){
+    if (op<=1) {
+        machine_error("under_top_ostack");
+    }
+    return ostack[op-2];
+}
+
 Odescr * push_ostack(){
     Odescr **old_ostack; int i;
     if(op == osize) {
@@ -154,4 +161,17 @@ void push_bool(int b){
     new_o->mode = EMB;
     new_o->size = sizeof(char);
     new_o->inst.cval = b ? '1' :'0';
+}
+
+char * pop_charp(){
+    char * s = top_ostack()->inst.sval;
+    pop_ostack();
+    return s;
+}
+
+void push_charp(char * s){
+    Odescr * new_o = push_ostack();
+    new_o->mode = STA;
+    new_o->size = sizeof(char *);//TO DO ... missing the ISTACK thing
+    new_o->inst.sval = s;
 }
