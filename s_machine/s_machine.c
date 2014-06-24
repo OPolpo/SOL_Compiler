@@ -150,5 +150,5 @@ void push_bool(int b){
     Odescr * new_o = push_ostack();
     new_o->mode = EMB;
     new_o->size = sizeof(char);
-    new_o->inst.cval = b;
+    new_o->inst.ival = b; // just as in C language
 }
