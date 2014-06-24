@@ -1574,7 +1574,7 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int
 	switch(root->type){
 		case T_CHARCONST:
 			(*stype)->type = CHAR;
-            *code = appcode(*code, make_ldc(root->value.ival));
+            *code = appcode(*code, make_ldc(root->value.cval));
 			break;
 		case T_INTCONST:
 			(*stype)->type = INT;
@@ -1590,7 +1590,7 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int
 			break;
 		case T_BOOLCONST:
 			(*stype)->type = BOOL;
-            *code = appcode(*code, make_ldc(root->value.bval));
+            *code = appcode(*code, make_ldc(root->value.cval));
 			break;
 		case T_NONTERMINAL:
             switch(root->value.ival){

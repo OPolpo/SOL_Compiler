@@ -78,7 +78,7 @@ rd				{return (RD);}
 write			{return (WRITE);}
 wr				{return (WR);}
 {boolconst}		{
-					lexval.bval = (yytext[0] == 'f' ? '0' : '1');
+					lexval.cval = (yytext[0] == 'f' ? '0' : '1');
 					return(BOOLCONST);
 				}
 {intconst}		{lexval.ival = atoi(yytext); return(INTCONST);}

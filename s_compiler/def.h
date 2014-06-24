@@ -59,10 +59,10 @@ typedef enum{
 } Typenode;
 
 typedef union{
+	char cval;
 	int ival;
 	float rval;
-	char *sval;
-	char bval;
+	char * sval;
 } Value;
 
 typedef struct snode{
@@ -81,6 +81,7 @@ Pnode nontermode(Nonterminal),
 	  sconstnode(),
 	  rconstnode(),
 	  bconstnode(),
+	  cconstnode(),
       atomicdomainnode(int domain),
 	  newnode(Typenode);
 

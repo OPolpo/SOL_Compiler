@@ -32,7 +32,7 @@ Pnode iconstnode(){
 
 Pnode cconstnode(){
     Pnode p = newnode(T_CHARCONST);
-    p->value.ival = lexval.ival;
+    p->value.ival = lexval.cval;
     return(p);
 }
 
@@ -46,12 +46,6 @@ Pnode sconstnode(){
     Pnode p = newnode(T_STRCONST);
     p->value.sval = lexval.sval;
     return(p);
-}
-
-Pnode bconstnode(){
-  Pnode p = newnode(T_BOOLCONST);
-  p->value.bval = lexval.bval;
-  return(p);
 }
 
 Pnode atomicdomainnode(int domain){
@@ -254,7 +248,7 @@ atomic_const : CHARCONST {$$ = cconstnode();}
 			 | INTCONST  {$$ = iconstnode();}
 			 | REALCONST {$$ = rconstnode();}
 			 | STRCONST  {$$ = sconstnode();}
-			 | BOOLCONST {$$ = bconstnode();}
+			 | BOOLCONST {$$ = cconstnode();}
 instance_construction : struct_construction 
 					  | vector_construction
 struct_construction : STRUCT '(' expr_list ')' {$$ = nontermnode(NINSTANCE_EXPR);

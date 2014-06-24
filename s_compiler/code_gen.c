@@ -270,8 +270,7 @@ Code make_push_pop(int size, int chain, int entry){
 Code make_ldc(char c){
     Code code;
     code = makecode(S_LDC);
-    code.head->args[0].bval = c;
-    printf("in make_ldc '%c'\n", code.head->args[0].bval);
+    code.head->args[0].cval = c;
     return code;
 }
 
@@ -367,7 +366,7 @@ void print_stat(FILE * stream, Stat * stat){
             fprintf(stream, "%f ", stat->args[0].rval);
             break;
         case S_LDC:
-            fprintf(stream, "'%c' ", stat->args[0].bval);
+            fprintf(stream, "'%c' ", stat->args[0].cval);
             break;
             
         case S_FUNC:
