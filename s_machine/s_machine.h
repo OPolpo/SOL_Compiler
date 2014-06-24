@@ -3,20 +3,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "../s_compiler/code_gen.h"
+#include "s_exec.h"
+
+#define MAXARGS 3
+#define ASTACK_UNIT 1000
+#define OSTACK_UNIT 1000
+#define ISTACK_UNIT 1000
+//TO DO listen to recording to find exact value
 
 typedef struct{
     Operator op;
-    Lexval args[MAXARGS];
+    Value args[MAXARGS];
 } Scode;
-Scode *prog;
-
-typedef struct adescr {
-    int numobj;
-    Odescr *objects;
-    int raddr;
-    struct adescr *alink;
-} Adescr;
-Adescr **astack;
 
 typedef enum {
     EMB,
@@ -26,19 +25,15 @@ typedef enum {
 typedef struct {
     Mode mode;
     int size;
-    Lexval inst;
+    Value inst;
 } Odescr;
-Odescr ** ostack;
 
-char *istack;
-extern Scode *prog;
-extern int pc;
-Adescr **astack;
-Odescr **ostack;
-char *istack;
-int asize, osize, isize;
-int ap, op, ip;
-long size_allocated = 0, size_deallocated = 0;
+typedef struct adescr {
+    int numobj;
+    Odescr *objects;
+    int raddr;
+    struct adescr *alink;
+} Adescr;
 
 void start_machine();
 void end_machine();
@@ -48,16 +43,11 @@ void freemem(char *p, int size);
 Adescr *push_astack();
 void pop_astack();
 
-Scode *prog;
-int pc;
-void exec(Scode *stat);
+Odescr *push_ostack();
+void pop_ostack();
 
-void exec_goto(int addr);
-void exec_jmp(int offset);
-void exec_jmf(int offset);
-void exec_return();
-void exec_iplus();
-void exec_igt();
-void exec_new(int size);
+//istack?!
 
+void load_scode();
+void machine_error(char * err_str);
 #endif
