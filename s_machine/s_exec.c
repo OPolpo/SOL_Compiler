@@ -74,11 +74,13 @@ void exec(Scode *stat) {
 }
 
 void exec_toint(){
-
+    int n = (float)pop_int());
+    push(n);
 }
 
 void exec_toreal(){
-
+    int n = (int)pop_real();
+    push(n);
 }
 
 void exec_pop(){
@@ -90,11 +92,24 @@ void exec_ist(){
 }
 
 void exec_equ(){
-
+    // int n, m;
+    // n = pop_int();
+    // m = pop_int();
+    // push_bool(m==n);
 }
 
 void exec_neq(){
+    // int n, m;
+    // n = pop_int();
+    // m = pop_int();
+    // push_bool(m==n);
+}
 
+void exec_cgt(){
+    char n, m;
+    n = pop_char();
+    m = pop_char();
+    push_bool(m>n);
 }
 
 void exec_igt(){
@@ -104,12 +119,11 @@ void exec_igt(){
     push_bool(m>n);
 }
 
-void exec_cgt(){
-
-}
-
 void exec_rgt(){
-
+    float n, m;
+    n = pop_real();
+    m = pop_real();
+    push_bool(m>n);
 }
 
 void exec_sgt(){
@@ -117,15 +131,24 @@ void exec_sgt(){
 }
 
 void exec_cge(){
-
+    char n, m;
+    n = pop_char();
+    m = pop_char();
+    push_bool(m>=n);
 }
 
 void exec_ige(){
-
+    int n, m;
+    n = pop_int();
+    m = pop_int();
+    push_bool(m>=n);
 }
 
 void exec_rge(){
-
+    float n, m;
+    n = pop_real();
+    m = pop_real();
+    push_bool(m>=n);
 }
 
 void exec_sge(){
@@ -133,14 +156,24 @@ void exec_sge(){
 }
 
 void exec_clt(){
-
+    char n, m;
+    n = pop_char();
+    m = pop_char();
+    push_bool(m<n);
 }
 
 void exec_ilt(){
-
+    int n, m;
+    n = pop_int();
+    m = pop_int();
+    push_bool(m<n);
 }
 
 void exec_rlt(){
+    float n, m;
+    n = pop_real();
+    m = pop_real();
+    push_bool(m<n);
 
 }
 
@@ -149,14 +182,25 @@ void exec_slt(){
 }
 
 void exec_cle(){
-
+    char n, m;
+    n = pop_char();
+    m = pop_char();
+    push_bool(m<=n);
 }
 
 void exec_ile(){
+    int n, m;
+    n = pop_int();
+    m = pop_int();
+    push_bool(m<=n);
 
 }
 
 void exec_rle(){
+    float n, m;
+    n = pop_real();
+    m = pop_real();
+    push_bool(m<=n);
 
 }
 
