@@ -7,7 +7,7 @@ to be compiled on linux
  opt: simple examples
  mand: a complete program that runs
 
- 2. Compler description
+ 2. Compiler description
  architecture + data structures
 
  3. Interpreter description
