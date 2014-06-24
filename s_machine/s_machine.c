@@ -6,7 +6,7 @@ Adescr **astack;
 Odescr **ostack;
 char *istack;
 int asize, osize, isize, code_size;
-int ap, op, ip;
+int ap, op, ip; // point to he first free elements of their stack
 long size_allocated = 0, size_deallocated = 0;
 
 int main(int argc, char* argv[]){
@@ -52,7 +52,10 @@ void freemem(char *p, int size) {
 }
 
 Adescr * top_astack(){
-    return astack[ap];
+    if (ap==0) {
+        machine_error("top_astack");
+    }
+    return astack[ap-1];
 }
 
 Adescr * push_astack(){
@@ -73,6 +76,13 @@ void pop_astack() {
     freemem((char*)astack[--ap], sizeof(Adescr));
 }
 
+Odescr * top_ostack(){
+    if (op==0) {
+        machine_error("top_ostack");
+    }
+    return ostack[op-1];
+}
+
 Odescr * push_ostack(){
     Odescr **old_ostack; int i;
     if(op == osize) {
@@ -83,10 +93,62 @@ Odescr * push_ostack(){
         freemem((char*)old_ostack, sizeof(Odescr*)*osize);
         osize += OSTACK_UNIT;
     }
-    return (ostack[ap++] = (Odescr*)newmem(sizeof(Odescr)));
+    return (ostack[op++] = (Odescr*)newmem(sizeof(Odescr)));
 }
 
 void pop_ostack() {
     if(op == 0) machine_error("pop_odescr()");
     freemem((char*)ostack[--op], sizeof(Odescr));
+}
+
+int pop_int(){
+    int i = top_ostack()->inst.ival;
+    pop_ostack();
+    return i;
+}
+
+void push_int(int i){
+    Odescr * new_o = push_ostack();
+    new_o->mode = EMB;
+    new_o->size = sizeof(int);
+    new_o->inst.ival = i;
+}
+
+float pop_real(){
+    float r = top_ostack()->inst.rval;
+    pop_ostack();
+    return r;
+}
+
+void push_real(float r){
+    Odescr * new_o = push_ostack();
+    new_o->mode = EMB;
+    new_o->size = sizeof(float);
+    new_o->inst.rval = r;
+}
+
+char pop_char(){
+    char c = top_ostack()->inst.cval;
+    pop_ostack();
+    return c;
+}
+
+void push_char(char c){
+    Odescr * new_o = push_ostack();
+    new_o->mode = EMB;
+    new_o->size = sizeof(char);
+    new_o->inst.cval = c;
+}
+
+int pop_bool(){
+    int i = top_ostack()->inst.cval;
+    pop_ostack();
+    return i;
+}
+
+void push_bool(int b){
+    Odescr * new_o = push_ostack();
+    new_o->mode = EMB;
+    new_o->size = sizeof(char);
+    new_o->inst.cval = b;
 }

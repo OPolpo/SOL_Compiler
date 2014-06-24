@@ -351,9 +351,9 @@ char * schema2format(Pschema schema){
             break;
         case VECTOR:
             tmp_str = schema2format(schema->p1);
-            i=log10(schema->size);
-            str = (char *)calloc((strlen(tmp_str)+i+1+3+1),sizeof(char));
-            sprintf(str, "[%d,%s]", schema->size, tmp_str);
+            //i=log10(schema->size);
+            //str = (char *)calloc((strlen(tmp_str)+i+1+3+1),sizeof(char));
+            asprintf(&str, "[%d,%s]", schema->size, tmp_str);
             break;
         case STRUCT:
             tmp_schema = schema->p1;
@@ -373,8 +373,7 @@ char * schema2format(Pschema schema){
                 strcat(str, (tmp_schema->id? tmp_schema->id: ""));
                 strcat(str, ":");
                 strcat(str, tmp_str);//
-                ///sprintf(str, ",%s:%s", tmp_schema->id, tmp_str);
-                
+                ///sprintf(str, ",%s:%s", tmp_schema->id, tmp_str);                
                 tmp_schema = tmp_schema->p2;
             }
             strcat(str, ")");

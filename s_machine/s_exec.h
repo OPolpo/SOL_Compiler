@@ -7,6 +7,8 @@
 
 void exec(Scode *stat);
 
+void exec_push(int arg1, int arg2, int pc);
+
 void exec_toint();
 void exec_toreal();
 void exec_pop();
@@ -46,7 +48,6 @@ void exec_return();
 void exec_read(int arg1, int arg2, char * arg3);
 void exec_fread(int arg1, int arg2, char * arg3);
 
-void exec_push(int arg1, int arg2);
 void exec_sto(int arg1, int arg2);
 void exec_lda(int arg1, int arg2);
 void exec_cat(int arg1, int arg2);
@@ -54,7 +55,7 @@ void exec_lod(int arg1, int arg2);
 
 void exec_write(char* arg1);
 void exec_fwrite(char* arg1);
-void exec_Rd(char* arg1);
+void exec_rd(char* arg1);
 void exec_frd(char* arg1);
 void exec_wr(char* arg1);
 void exec_fwr(char* arg1);
