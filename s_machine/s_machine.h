@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../s_compiler/code_gen.h"
 #include "s_exec.h"
 

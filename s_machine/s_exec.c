@@ -173,43 +173,67 @@ void exec_iplus(){
 }
 
 void exec_rplus(){
-    
+    float n, m;
+    n = pop_real();
+    m = pop_real();
+    push_real(m+n);
 }
 
 void exec_iminus(){
-    
+    int n, m;
+    n = pop_int();
+    m = pop_int();
+    push_int(m-n);
 }
 
 void exec_rminus(){
-    
+    float n, m;
+    n = pop_real();
+    m = pop_real();
+    push_real(m-n);
 }
 
 void exec_itimes(){
-    
+    int n, m;
+    n = pop_int();
+    m = pop_int();
+    push_int(m*n);
 }
 
 void exec_rtimes(){
-    
+    float n, m;
+    n = pop_real();
+    m = pop_real();
+    push_real(m*n);
 }
 
 void exec_idiv(){
-    
+    int n, m;
+    n = pop_int();
+    m = pop_int();
+    push_int(m/n);
 }
 
 void exec_rdiv(){
-    
+    float n, m;
+    n = pop_real();
+    m = pop_real();
+    push_real(m/n);
 }
 
 void exec_iumi(){
-    
+    int i = pop_int();
+    push_int(-i);
 }
 
 void exec_rumi(){
-    
+    float r = pop_real();
+    push_real(-r);
 }
 
 void exec_neg(){
-    
+    int n = pop_bool();
+    push_bool(!n);
 }
 
 void exec_return(){
