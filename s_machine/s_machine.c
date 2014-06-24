@@ -9,7 +9,6 @@ int asize, osize, isize, code_size;
 int ap, op, ip;
 long size_allocated = 0, size_deallocated = 0;
 
-
 int main(int argc, char* argv[]){
 	Scode * stat;
 	start_machine();
@@ -18,8 +17,6 @@ int main(int argc, char* argv[]){
     end_machine();
     return 1;
 }
-
-
 
 void start_machine() {
     load_scode();
@@ -43,7 +40,7 @@ void end_machine() {
     printf("Residue: %ld bytes\n", size_allocated - size_deallocated);
 }
 
-void *newmem(int size) {
+void * newmem(int size) {
     void *p;
     if((p = malloc(size)) == NULL) machine_error("Failure in memory allocation");
     size_allocated += size;
@@ -54,7 +51,11 @@ void freemem(char *p, int size) {
     size_deallocated += size;
 }
 
-Adescr *push_astack(){
+Adescr * top_astack(){
+    return astack[ap];
+}
+
+Adescr * push_astack(){
     Adescr **old_astack; int i;
     if(ap == asize) {
         old_astack = astack;
@@ -70,4 +71,22 @@ Adescr *push_astack(){
 void pop_astack() {
     if(ap == 0) machine_error("pop_adescr()");
     freemem((char*)astack[--ap], sizeof(Adescr));
+}
+
+Odescr * push_ostack(){
+    Odescr **old_ostack; int i;
+    if(op == osize) {
+        old_ostack = ostack;
+        ostack = (Odescr**) newmem(sizeof(Odescr*)*(osize + OSTACK_UNIT));
+        for(i = 0; i < osize; i++)
+            ostack[i] = old_ostack[i];
+        freemem((char*)old_ostack, sizeof(Odescr*)*osize);
+        osize += OSTACK_UNIT;
+    }
+    return (ostack[ap++] = (Odescr*)newmem(sizeof(Odescr)));
+}
+
+void pop_ostack() {
+    if(op == 0) machine_error("pop_odescr()");
+    freemem((char*)ostack[--op], sizeof(Odescr));
 }

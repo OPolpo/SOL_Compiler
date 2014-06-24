@@ -40,10 +40,11 @@ void end_machine();
 void *newmem(int size);
 void freemem(char *p, int size);
 
-Adescr *push_astack();
+Adescr * top_astack();
+Adescr * push_astack();
 void pop_astack();
 
-Odescr *push_ostack();
+Odescr * push_ostack();
 void pop_ostack();
 
 //istack?!
