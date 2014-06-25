@@ -9,7 +9,7 @@ int asize, osize, isize, code_size;
 int ap, op, ip; // point to he first free elements of their stack
 long size_allocated = 0, size_deallocated = 0;
 
-char ** str_const_table;
+Str_c_node ** str_const_table;
 
 int main(int argc, char* argv[]){
 	Scode * stat;
@@ -30,7 +30,7 @@ void start_machine() {
     istack = (char*)newmem(ISTACK_UNIT);
     isize = ISTACK_UNIT;
     
-    str_const_table = (char **)newmem(sizeof(char*)*STR_CONST_DIM);
+    str_const_table = (Str_c_node **)newmem(sizeof(Str_c_node*)*STR_CONST_DIM);
 }
 
 void end_machine() {
@@ -38,7 +38,7 @@ void end_machine() {
     freemem((char*)astack, sizeof(Adescr*)*asize);
     freemem((char*)ostack, sizeof(Odescr*)*osize);
     freemem(istack, isize);
-    freemem(*str_const_table, STR_CONST_DIM);
+    freemem((char*)str_const_table, sizeof(Str_c_node*)*STR_CONST_DIM);
     //FREE ALSO THE ELEMENTS, ANDREA ... PLEASE after the coffee and possibly in an itrerative way thx
     printf("Program executed without errors\n");
     printf("Allocation: %ld bytes\n", size_allocated);
@@ -194,18 +194,52 @@ void push_bool(int b){
     new_o->inst.cval = b ? '1' :'0';
 }
 
-char * pop_char_p(){
+char * pop_string(){
     char * s = top_ostack()->inst.sval;
     pop_ostack();
     return s;
 }
 
-void push_char_p(char * s){ //assuming is "mallocated" and i.e. in yylex
+void push_string(char * s){ //assuming is "mallocated" and is in the hash table
     Odescr * new_o = push_ostack();
     new_o->mode = STA;
     new_o->size = sizeof(s)+1;
-    new_o->inst.sval = push_istack((int)strlen(s)+1);
-    memcpy(new_o->inst.sval, s, strlen(s)+1);
+    new_o->inst.sval = insert_str_c(s);
 }
 
+
+//manage str_const_table
+char * insert_str_c(char * s){
+    char * p_on_table = get_str_c(s);
+    if (!p_on_table){
+        int pos = hash(s);
+        Str_c_node * new_node = (Str_c_node *)newmem(sizeof(Str_c_node));
+        new_node->string = calloc(strlen(s)+1, sizeof(char));
+        strcpy(new_node->string, s);
+        p_on_table = new_node->string;
+        new_node->next = str_const_table[pos];
+        str_const_table[pos] = new_node;
+    }
+    return p_on_table;
+}
+
+char * get_str_c(char * s){
+    int pos = hash_str_c(s);
+    Str_c_node * node = str_const_table[pos];
+    while (node) {
+        if (strcmp(node->string, s) == 0) {
+            return node->string;
+        }
+        node = node->next;
+    }
+    return NULL;
+}
+
+int hash_str_c(char * s){
+    int i, h = 0;
+    for(i = 0; s[i] != '\0'; i++){
+        h = ((h << STR_SHIFT) + s[i]) % STR_CONST_DIM;
+    }
+    return h;
+}
 

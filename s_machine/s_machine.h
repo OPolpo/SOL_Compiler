@@ -9,6 +9,7 @@
 
 #define MAXARGS 3
 #define STR_CONST_DIM 401
+#define STR_SHIFT 4
 #define ASTACK_UNIT 1000
 #define OSTACK_UNIT 1000
 #define ISTACK_UNIT 1000000
@@ -36,6 +37,11 @@ typedef struct adescr {
     int raddr;
     struct adescr *alink;
 } Adescr;
+
+typedef struct str_c_node{
+    char * string;
+    struct str_c_node * next;
+} Str_c_node;
 
 void start_machine();
 void end_machine();
@@ -70,5 +76,9 @@ void push_bool(int b);
 
 char * pop_char_p();
 void push_char_p(char *);
+
+char * insert_str_c(char * s);
+char * get_str_c(char * s);
+int hash_str_c(char * s);
 
 #endif
