@@ -8,6 +8,7 @@
 #include "s_exec.h"
 
 #define MAXARGS 3
+#define STR_CONST_DIM 401
 #define ASTACK_UNIT 1000
 #define OSTACK_UNIT 1000
 #define ISTACK_UNIT 1000000
@@ -50,7 +51,9 @@ Odescr * under_top_ostack();
 Odescr * push_ostack();
 void pop_ostack();
 
-//istack?!
+char * push_istack(int size);
+void pop_istack(int size);
+void move_down_istack(int to_move, int this_much);
 
 void load_scode();
 void machine_error(char * err_str);
@@ -65,7 +68,7 @@ void push_char(char c);
 int pop_bool();
 void push_bool(int b);
 
-char * pop_charp();
-void push_charp(char *);
+char * pop_char_p();
+void push_char_p(char *);
 
 #endif

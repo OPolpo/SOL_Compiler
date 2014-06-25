@@ -143,8 +143,8 @@ void exec_rgt(){
 
 void exec_sgt(){
     char * n, * m;
-    n = pop_charp();
-    m = pop_charp();
+    n = pop_char_p();
+    m = pop_char_p();
     push_bool(strcmp(m, n) > 0);
 }
 
@@ -171,8 +171,8 @@ void exec_rge(){
 
 void exec_sge(){
     char * n, * m;
-    n = pop_charp();
-    m = pop_charp();
+    n = pop_char_p();
+    m = pop_char_p();
     push_bool(strcmp(m, n) >= 0);
 }
 
@@ -200,8 +200,8 @@ void exec_rlt(){
 
 void exec_slt(){
     char * n, * m;
-    n = pop_charp();
-    m = pop_charp();
+    n = pop_char_p();
+    m = pop_char_p();
     push_bool(strcmp(m, n) < 0);
 }
 
@@ -228,8 +228,8 @@ void exec_rle(){
 
 void exec_sle(){
     char * n, * m;
-    n = pop_charp();
-    m = pop_charp();
+    n = pop_char_p();
+    m = pop_char_p();
     push_bool(strcmp(m, n) <= 0);
 }
 

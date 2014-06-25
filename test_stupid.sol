@@ -1,6 +1,8 @@
 --test :P
 func tester():int
 var a,b,c:int;
+	str:string;
+	boo:bool;
 
 	func tester1():int
 	var a1,b1,c1:int;
@@ -20,5 +22,7 @@ var a,b,c:int;
 
 begin tester
 	a=0;
+	str="ciao";
+	boo = str == "cio";
 	return a;
 end tester

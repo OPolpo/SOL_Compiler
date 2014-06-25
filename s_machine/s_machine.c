@@ -9,6 +9,8 @@ int asize, osize, isize, code_size;
 int ap, op, ip; // point to he first free elements of their stack
 long size_allocated = 0, size_deallocated = 0;
 
+char ** str_const_table;
+
 int main(int argc, char* argv[]){
 	Scode * stat;
 	start_machine();
@@ -27,6 +29,8 @@ void start_machine() {
     osize = OSTACK_UNIT;
     istack = (char*)newmem(ISTACK_UNIT);
     isize = ISTACK_UNIT;
+    
+    str_const_table = (char **)newmem(sizeof(char*)*STR_CONST_DIM);
 }
 
 void end_machine() {
@@ -34,6 +38,8 @@ void end_machine() {
     freemem((char*)astack, sizeof(Adescr*)*asize);
     freemem((char*)ostack, sizeof(Odescr*)*osize);
     freemem(istack, isize);
+    freemem(*str_const_table, STR_CONST_DIM);
+    //FREE ALSO THE ELEMENTS, ANDREA ... PLEASE after the coffee and possibly in an itrerative way thx
     printf("Program executed without errors\n");
     printf("Allocation: %ld bytes\n", size_allocated);
     printf("Deallocation: %ld bytes\n", size_deallocated);
@@ -119,7 +125,7 @@ char * push_istack(int size){
         isize += ISTACK_UNIT;
     }
     ip+=size;
-    return &(istack[ip+1]);
+    return &(istack[ip-size]);
 }
 
 void pop_istack(int size) {
@@ -128,7 +134,9 @@ void pop_istack(int size) {
 }
 
 void move_down_istack(int to_move, int this_much){
-    if(ip < ) machine_error("pop_istack()");
+    if(ip - to_move - this_much < 0) machine_error("move_down_istack()");
+    if (to_move<0 || this_much<0) machine_error("move_down_istack() parameters");
+    memmove(&istack[ip-to_move-this_much], &istack[ip-to_move], to_move);
 }
 
 int pop_int(){
@@ -186,15 +194,18 @@ void push_bool(int b){
     new_o->inst.cval = b ? '1' :'0';
 }
 
-char * pop_charp(){
+char * pop_char_p(){
     char * s = top_ostack()->inst.sval;
     pop_ostack();
     return s;
 }
 
-void push_charp(char * s){
+void push_char_p(char * s){ //assuming is "mallocated" and i.e. in yylex
     Odescr * new_o = push_ostack();
     new_o->mode = STA;
-    new_o->size = sizeof(char *);//TO DO ... missing the ISTACK thing
-    new_o->inst.sval = s;
+    new_o->size = sizeof(s)+1;
+    new_o->inst.sval = push_istack((int)strlen(s)+1);
+    memcpy(new_o->inst.sval, s, strlen(s)+1);
 }
+
+
