@@ -8,3 +8,4 @@ SOL_compiler/*
 SOL_compilers/*
 compiler
 SOL_machine/*
+*.out
