@@ -117,9 +117,9 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     if (current->child != NULL) {
                         child = current->child; // FUNC DECL
                         while (child != NULL) {//loop on FUNC DECL
-                            if (!insert(create_symbol_table(child, func), (func->aux)->locenv)) {
-                                sprintf(error_msg_symb, "Function names must be unique, \"%s\" already declared\n", child->value.sval);
-                                sem_error(child, error_msg_symb);
+                            if (!insert_func(create_symbol_table(child, func), func)) {
+                                sprintf(error_msg_symb, "Function names must be unique, \"%s\" already declared\n", child->child->value.sval);
+                                sem_error(child->child, error_msg_symb);
                             }
                             child = child->brother;
                         }

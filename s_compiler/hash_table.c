@@ -21,6 +21,14 @@ int insert(Phash_node p, Phash_node * table){
     return 1;
 }
 
+int insert_func(Phash_node p, Phash_node f_parent){
+    int not_used;
+    if (find_visible_node(p->name, f_parent, &not_used) != NULL) {
+        return 0;
+    }
+    return insert(p, f_parent->aux->locenv);
+}
+
 Phash_node getNode(char * id, Phash_node * table){
     int pos = hash(id);
     Phash_node node = table[pos];

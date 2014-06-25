@@ -1,14 +1,22 @@
 --test :P
-func tester2(a:bool;):int
-type typeint: int;
-var grrr:struct(a:int;b:real;);
-const ff,gg:int = 3;
-	kk:real = 3.0;
-	theend:string = "fine";
-	
+func tester():int
+var a,b,c:int;
+
+func tester1():int
+var a,b,c:int;
+begin tester1
+	a=0;
+	return a;
+end tester1
+
+func tester2():int
+var a,b,c:int;
 begin tester2
-	a = (true and false) or true;
-	grrr=struct(5,5.0);
-	grrr.c=3.9;
-	return 1;
+	a=0;
+	return a;
 end tester2
+
+begin tester
+	a=0;
+	return a;
+end tester
