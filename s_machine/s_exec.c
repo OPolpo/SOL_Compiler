@@ -324,8 +324,15 @@ void exec_push(int arg1, int arg2, int raddr){
     
 }
 
-void exec_sto(int arg1, int arg2){
-    
+void exec_sto(int env_offset, int oid){
+    Adescr * a_declaration = top_astack();
+    int i;
+    for (i=env_offset; i>0; i--) {
+        a_declaration = a_declaration->alink; // not sure TODO check
+    }
+    Odescr * o_to_store = (a_declaration->objects) + oid;
+    memcpy(&(o_to_store->inst), &(top_ostack()->inst), o_to_store->size);
+    pop_ostack();
 }
 
 void exec_lda(int arg1, int arg2){
@@ -336,8 +343,15 @@ void exec_cat(int arg1, int arg2){
     
 }
 
-void exec_lod(int arg1, int arg2){
-    
+void exec_lod(int env_offset, int oid){
+    Adescr * a_declaration = top_astack();
+    int i;
+    for (i=env_offset; i>0; i--) {
+        a_declaration = a_declaration->alink; // not sure TODO check
+    }
+    Odescr * o_to_lod = (a_declaration->objects) + oid;
+    push_ostack();
+    memcpy(top_ostack(), o_to_lod, sizeof(Odescr));
 }
 
 void exec_write(char* arg1){

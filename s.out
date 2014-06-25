@@ -1,0 +1,33 @@
+[0] SCODE 32 
+[1] PUSH 3 -1 
+[2] GOTO 5 
+[3] POP 
+[4] HALT 
+[5] FUNC 1 
+[6] NEW 4 
+[7] NEW 4 
+[8] NEW 4 
+[9] FUNC 2 
+[10] NEW 4 
+[11] NEW 4 
+[12] NEW 4 
+[13] FUNC 3 
+[14] NEW 4 
+[15] NEW 4 
+[16] NEW 4 
+[17] LDI 0 
+[18] STO 2 1 
+[19] PUSH 3 2 
+[20] GOTO 9 
+[21] POP 
+[22] STO 0 1 
+[23] LOD 2 1 
+[24] RETURN 
+[25] LDI 0 
+[26] STO 1 1 
+[27] LOD 1 1 
+[28] RETURN 
+[29] LDI 0 
+[30] STO 0 1 
+[31] LOD 0 1 
+[32] RETURN 

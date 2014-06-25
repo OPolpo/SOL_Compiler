@@ -1358,7 +1358,7 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 #endif
     Pnode id_node = root->child;
     Pnode param_node = id_node->brother;
-    int id_ok, expr_ok = 1, param_ok = 0;
+    int id_ok, expr_ok = 1, param_ok = 1;
     int offset;
     Phash_node h_id_node = find_visible_node(id_node->value.sval, f_loc_env, &offset);
     id_ok = (h_id_node != NULL) && (h_id_node->class_node == CLFUNC);

@@ -108,6 +108,29 @@ void pop_ostack() {
     freemem((char*)ostack[--op], sizeof(Odescr));
 }
 
+char * push_istack(int size){
+    char *old_istack; int i;
+    if(ip+size >= isize) {
+        old_istack = istack;
+        istack = newmem(isize + ISTACK_UNIT);
+        for(i = 0; i < isize; i++)
+            istack[i] = old_istack[i];
+        freemem(old_istack, isize);
+        isize += ISTACK_UNIT;
+    }
+    ip+=size;
+    return &(istack[ip+1]);
+}
+
+void pop_istack(int size) {
+    if(ip < size) machine_error("pop_istack()");
+    ip = ip-size;
+}
+
+void move_down_istack(int to_move, int this_much){
+    if(ip < ) machine_error("pop_istack()");
+}
+
 int pop_int(){
     int i = top_ostack()->inst.ival;
     pop_ostack();
