@@ -1,6 +1,6 @@
 *.[oa]
 lex.c
-parser.c
+s_compiler/parser.c
 parser.h
 prova
 *.orig

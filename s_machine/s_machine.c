@@ -50,7 +50,8 @@ void * newmem(int size) {
     void *p;
     if((p = malloc(size)) == NULL) machine_error("Failure in memory allocation");
     size_allocated += size;
-    return p; }
+    return p;
+}
 
 void freemem(char *p, int size) {
     free(p);
