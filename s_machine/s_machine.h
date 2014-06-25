@@ -13,7 +13,6 @@
 #define ASTACK_UNIT 1000
 #define OSTACK_UNIT 1000
 #define ISTACK_UNIT 1000000
-//TO DO listen to recording to find exact value
 
 typedef struct{
     Operator op;

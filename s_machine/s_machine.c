@@ -204,7 +204,7 @@ char * pop_string(){
 void push_string(char * s){ //assuming is "mallocated" and is in the hash table
     Odescr * new_o = push_ostack();
     new_o->mode = STA;
-    new_o->size = sizeof(s)+1;
+    new_o->size = (int)strlen(s)+1;
     new_o->inst.sval = insert_str_c(s);
 }
 
@@ -215,7 +215,8 @@ char * insert_str_c(char * s){
     if (!p_on_table){
         int pos = hash(s);
         Str_c_node * new_node = (Str_c_node *)newmem(sizeof(Str_c_node));
-        new_node->string = calloc(strlen(s)+1, sizeof(char));
+        new_node->string = (char*)newmem(((int)strlen(s)+1) * sizeof(char));
+        //new_node->string = calloc(strlen(s)+1, sizeof(char));
         strcpy(new_node->string, s);
         p_on_table = new_node->string;
         new_node->next = str_const_table[pos];

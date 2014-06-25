@@ -339,8 +339,27 @@ void exec_lda(int arg1, int arg2){
     
 }
 
-void exec_cat(int arg1, int arg2){
-    
+void exec_cat(int num, int size){
+    char * new_inst = push_istack(size);
+    char * start = new_inst;
+    int i, temp_size=0;
+    for (i=0; i<num; i++) {
+        if(top_ostack()->mode == EMB){
+            memcpy(start, &(top_ostack()->inst), top_ostack()->size);
+            temp_size += top_ostack()->size;
+        }else{
+            memcpy(start, top_ostack()->inst.sval, top_ostack()->size);
+            temp_size += top_ostack()->size;
+            move_down_istack(temp_size, top_ostack()->size);
+        }
+        start += top_ostack()->size;
+        pop_ostack();
+    }
+    if (temp_size != size) machine_error("exec_cat");
+    Odescr * new_obj = push_ostack();
+    new_obj->mode = STA;
+    new_obj->size = size;
+    new_obj->inst.sval = new_inst;
 }
 
 void exec_lod(int env_offset, int oid){
