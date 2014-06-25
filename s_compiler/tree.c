@@ -72,7 +72,7 @@ void treeprint(Pnode root, char* father_indent) {
         //strcat(my_indent,"    └");
         strcat(my_indent,"└");
 
-    printf("%s─%s", my_indent, (root->type == T_NONTERMINAL ? tabnonterm[root->value.ival] : tabtypes[root->type]));
+    printf("%s─ %03d# %s", my_indent, root->row, (root->type == T_NONTERMINAL ? tabnonterm[root->value.ival] : tabtypes[root->type]));
     if(root->type == T_ID || root->type == T_STRCONST)
         printf(" (%s)", root->value.sval);
     else if(root->type == T_ATOMIC_DOMAIN)

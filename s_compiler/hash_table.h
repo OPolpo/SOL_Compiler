@@ -47,6 +47,7 @@ typedef struct shash_node{
 
 int hash (char* id);
 int insert(Phash_node p,Phash_node * table);
+int insert_func(Phash_node p, Phash_node f_parent);
 Phash_node getNode(char * id, Phash_node * table);
 Phash_node find_visible_node(char * id, Phash_node func_node, int * offset);
 
