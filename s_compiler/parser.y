@@ -293,11 +293,23 @@ dynamic_output : WR specifier_opt {$$ = nontermnode(NWR_EXPR);
 
 
 
-int main(){
-	int result;
-	yyin = stdin;
+int main(int argc, char * argv[]){
+	int result = 0;
+	if (argc > 1){
+		FILE *input_file = fopen(argv[1], "r");
+		if (input_file){
+    		yyin = input_file;
+		}
+		else{
+			sprintf(stderr,"Can't create output file.\n");
+			yyin = stdin;
+		}
+	}
+	else{
+		yyin = stdin;
+	}
 	if((result = yyparse()) == 0){
-        printf("sizeof\nchar:\t%lu\nint:\t%lu\nfloat:\t%lu\nstring:\t%lu\n", sizeof(char), sizeof(int), sizeof(float), sizeof(char *));
+        //printf("sizeof\nchar:\t%lu\nint:\t%lu\nfloat:\t%lu\nstring:\t%lu\n", sizeof(char), sizeof(int), sizeof(float), sizeof(char *));
         
 		treeprint(root, " ");
 		Phash_node symtab = create_symbol_table(root, NULL);
@@ -306,7 +318,7 @@ int main(){
         Code code = makecode(S_NOOP);
         sem_program(root, symtab, 0, &code);
         printf("## END\n");
-
+	
         FILE *fp = fopen("s.out", "w");
 		if (fp){
     		print_code(fp, &code);
@@ -314,8 +326,11 @@ int main(){
 		else{
 			sprintf(stderr,"Can't create output file.\n");
 		}
- 
+ 		
+    	print_code(stdout, &code);
+
         destroy_code(&code);
+
         
         
 	}
