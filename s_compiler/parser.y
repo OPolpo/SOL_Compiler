@@ -1,9 +1,12 @@
 %{
+#include <unistd.h>
+#include <ctype.h>
 #include "def.h"
 #include "tree.h"
 #include "symbol_table.h"
 #include "semantic.h"
 #include "code_gen.h"
+
 
 #define YYSTYPE Pnode
 extern char *yytext;
@@ -295,13 +298,33 @@ dynamic_output : WR specifier_opt {$$ = nontermnode(NWR_EXPR);
 
 int main(int argc, char * argv[]){
 	int result = 0;
-	if (argc > 1){
-		FILE *input_file = fopen(argv[1], "r");
+	int c;
+	char *ovalue = "s.out";
+
+	while ((c = getopt (argc, argv, "o:")) != -1)
+        switch (c){
+          	case 'o':
+            	ovalue = optarg;
+            	break;
+           	case '?':
+            	if (optopt == 'o')
+               		fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+             	else if (isprint (optopt))
+             		fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+            	else
+               		fprintf (stderr,"Unknown option character `\\x%x'.\n", optopt);
+            	return 1;
+           default:
+           		abort();
+           }
+
+	if (argc-optind == 1){
+		FILE *input_file = fopen(argv[optind], "r");
 		if (input_file){
     		yyin = input_file;
 		}
 		else{
-			sprintf(stderr,"Can't create output file.\n");
+			fprintf(stderr,"Can't read input file.\n");
 			yyin = stdin;
 		}
 	}
@@ -319,19 +342,17 @@ int main(int argc, char * argv[]){
         sem_program(root, symtab, 0, &code);
         printf("## END\n");
 	
-        FILE *fp = fopen("s.out", "w");
+        FILE *fp = fopen(ovalue, "w");
 		if (fp){
     		print_code(fp, &code);
 		}
 		else{
-			sprintf(stderr,"Can't create output file.\n");
+			fprintf(stderr,"Can't create output file.\n");
 		}
  		
     	print_code(stdout, &code);
 
         destroy_code(&code);
-
-        
         
 	}
 	return(result);
