@@ -335,8 +335,15 @@ void exec_sto(int env_offset, int oid){
     pop_ostack();
 }
 
-void exec_lda(int arg1, int arg2){
-    
+void exec_lda(int env_offset, int oid){
+    Adescr * a_declaration = top_astack();
+    int i;
+    for (i=env_offset; i>0; i--) {
+        a_declaration = a_declaration->alink; // not sure TODO check
+    }
+    Odescr * o_to_lod = (a_declaration->objects) + oid;
+    push_ostack();
+    memcpy(top_ostack(), o_to_lod, sizeof(Odescr));
 }
 
 void exec_cat(int num, int size){
