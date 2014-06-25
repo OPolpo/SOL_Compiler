@@ -327,7 +327,6 @@ int compute_size(Pschema schema){
 char * schema2format(Pschema schema){
     char * str, * tmp_str, * tmp2_str; //mallocami
     Pschema tmp_schema;
-    int i;
     switch (schema->type) {
         case CHAR:
             //str = (char *)malloc(2*sizeof(char));

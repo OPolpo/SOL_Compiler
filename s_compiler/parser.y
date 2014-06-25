@@ -306,7 +306,15 @@ int main(){
         Code code = makecode(S_NOOP);
         sem_program(root, symtab, 0, &code);
         printf("## END\n");
-        print_code(stdout, &code);
+
+        FILE *fp = fopen("s.out", "w");
+		if (fp){
+    		print_code(fp, &code);
+		}
+		else{
+			sprintf(stderr,"Can't create output file.\n");
+		}
+ 
         destroy_code(&code);
         
         
