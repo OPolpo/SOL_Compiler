@@ -3,6 +3,7 @@ func tester():int
 var a,b,c:int;
 	str:string;
 	boo:bool;
+const sss:string="2";
 
 	func tester1():int
 	var a1,b1,c1:int;

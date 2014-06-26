@@ -10,17 +10,17 @@ extern int pc;
 void load_scode(FILE * input){
     yyin = input;
     int a;
-    int total_instruction;
+    int total_instruction = 0;
     while(1){
         a = next();
         switch(a){
             case S_SCODE:
-            next();
-            total_instruction = atoi(yytext);
-            prog = (Scode *)newmem(atoi(yytext));
-            pc--;
-            break;
-
+                next();
+                total_instruction = atoi(yytext);
+                prog = (Scode *)newmem(atoi(yytext));
+                pc--;
+                break;
+                
             case S_HALT:
             case S_TOINT:
             case S_TOREAL:
@@ -124,18 +124,17 @@ void load_scode(FILE * input){
             prog[pc].args[0].ival=atoi(yytext);
             break;
             default:
-            fprintf(stderr, "ERROR\n");
+                fprintf(stderr, "ERROR\n");
         }
+        
         pc++;
         print_loaded_code(prog);
         if (pc>total_instruction)
             break;
     }
-    
 }
 
 int next(){
-    printf("\ncalcolo %d\n",pc);
     return yylex();
 }
 
