@@ -85,11 +85,22 @@ void pop_astack() {
     freemem((char*)astack[--ap], sizeof(Adescr));
 }
 
+Odescr * get_p2objects(int i){
+    return ostack[i];
+}
+int get_next_op(){
+    return op;
+}
+
 Odescr * top_ostack(){
     if (op==0) {
         machine_error("top_ostack");
     }
     return ostack[op-1];
+}
+
+Odescr * over_top_ostack(){
+    return top_ostack()+sizeof(Odescr *);
 }
 
 Odescr * under_top_ostack(){
@@ -248,7 +259,7 @@ int hash_str_c(char * s){
 }
 
 void machine_error(char * msg){
-    fprintf(stderr, "Machine error: %s", msg);
+    fprintf(stderr, "Machine error: %s\n", msg);
     exit(EXIT_FAILURE);
 }
 

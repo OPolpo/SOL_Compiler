@@ -5,22 +5,23 @@ extern FILE * yyin;
 extern int yylex();
 extern char * yytext;
 extern Scode * prog;
-extern pc;
+extern int pc;
+
 
 void load_scode(char * input){
     yyin = input;
     int a;
-    int total_instruction;
+    int total_instruction = 0;
     while(1){
         a = next();
         switch(a){
             case S_SCODE:
-            next();
-            total_instruction = atoi(yytext);
-            prog = (Scode *)newmem(atoi(yytext));
-            pc--;
-            break;
-
+                next();
+                total_instruction = atoi(yytext);
+                prog = (Scode *)newmem(atoi(yytext));
+                pc--;
+                break;
+                
             case S_HALT:
             case S_TOINT:
             case S_TOREAL:
@@ -59,32 +60,34 @@ void load_scode(char * input){
             case S_RETURN:
             case S_FAKE_RETURN:
             case S_NOOP:
-            prog[pc].op=a;
-            break;
-
+                prog[pc].op=a;
+                break;
+                
             case S_READ:
             case S_FREAD:
-            prog[pc].op=a;
-            next();
-            prog[pc].args[0].ival=atoi(yytext);
-            next();
-            prog[pc].args[1].ival=atoi(yytext);
-            next();
-            prog[pc].args[2].sval=insert_str_c(yytext);
-            break;
-
+                prog[pc].op=a;
+                next();
+                prog[pc].args[0].ival=atoi(yytext);
+                next();
+                prog[pc].args[1].ival=atoi(yytext);
+                next();
+                prog[pc].args[2].sval=insert_str_c(yytext);
+                
+                break;
+                
             case S_PUSH:
             case S_STO:
             case S_LDA:
             case S_CAT:
             case S_LOD:
-            prog[pc].op=a;
-            next();
-            prog[pc].args[0].ival=atoi(yytext);
-            next();
-            prog[pc].args[1].ival=atoi(yytext);
-            break;
+                prog[pc].op=a;
+                next();
+                prog[pc].args[0].ival=atoi(yytext);
+                next();
+                prog[pc].args[1].ival=atoi(yytext);
 
+                break;
+                
             case S_WRITE:
             case S_FWRITE:
             case S_RD:
@@ -92,22 +95,26 @@ void load_scode(char * input){
             case S_WR:
             case S_FWR:
             case S_LDS:
-            prog[pc].op=a;
-            next();
-            prog[pc].args[0].sval=insert_str_c(yytext);
-            break;
+                prog[pc].op=a;
+                next();
+                prog[pc].args[0].sval=insert_str_c(yytext);
 
+                break;
+                
             case S_LDR:
-            prog[pc].op=a;
-            next();
-            prog[pc].args[0].rval=atof(yytext);
-            break;
-            case S_LDC:
-            prog[pc].op=a;
-            next();
-            prog[pc].args[0].cval=yytext[0];
-            break;
+                prog[pc].op=a;
+                next();
+                prog[pc].args[0].rval=atof(yytext);
 
+                break;
+                
+            case S_LDC:
+                prog[pc].op=a;
+                next();
+                prog[pc].args[0].cval=yytext[0];
+
+                break;
+                
             case S_FUNC:
             case S_GOTO:
             case S_FAKE_GOTO:
@@ -120,23 +127,22 @@ void load_scode(char * input){
             case S_LDI:
             case S_NEW:
             case S_NEWS:
-            prog[pc].op=a;
-            next();
-            prog[pc].args[0].ival=atoi(yytext);
-            break;
+                prog[pc].op=a;
+                next();
+                prog[pc].args[0].ival=atoi(yytext);
+
+                break;
             default:
-            fprintf(stderr, "ERROR\n");
+                fprintf(stderr, "ERROR\n");
         }
+        
         pc++;
-        // print_loaded_code(prog);
-        if (pc==total_instruction)
+        if (pc>total_instruction)
             break;
     }
-    
 }
 
 int next(){
-    printf("\ncalcolo %d\n",pc);
     return yylex();
 }
 

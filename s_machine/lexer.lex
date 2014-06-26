@@ -73,16 +73,16 @@ RDIV			{return (S_RDIV);}
 IUMI			{return (S_IUMI);}
 RUMI			{return (S_RUMI);}
 NEG				{return (S_NEG);}
-WR				{return (S_WR);}
 FWR				{return (S_FWR);}
-RD				{return (S_RD);}
+WR				{return (S_WR);}
 FRD				{return (S_FRD);}
+RD				{return (S_RD);}
 TOINT			{return (S_TOINT);}
 TOREAL			{return (S_TOREAL);}
-READ			{return (S_READ);}
 FREAD			{return (S_FREAD);}
-WRITE			{return (S_WRITE);}
+READ			{return (S_READ);}
 FWRITE			{return (S_FWRITE);}
+WRITE			{return (S_WRITE);}
 FUNC			{return (S_FUNC);}
 RETURN			{return (S_RETURN);}
 

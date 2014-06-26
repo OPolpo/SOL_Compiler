@@ -31,7 +31,7 @@ typedef struct {
 
 typedef struct adescr {
     int numobj;
-    Odescr *objects;
+    int pos_objects;
     int raddr;
     struct adescr *alink;
 } Adescr;
@@ -50,7 +50,11 @@ Adescr * top_astack();
 Adescr * push_astack();
 void pop_astack();
 
+Odescr * get_p2objects(int i);
+int get_next_op();
+
 Odescr * top_ostack();
+Odescr * over_top_ostack();
 Odescr * under_top_ostack();
 Odescr * push_ostack();
 void pop_ostack();
