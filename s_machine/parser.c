@@ -7,8 +7,7 @@ extern char * yytext;
 extern Scode * prog;
 extern int pc;
 
-
-void load_scode(char * input){
+void load_scode(FILE * input){
     yyin = input;
     int a;
     int total_instruction = 0;
