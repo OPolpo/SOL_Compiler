@@ -81,11 +81,17 @@ void exec_toreal(){
 }
 
 void exec_pop(){
-    
+    int i,n = top_astack()->numobj;
+    for (i=0; i<n; i++) {
+        
+    }
+    pop_astack();
 }
 
 void exec_ist(){
-    
+    memcpy(under_top_ostack()->inst.sval, &(top_ostack()->inst), top_ostack()->size);
+    pop_ostack();
+    pop_ostack();
 }
 
 void exec_equ(){
@@ -143,8 +149,8 @@ void exec_rgt(){
 
 void exec_sgt(){
     char * n, * m;
-    n = pop_char_p();
-    m = pop_char_p();
+    n = pop_string();
+    m = pop_string();
     push_bool(strcmp(m, n) > 0);
 }
 
@@ -171,8 +177,8 @@ void exec_rge(){
 
 void exec_sge(){
     char * n, * m;
-    n = pop_char_p();
-    m = pop_char_p();
+    n = pop_string();
+    m = pop_string();
     push_bool(strcmp(m, n) >= 0);
 }
 
@@ -200,8 +206,8 @@ void exec_rlt(){
 
 void exec_slt(){
     char * n, * m;
-    n = pop_char_p();
-    m = pop_char_p();
+    n = pop_string();
+    m = pop_string();
     push_bool(strcmp(m, n) < 0);
 }
 
@@ -228,13 +234,23 @@ void exec_rle(){
 
 void exec_sle(){
     char * n, * m;
-    n = pop_char_p();
-    m = pop_char_p();
+    n = pop_string();
+    m = pop_string();
     push_bool(strcmp(m, n) <= 0);
 }
 
 void exec_in(){
-    
+    int found=0, i, n = top_ostack()->size / under_top_ostack()->size;
+    char * to_find = (under_top_ostack()->mode == EMB) ? (char *)&(under_top_ostack()->inst) : under_top_ostack()->inst.sval;
+    for (i=0; i<n; i++) {
+        if (memcmp(top_ostack()->inst.sval, to_find, under_top_ostack()->size)==0) {
+            found = 1;
+            break;
+        }
+    }
+    pop_ostack();
+    pop_ostack();
+    push_bool(found);
 }
 
 void exec_iplus(){
@@ -312,16 +328,17 @@ void exec_return(){
     pc = top_astack()->raddr;
 }
 
-void exec_read(int arg1, int arg2, char * arg3){
-    
-}
-
-void exec_fread(int arg1, int arg2, char * arg3){
-    
-}
-
-void exec_push(int arg1, int arg2, int raddr){
-    
+void exec_push(int size, int chain, int raddr){
+    Adescr * actual_ar = top_astack();
+    Adescr * new_ar = push_astack();
+    new_ar->numobj = size;
+    new_ar->objects = top_ostack();
+    new_ar->raddr = raddr;
+    int i;
+    new_ar->alink = actual_ar;
+    for (i=chain; i>0; i--) {
+        new_ar->alink = actual_ar->alink;
+    }
 }
 
 void exec_sto(int env_offset, int oid){
@@ -335,12 +352,38 @@ void exec_sto(int env_offset, int oid){
     pop_ostack();
 }
 
-void exec_lda(int arg1, int arg2){
-    
+void exec_lda(int env_offset, int oid){
+    Adescr * a_declaration = top_astack();
+    int i;
+    for (i=env_offset; i>0; i--) {
+        a_declaration = a_declaration->alink; // not sure TODO check
+    }
+    Odescr * o_to_lod = (a_declaration->objects) + oid;
+    push_ostack();
+    memcpy(top_ostack(), o_to_lod, sizeof(Odescr));
 }
 
-void exec_cat(int arg1, int arg2){
-    
+void exec_cat(int num, int size){
+    char * new_inst = push_istack(size);
+    char * start = new_inst;
+    int i, temp_size=0;
+    for (i=0; i<num; i++) {
+        if(top_ostack()->mode == EMB){
+            memcpy(start, &(top_ostack()->inst), top_ostack()->size);
+            temp_size += top_ostack()->size;
+        }else{
+            memcpy(start, top_ostack()->inst.sval, top_ostack()->size);
+            temp_size += top_ostack()->size;
+            move_down_istack(temp_size, top_ostack()->size); // not sure TODO check
+        }
+        start += top_ostack()->size;
+        pop_ostack();
+    }
+    if (temp_size != size) machine_error("exec_cat");
+    Odescr * new_obj = push_ostack();
+    new_obj->mode = STA;
+    new_obj->size = size;
+    new_obj->inst.sval = new_inst;
 }
 
 void exec_lod(int env_offset, int oid){
@@ -352,34 +395,48 @@ void exec_lod(int env_offset, int oid){
     Odescr * o_to_lod = (a_declaration->objects) + oid;
     push_ostack();
     memcpy(top_ostack(), o_to_lod, sizeof(Odescr));
+    
+    if (top_ostack()->mode == STA) {
+        char * i_address = push_istack(top_ostack()->size);
+        memcpy(i_address, top_ostack()->inst.sval, top_ostack()->size);
+        top_ostack()->inst.sval = i_address;
+    }
 }
 
-void exec_write(char* arg1){
+void exec_read(int oid, int offset, char * format){
     
 }
 
-void exec_fwrite(char* arg1){
+void exec_fread(int oid, int offset, char * format){
     
 }
 
-void exec_rd(char* arg1){
+void exec_write(char* format){
     
 }
 
-void exec_frd(char* arg1){
+void exec_fwrite(char* format){
     
 }
 
-void exec_wr(char* arg1){
+void exec_rd(char* format){
     
 }
 
-void exec_fwr(char* arg1){
+void exec_frd(char* format){
+    
+}
+
+void exec_wr(char* format){
+    
+}
+
+void exec_fwr(char* format){
     
 }
 
 void exec_lds(char* arg1){
-    
+    push_string(arg1);
 }
 
 void exec_ldr(float arg1){
@@ -407,34 +464,52 @@ void exec_jmp(int offset){
     pc += offset-1;
 }
 
-void exec_ixa(int arg1){
-    
+void exec_ixa(int size){
+    int n = pop_int();
+    top_ostack()->inst.sval += (n*size);
 }
 
-void exec_eil(int arg1){
-    
+void exec_eil(int size){
+    char * content = top_ostack()->inst.sval;
+    pop_ostack();
+    Odescr *po;
+    po = push_ostack();
+    po->mode = EMB;
+    po->size = size;
+    memcpy(&(po->inst), content, size);
 }
 
-void exec_sil(int arg1){
-    
+void exec_sil(int size){
+    char * content = top_ostack()->inst.sval;
+    pop_ostack();
+    Odescr *po;
+    po = push_ostack();
+    po->mode = STA;
+    po->size = size;
+    po->inst.sval = push_istack(size);
+    memcpy(po->inst.sval, content, size);
 }
 
-void exec_fda(int arg1){
-    
+void exec_fda(int offset){
+    top_ostack()->inst.sval += offset;
 }
 
 void exec_ldi(int arg1){
     push_int(arg1);
 }
 
-void exec_new(int arg1){
+void exec_new(int size){
     Odescr *po;
     po = push_ostack();
     po->mode = EMB;
-    po->size = arg1;
+    po->size = size;
 }
 
-void exec_news(int arg1){
-    
+void exec_news(int size){
+    Odescr *po;
+    po = push_ostack();
+    po->mode = STA;
+    po->size = size;
+    po->inst.sval = push_istack(size);
 }
 

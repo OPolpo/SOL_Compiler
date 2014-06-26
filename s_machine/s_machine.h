@@ -12,7 +12,6 @@
 #define ASTACK_UNIT 1000
 #define OSTACK_UNIT 1000
 #define ISTACK_UNIT 1000000
-//TO DO listen to recording to find exact value
 
 typedef struct{
     Operator op;
@@ -72,9 +71,8 @@ char pop_char();
 void push_char(char c);
 int pop_bool();
 void push_bool(int b);
-
-char * pop_char_p();
-void push_char_p(char *);
+char * pop_string();
+void push_string(char * s);
 
 char * insert_str_c(char * s);
 char * get_str_c(char * s);
