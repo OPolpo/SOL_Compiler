@@ -57,8 +57,6 @@ void load_scode(FILE * input){
             case S_NEQ:
             case S_IST:
             case S_RETURN:
-            case S_FAKE_RETURN:
-            case S_NOOP:
             prog[pc].op=a;
             break;
 
@@ -94,7 +92,8 @@ void load_scode(FILE * input){
             case S_LDS:
             prog[pc].op=a;
             next();
-            prog[pc].args[0].sval=insert_str_c(yytext);
+            //prog[pc].args[0].sval=insert_str_c(yytext);
+            prog[pc].args[0].sval="ciao";
             break;
 
             case S_LDR:
@@ -128,8 +127,8 @@ void load_scode(FILE * input){
             fprintf(stderr, "ERROR\n");
         }
         pc++;
-        // print_loaded_code(prog);
-        if (pc==total_instruction)
+        print_loaded_code(prog);
+        if (pc>total_instruction)
             break;
     }
     
@@ -143,11 +142,15 @@ int next(){
 void print_loaded_code(Scode * prog){
     int i = 0;
     for(i=0;i<pc;i++){
-        print_code_instruction(prog[i]);
+        //printf("%d\n",prog[i].op);
+        print_code_instruction(&prog[i]);
     }
 }
 
-void print_code_instruction(Scode line){
-    Stat to_print = {pc,line.op,{line.args[0],line.args[1],line.args[2]},0};
+void print_code_instruction(Scode * line){
+    //printf("durante la stampa l'operatore è %d\n",line->op);
+    if(line->op!=5){
+    Stat to_print = {pc,line->op,{line->args[0],line->args[1],line->args[2]},0};
     print_stat(stdout, &to_print);
+}
 }
