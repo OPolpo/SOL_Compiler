@@ -22,7 +22,7 @@ stringconst \"([^\"])*\"
 
 %%
 
-
+.				;
 PUSH			{return (S_PUSH);}
 GOTO			{return (S_GOTO);}
 POP				{return (S_POP);}
