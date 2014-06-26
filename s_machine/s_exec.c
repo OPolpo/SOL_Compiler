@@ -83,7 +83,10 @@ void exec_toreal(){
 void exec_pop(){
     int i,n = top_astack()->numobj;
     for (i=0; i<n; i++) {
-        
+        if (top_ostack()->mode == STA) {
+            pop_istack(top_ostack()->size);
+        }
+        pop_ostack();
     }
     pop_astack();
 }
