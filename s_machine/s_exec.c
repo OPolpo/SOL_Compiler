@@ -81,7 +81,11 @@ void exec_toreal(){
 }
 
 void exec_pop(){
-    
+    int i,n = top_astack()->numobj;
+    for (i=0; i<n; i++) {
+        
+    }
+    pop_astack();
 }
 
 void exec_ist(){
@@ -324,8 +328,17 @@ void exec_return(){
     pc = top_astack()->raddr;
 }
 
-void exec_push(int arg1, int arg2, int raddr){
-    
+void exec_push(int size, int chain, int raddr){
+    Adescr * actual_ar = top_astack();
+    Adescr * new_ar = push_astack();
+    new_ar->numobj = size;
+    new_ar->objects = top_ostack();
+    new_ar->raddr = raddr;
+    int i;
+    new_ar->alink = actual_ar;
+    for (i=chain; i>0; i--) {
+        new_ar->alink = actual_ar->alink;
+    }
 }
 
 void exec_sto(int env_offset, int oid){
