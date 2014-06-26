@@ -214,7 +214,7 @@ void push_string(char * s){ //assuming is "mallocated" and is in the hash table
 char * insert_str_c(char * s){
     char * p_on_table = get_str_c(s);
     if (!p_on_table){
-        int pos = hash(s);
+        int pos = hash_str_c(s);
         Str_c_node * new_node = (Str_c_node *)newmem(sizeof(Str_c_node));
         new_node->string = (char*)newmem(((int)strlen(s)+1) * sizeof(char));
         //new_node->string = calloc(strlen(s)+1, sizeof(char));
@@ -245,4 +245,10 @@ int hash_str_c(char * s){
     }
     return h;
 }
+
+void machine_error(char * msg){
+    fprintf(stderr, "Machine error: %s", msg);
+    exit(EXIT_FAILURE);
+}
+
 
