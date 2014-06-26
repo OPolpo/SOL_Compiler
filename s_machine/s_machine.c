@@ -233,6 +233,7 @@ char * insert_str_c(char * s){
         int pos = hash_str_c(s);
         Str_c_node * new_node = (Str_c_node *)newmem(sizeof(Str_c_node));
         new_node->string = (char*)newmem(((int)strlen(s)+1) * sizeof(char));
+        
         //new_node->string = calloc(strlen(s)+1, sizeof(char));
         strcpy(new_node->string, s);
         p_on_table = new_node->string;
