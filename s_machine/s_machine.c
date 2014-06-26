@@ -19,7 +19,7 @@ int main(int argc, char* argv[]){
 	while((stat = &prog[pc++])->op != S_HALT)
         exec(stat);
     end_machine();
-    return 1;
+    return 0;
 }
 
 void start_machine(char * input) {
@@ -45,7 +45,10 @@ void end_machine() {
     freemem((char*)ostack, sizeof(Odescr*)*osize);
     freemem(istack, isize);
     freemem((char*)str_const_table, sizeof(Str_c_node*)*STR_CONST_DIM);
-    //FREE ALSO THE ELEMENTS, ANDREA ... PLEASE after the coffee and possibly in an itrerative way thx
+    char * pippo;
+    asprintf(&pippo, "%%d pippo\n");
+    printf(pippo,10);
+    
     printf("Program executed without errors\n");
     printf("Allocation: %ld bytes\n", size_allocated);
     printf("Deallocation: %ld bytes\n", size_deallocated);

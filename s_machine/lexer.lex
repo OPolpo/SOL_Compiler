@@ -85,6 +85,7 @@ FWRITE			{return (S_FWRITE);}
 WRITE			{return (S_WRITE);}
 FUNC			{return (S_FUNC);}
 RETURN			{return (S_RETURN);}
+HALT			{return (S_HALT);}
 
 
 {spacing}		;
