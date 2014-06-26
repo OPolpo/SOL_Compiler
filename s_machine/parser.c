@@ -17,9 +17,7 @@ void load_scode(char * input){
             case S_SCODE:
             next();
             total_instruction = atoi(yytext);
-            printf("\n\n%d <=============\n",atoi(yytext));
             prog = (Scode *)newmem(atoi(yytext));
-            printf("\n\n%d <=============\n",atoi(yytext));
             pc--;
             break;
 
@@ -130,9 +128,11 @@ void load_scode(char * input){
             fprintf(stderr, "ERROR\n");
         }
         pc++;
+        // print_loaded_code(prog);
         if (pc==total_instruction)
             break;
     }
+    
 }
 
 int next(){
@@ -148,6 +148,6 @@ void print_loaded_code(Scode * prog){
 }
 
 void print_code_instruction(Scode line){
-    Stat * to_print = {pc,line.op,line.args,0};
-    print_stat(stdout, to_print);
+    Stat to_print = {pc,line.op,{line.args[0],line.args[1],line.args[2]},0};
+    print_stat(stdout, &to_print);
 }

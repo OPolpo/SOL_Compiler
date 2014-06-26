@@ -16,8 +16,8 @@ letter		[a-zA-Z]
 digit		[0-9]
 num 		{digit}+
 charconst 	\'.\'
-intconst 	{num}
-realconst	{num}?"."{num}
+intconst 	-?{num}
+realconst	-?{num}?"."{num}
 stringconst \"([^\"])*\"
 
 %%
@@ -26,8 +26,8 @@ SCODE			{return (S_SCODE);}
 PUSH			{return (S_PUSH);}
 GOTO			{return (S_GOTO);}
 POP				{return (S_POP);}
-NEW				{return (S_NEW);}
 NEWS			{return (S_NEWS);}
+NEW				{return (S_NEW);}
 LDC				{return (S_LDC);}
 LDI				{return (S_LDI);}
 LDS				{return (S_LDS);}

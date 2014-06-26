@@ -50,7 +50,7 @@ void end_machine() {
 
 void * newmem(int size) {
     void *p;
-    if((p = malloc(size)) == NULL) machine_error("Failure in memory allocation");
+    if((p = calloc(1,size)) == NULL) machine_error("Failure in memory allocation");
     size_allocated += size;
     return p;
 }

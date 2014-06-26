@@ -1,9 +1,11 @@
 #include "s_exec.h"
+#include "parser.h"
 
 Scode *prog;
 int pc;
 
 void exec(Scode *stat) {
+    print_code_instruction(stat);
     switch (stat->op) {
         case S_PUSH: exec_push(stat->args[0].ival, stat->args[1].ival, pc+1); break;
         case S_GOTO: exec_goto(stat->args[0].ival); break;
