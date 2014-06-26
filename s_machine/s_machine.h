@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../s_compiler/code_gen.h"
-#include "s_exec.h"
 
 #define MAXARGS 3
 #define STR_CONST_DIM 401

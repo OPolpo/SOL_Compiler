@@ -1,4 +1,4 @@
-#include "s_machine.h"
+#include "s_exec.h"
 
 Scode *prog;
 int pc;

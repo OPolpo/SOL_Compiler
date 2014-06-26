@@ -65,7 +65,6 @@ void exec_ldr(float arg1);
 
 void exec_ldc(char arg1);
 
-
 void exec_func(int arg1);
 void exec_goto(int arg1);
 void exec_jmf(int arg1);
@@ -77,9 +76,5 @@ void exec_fda(int arg1);
 void exec_ldi(int arg1);
 void exec_new(int arg1);
 void exec_news(int arg1);
-
-
-
-
 
 #endif

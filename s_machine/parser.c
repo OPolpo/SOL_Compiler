@@ -1,9 +1,11 @@
 #include "s_machine.h"
+#include "parser.h"
 
 extern FILE * yyin();
 extern int yylex();
 extern char * yytext;
 extern Scode * prog;
+extern pc;
 
 void load_scode(){
 	int a = next();
@@ -52,12 +54,12 @@ void load_scode(){
         case S_RETURN:
         case S_FAKE_RETURN:
         case S_NOOP:
-        	prog[pc].op=yytext;
+        	prog[pc].op=a;
             break;
             
         case S_READ:
         case S_FREAD:
-        	prog[pc].op=yytext;
+        	prog[pc].op=a;
         	next();
         	prog[pc].args[0].ival=atoi(yytext);
         	next();
@@ -71,7 +73,7 @@ void load_scode(){
         case S_LDA:
         case S_CAT:
         case S_LOD:
-            prog[pc].op=yytext;
+            prog[pc].op=a;
         	next();
         	prog[pc].args[0].ival=atoi(yytext);
         	next();
@@ -85,18 +87,18 @@ void load_scode(){
         case S_WR:
         case S_FWR:
         case S_LDS:
-            prog[pc].op=yytext;
+            prog[pc].op=a;
         	next();
         	prog[pc].args[0].sval=insert_str_c(yytext);
             break;
             
         case S_LDR:
-            prog[pc].op=yytext;
+            prog[pc].op=a;
         	next();
         	prog[pc].args[0].rval=atof(yytext);
             break;
         case S_LDC:
-            prog[pc].op=yytext;
+            prog[pc].op=a;
         	next();
         	prog[pc].args[0].cval=yytext[0];
             break;
@@ -113,12 +115,12 @@ void load_scode(){
         case S_LDI:
         case S_NEW:
         case S_NEWS:
-            prog[pc].op=yytext;
+            prog[pc].op=a;
         	next();
         	prog[pc].args[0].ival=atoi(yytext);
             break;
         default:
-            fprintf(stream, "ERROR");        	
+            fprintf(stderr, "ERROR\n");
     }
     pc++;
 }
@@ -127,3 +129,14 @@ int next(){
 	return yylex();
 }
 
+void print_loaded_code(Scode * prog){
+    int i = 0;
+    for(i=0;i<pc;i++){
+        print_code_instruction(prog[i]);
+    }
+}
+
+void print_code_instruction(Scode line){
+    Stat * to_print = {pc,line.op,line.args,0};
+    print_stat(stdout, to_print);
+}
