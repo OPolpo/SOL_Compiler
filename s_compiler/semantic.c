@@ -84,7 +84,8 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     int const_sect_opt_ok = sem_const_sect_opt(current, new_f_loc_env, code, &const_num_objects);
 	current = current->brother;
     
-	int func_list_opt_ok = sem_func_list_opt(current, new_f_loc_env, code, func_table);
+    Code function_list_code = makecode(S_NOOP);
+	int func_list_opt_ok = sem_func_list_opt(current, new_f_loc_env, &function_list_code, func_table);
 	current = current->brother;
     
     Stat * start = code->tail; //we save the pointer to first stat of the code to sanitize // this is for optimixe sanitization process of return
@@ -92,7 +93,9 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     Code func_body_code = makecode(S_NOOP);
 	int func_body_ok = sem_func_body(current, new_f_loc_env, &func_body_code);
     *code = appcode(*code, func_body_code);
+
     cleanup_return(start, code_len, code); //sanitize
+    *code = appcode(*code, function_list_code);
     
     return decl_list_opt_ok && domain_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
 }
