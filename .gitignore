@@ -1,11 +1,13 @@
 *.[oa]
+*.orig
+*.out
+s.out
 lex.c
 s_compiler/parser.c
 parser.h
 prova
-*.orig
 SOL_compiler/*
 SOL_compilers/*
 compiler
 SOL_machine/*
-*.out
+
