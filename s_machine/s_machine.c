@@ -24,7 +24,11 @@ int main(int argc, char* argv[]){
 
 void start_machine(char * input) {
     str_const_table = (Str_c_node **)newmem(sizeof(Str_c_node*)*STR_CONST_DIM);
-    load_scode(input);
+    FILE *input_file = fopen(input, "r");
+    if (!input_file){
+        machine_error("ERRORE nel caricamento del file");
+    }
+    load_scode(input_file);
     pc = ap = op = ip = 0;
     astack = (Adescr**)newmem(sizeof(Adescr*)*ASTACK_UNIT);
     asize = ASTACK_UNIT;

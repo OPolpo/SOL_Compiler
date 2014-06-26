@@ -5,9 +5,9 @@ extern FILE * yyin;
 extern int yylex();
 extern char * yytext;
 extern Scode * prog;
-extern pc;
+extern int pc;
 
-void load_scode(char * input){
+void load_scode(FILE * input){
     yyin = input;
     int a;
     int total_instruction;
