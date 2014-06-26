@@ -23,6 +23,7 @@ int main(int argc, char* argv[]){
 }
 
 void start_machine(char * input) {
+    str_const_table = (Str_c_node **)newmem(sizeof(Str_c_node*)*STR_CONST_DIM);
     load_scode(input);
     pc = ap = op = ip = 0;
     astack = (Adescr**)newmem(sizeof(Adescr*)*ASTACK_UNIT);
@@ -32,7 +33,6 @@ void start_machine(char * input) {
     istack = (char*)newmem(ISTACK_UNIT);
     isize = ISTACK_UNIT;
     
-    str_const_table = (Str_c_node **)newmem(sizeof(Str_c_node*)*STR_CONST_DIM);
 }
 
 void end_machine() {
