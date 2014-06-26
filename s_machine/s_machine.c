@@ -3,6 +3,7 @@
 
 extern Scode *prog;
 extern int pc;
+
 Adescr **astack;
 Odescr **ostack;
 char *istack;
@@ -14,15 +15,15 @@ Str_c_node ** str_const_table;
 
 int main(int argc, char* argv[]){
 	Scode * stat;
-	start_machine();
+	start_machine(argv[1]);
 	while((stat = &prog[pc++])->op != S_HALT)
         exec(stat);
     end_machine();
     return 1;
 }
 
-void start_machine() {
-    load_scode();
+void start_machine(char * input) {
+    load_scode(input);
     pc = ap = op = ip = 0;
     astack = (Adescr**)newmem(sizeof(Adescr*)*ASTACK_UNIT);
     asize = ASTACK_UNIT;

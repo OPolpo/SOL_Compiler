@@ -296,7 +296,8 @@ Code make_lds(char *s){
 }
 
 void print_stat(FILE * stream, Stat * stat){
-    fprintf(stream, "[%d] %s ", stat->address, tabOperator[stat->op]);
+    // fprintf(stream, "[%d] %s ", stat->address, tabOperator[stat->op]);
+    fprintf(stream, "%s ", tabOperator[stat->op]);
     
     switch(stat->op){
         case S_HALT:

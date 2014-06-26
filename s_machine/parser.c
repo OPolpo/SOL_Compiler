@@ -1,13 +1,14 @@
 #include "s_machine.h"
 #include "parser.h"
 
-extern FILE * yyin();
+extern FILE * yyin;
 extern int yylex();
 extern char * yytext;
 extern Scode * prog;
 extern pc;
 
-void load_scode(){
+void load_scode(char * input){
+    yyin = input;
 	int a = next();
 	switch(a){
 		case S_SCODE:
