@@ -17,7 +17,7 @@ void load_scode(FILE * input){
             case S_SCODE:
                 next();
                 total_instruction = atoi(yytext);
-                prog = (Scode *)newmem(atoi(yytext));
+                prog = (Scode *)newmem(atoi(yytext)*sizeof(Scode));
                 pc--;
                 break;
                 
@@ -57,32 +57,32 @@ void load_scode(FILE * input){
             case S_NEQ:
             case S_IST:
             case S_RETURN:
-            prog[pc].op=a;
-            break;
-
+                prog[pc].op=a;
+                break;
+                
             case S_READ:
             case S_FREAD:
-            prog[pc].op=a;
-            next();
-            prog[pc].args[0].ival=atoi(yytext);
-            next();
-            prog[pc].args[1].ival=atoi(yytext);
-            next();
-            prog[pc].args[2].sval=insert_str_c(yytext);
-            break;
-
+                prog[pc].op=a;
+                next();
+                prog[pc].args[0].ival=atoi(yytext);
+                next();
+                prog[pc].args[1].ival=atoi(yytext);
+                next();
+                prog[pc].args[2].sval=insert_str_c(yytext);
+                break;
+                
             case S_PUSH:
             case S_STO:
             case S_LDA:
             case S_CAT:
             case S_LOD:
-            prog[pc].op=a;
-            next();
-            prog[pc].args[0].ival=atoi(yytext);
-            next();
-            prog[pc].args[1].ival=atoi(yytext);
-            break;
-
+                prog[pc].op=a;
+                next();
+                prog[pc].args[0].ival=atoi(yytext);
+                next();
+                prog[pc].args[1].ival=atoi(yytext);
+                break;
+                
             case S_WRITE:
             case S_FWRITE:
             case S_RD:
@@ -90,23 +90,23 @@ void load_scode(FILE * input){
             case S_WR:
             case S_FWR:
             case S_LDS:
-            prog[pc].op=a;
-            next();
-            prog[pc].args[0].sval=insert_str_c(yytext);
-            //prog[pc].args[0].sval="ciao";
-            break;
-
+                prog[pc].op=a;
+                next();
+                prog[pc].args[0].sval=insert_str_c(yytext);
+                //prog[pc].args[0].sval="ciao";
+                break;
+                
             case S_LDR:
-            prog[pc].op=a;
-            next();
-            prog[pc].args[0].rval=atof(yytext);
-            break;
+                prog[pc].op=a;
+                next();
+                prog[pc].args[0].rval=atof(yytext);
+                break;
             case S_LDC:
-            prog[pc].op=a;
-            next();
-            prog[pc].args[0].cval=yytext[0];
-            break;
-
+                prog[pc].op=a;
+                next();
+                prog[pc].args[0].cval=yytext[0];
+                break;
+                
             case S_FUNC:
             case S_GOTO:
             case S_FAKE_GOTO:
@@ -119,10 +119,10 @@ void load_scode(FILE * input){
             case S_LDI:
             case S_NEW:
             case S_NEWS:
-            prog[pc].op=a;
-            next();
-            prog[pc].args[0].ival=atoi(yytext);
-            break;
+                prog[pc].op=a;
+                next();
+                prog[pc].args[0].ival=atoi(yytext);
+                break;
             default:
                 fprintf(stderr, "ERROR\n");
         }
@@ -152,5 +152,5 @@ void print_code_instruction(Scode * line){
     //if(line->op!=5){
     Stat to_print = {pc,line->op,{line->args[0],line->args[1],line->args[2]},0};
     print_stat(stdout, &to_print);
-//}
+    //}
 }

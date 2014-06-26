@@ -12,7 +12,7 @@ char * tabOperator[]={
     "CAT",
     "LDA",
     "FDA",
-    "EIL",
+    "EIL",//10
     "SIL",
     "IXA",
     "STO",
@@ -22,7 +22,7 @@ char * tabOperator[]={
     "EQU",
     "NEQ",
     "CGT",
-    "IGT",
+    "IGT",//20
     "RGT",
     "SGT",
     "CGE",
@@ -32,7 +32,7 @@ char * tabOperator[]={
     "CLT",
     "ILT",
     "RLT",
-    "SLT",
+    "SLT",//30
     "CLE",
     "ILE",
     "RLE",
@@ -42,7 +42,7 @@ char * tabOperator[]={
     "RPLUS",
     "IMINUS",
     "RMINUS",
-    "ITIMES",
+    "ITIMES",//40
     "RTIMES",
     "IDIV",
     "RDIV",
@@ -52,7 +52,7 @@ char * tabOperator[]={
     "WR",
     "FWR",
     "PUSH",
-    "GOTO",
+    "GOTO",//50
     "POP",
     "RD",
     "FRD",
@@ -62,7 +62,7 @@ char * tabOperator[]={
     "FREAD",
     "WRITE",
     "FWRITE",
-    "FUNC",
+    "FUNC",//60
     "HALT",
     "SCODE",
     "RETURN",
