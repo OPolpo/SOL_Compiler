@@ -11,3 +11,5 @@ SOL_compilers/*
 compiler
 SOL_machine/*
 
+
+*.out
