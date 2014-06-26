@@ -22,7 +22,7 @@ stringconst \"([^\"])*\"
 
 %%
 
-.				;
+SCODE			{return (S_SCODE);}
 PUSH			{return (S_PUSH);}
 GOTO			{return (S_GOTO);}
 POP				{return (S_POP);}
@@ -89,7 +89,10 @@ RETURN			{return (S_RETURN);}
 
 {spacing}		;
 {eol}			;
-
+{intconst}		{return (0);}
+{realconst}		{return (0);}
+{charconst}		{return (0);}
+{stringconst}	{return (0);}
 .				{return (0);}
 
 %%
