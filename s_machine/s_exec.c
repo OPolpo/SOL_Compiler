@@ -425,21 +425,33 @@ void exec_fread(int oid, int offset, char * format){
 }
 
 void exec_write(char* format){
-    if(top_ostack->mode == STA)
+    //printf("entro");
+    if(top_ostack()->mode == STA){
+        //printf("sta\n");
     //vector
         if(format[0]=='['){
+            //printf("vect\n");
             return;
         }
         //struct
         else if(format[0]=='('){
+            //printf("struct\n");
             return;
         }
         //atomic
         else{
+            //printf("atom\n");
             return;
         }
+    }
     else{
-        printf(stdout,"%s",pop_atom_to_string(format));
+        //printf("\nemb <=====\n");
+        // printf("\n%c <=====\n",format[0]);
+        // printf("\n%c <=====\n",format[1]);
+        // printf("\n%c <=====\n",format[2]);
+        // printf("\n%s <=====\n",format);
+
+        fprintf(stdout,"\nqualcosa deve pur uscire: \'%s\'\n",format_string(format[0], &(top_ostack()->inst)));
     }
 }
 
@@ -541,34 +553,37 @@ void exec_news(int size){
     po->inst.sval = push_istack(size);
 }
 
-char* pop_atom_to_string(char format){//EMBEDDED
+char* format_string(char format, Value * inst){//EMBEDDED
     char * formatted;
     Value val;
+    printf("il formato in format string vale: %c",format);
     switch(format){
         case 'c':
-            val.cval = pop_char();
-            asprintf(&formatted, "%c", val.cval);
+            // val.cval = pop_char();
+            asprintf(&formatted, "%c", inst->cval);
         break;
         case 'i':
-            val.ival = pop_int();
-            asprintf(&formatted, "%d", val.ival);
+            // val.ival = pop_int();
+            printf("nel format string vale %d\n", inst->ival);
+            asprintf(&formatted, "%d", inst->ival);
         break;
         case 'r':
-            val.rval = pop_real();
-            asprintf(&formatted, "%f", val.rval );
+            // val.rval = pop_real();
+            asprintf(&formatted, "%f", inst->rval );
         break;
         case 's':
-            val.sval = pop_string();
-            asprintf(&formatted, "%s", val.sval );
+            // val.sval = pop_string();
+            asprintf(&formatted, "%s", inst->sval );
         break;
         case 'b':
-            val.cval =pop_string();
-            asprintf(&formatted, "%s", val.cval==0 ? "false" : "true");
+            // val.cval =pop_bool();
+            asprintf(&formatted, "%s", inst->cval==0 ? "false" : "true");
     }
     return formatted;
 }
 char * pop_vect_to_string(char * format){
-    char * size_str;
-    asprintf(size_str)
-    int size = 
+    // char * size_str;
+    // asprintf(size_str);
+    // int size = 
+    return NULL;
 }

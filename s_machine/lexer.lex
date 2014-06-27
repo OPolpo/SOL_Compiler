@@ -97,18 +97,3 @@ HALT			{return (S_HALT);}
 .				{return (0);}
 
 %%
-
-
-char *newstring(char *s) {
-	char *p;
- 	p = malloc(strlen(s)+1);
- 	strcpy(p, s);
- 	return(p);
-}
-
-#ifdef LEXER
-int main(){
-	//yylex();
-	printf("%d:  %d\n",line, yylex());
-}
-#endif

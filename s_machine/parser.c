@@ -17,7 +17,7 @@ void load_scode(FILE * input){
             case S_SCODE:
                 next();
                 total_instruction = atoi(yytext);
-                prog = (Scode *)newmem(atoi(yytext)*sizeof(Scode));
+                prog = (Scode *)newmem(total_instruction * sizeof(Scode));
                 pc--;
                 break;
                 
@@ -126,9 +126,10 @@ void load_scode(FILE * input){
                 fprintf(stderr, "ERROR\n");
         }
         
-        pc++;
-        if (pc>total_instruction)
+        
+        if (pc>=total_instruction)
             break;
+        pc++;
     }
     printf("inizio stampa\n");
     print_loaded_code(prog);
