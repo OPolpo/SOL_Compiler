@@ -509,25 +509,40 @@ int basic_write(char* format, FILE * stream, char * addr){
         //atomic
         else{
             //printf("atom\n");
-            printf("nella tipologia atomica il formato è %s\n",format);
+            //printf("nella tipologia atomica il formato è %s\n",format);
             if (format[0] == 'c'){
-                fprintf(stream, "%c", (char) *addr);
+                if(top_ostack()->mode==STA)
+                    fprintf(stream, "%c", (char) *addr);
+                else
+                    fprintf(stream, "%c", ((Value *) addr)->cval);
                 return 1;
             }
             if (format[0] == 'i'){
-                fprintf(stream, "======>\'%d\'<======", (int) *addr);
+                if(top_ostack()->mode==STA)
+                    fprintf(stream, "%d", (int) *addr);
+                else
+                    fprintf(stream, "======>\'%d\'<======", ((Value *) addr)->ival);
                 return 4;
             }
             if (format[0] == 'r'){
-                fprintf(stream, "%f", (float) *addr);
+                if(top_ostack()->mode==STA)
+                    fprintf(stream, "%f", (float) *addr);
+                else
+                    fprintf(stream, "%f", ((Value *) addr)->rval);
                 return 4;
             }
             if (format[0] == 's'){
-                fprintf(stream, "======>\'%s\'<======", (char *) addr);
+                if(top_ostack()->mode==STA)
+                    fprintf(stream, "======>\'%s\'<======",  (char*) *addr);
+                else
+                    fprintf(stream, "======>\'%s\'<======", ((Value *) addr)->sval);
                 return 8;
             }
             if (format[0] == 'b'){
-                fprintf(stream, "%s", addr[0]=='0' ? "false" : "true");
+                if(top_ostack()->mode==STA)
+                    fprintf(stream, "%s", ((char) *addr) =='0' ? "false" : "true");
+                else
+                    fprintf(stream, "%s", ((Value *) addr)->cval=='0' ? "false" : "true");
                 return 1;
             }
             return 1;
@@ -545,7 +560,7 @@ void exec_write(char* format){
 
 void exec_fwrite(char* format){
     // FILE * fp;
-    // char* file_name = pop_string();
+    char* file_name = pop_string();
     // fp = fopen(file_name, "w");
     // basic_write(format, fp, NULL);
     basic_write(format, stdout, NULL);
@@ -652,8 +667,10 @@ int write_vect(char * format, FILE* stream, char* addr){
     int i = 0; 
     char str_format[strlen(format)]; // todo
     sscanf(format,"[%d,%s",&size, str_format);
+    int element_size = (top_ostack()->size)/size;
     for(i=0;i<size;i++){
-        basic_write(str_format, stream, addr+((top_ostack()->size)/size)*i);
+        printf("dimensione elemento %d\n", element_size);
+        basic_write(str_format, stream, addr+element_size*i);
     }
     return top_ostack()->size;
 }
@@ -661,7 +678,6 @@ int write_vect(char * format, FILE* stream, char* addr){
 int write_struct(char * format, FILE* stream, char* addr){
     int size = top_ostack()->size;
     int i = 0;
-    int j = 0;
     while(!(format[i]==0 || format[i] == ':')){
         i++;
     }
@@ -675,8 +691,8 @@ int write_struct(char * format, FILE* stream, char* addr){
         while(!(format[i]==0 || format[i] == ':')){
             i++;
         }
-        //printf("\nsize residuo: %d\n",size);
-        //getc(stdin);
+        printf("\nsize residuo: %d\n",size);
+        getc(stdin);
     }
     //printf("%d",top_ostack()->size);
     return top_ostack()->size;
