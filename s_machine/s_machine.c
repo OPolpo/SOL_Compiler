@@ -235,8 +235,9 @@ void push_string(char * s){ //assuming is "mallocated" and is in the hash table
 
 //manage str_const_table
 char * insert_str_c(char * s){
-    char * without = s+1;
-    without[strlen(without)-1]=0;
+    char *without = s;
+    printf("vorrei inserire %s, pulisco e ho: %s\n", s, without);
+    
     
     char * p_on_table = get_str_c(without);
     if (!p_on_table){
@@ -251,6 +252,13 @@ char * insert_str_c(char * s){
         str_const_table[pos] = new_node;
     }
     return p_on_table;
+}
+
+char * insert_strWclean(char * s){
+    char * without = s+1;
+    without[strlen(without)-1]=0;
+    
+    return insert_str_c(without);
 }
 
 char * get_str_c(char * s){

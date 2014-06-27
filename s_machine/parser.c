@@ -68,7 +68,7 @@ void load_scode(FILE * input){
                 next();
                 prog[pc].args[1].ival=atoi(yytext);
                 next();
-                prog[pc].args[2].sval=insert_str_c(yytext);
+                prog[pc].args[2].sval=insert_strWclean(yytext);
                 break;
                 
             case S_PUSH:
@@ -92,7 +92,7 @@ void load_scode(FILE * input){
             case S_LDS:
             prog[pc].op=a;
             next();
-            prog[pc].args[0].sval=insert_str_c(yytext);
+            prog[pc].args[0].sval=insert_strWclean(yytext);
             break;
 
             case S_LDR:
