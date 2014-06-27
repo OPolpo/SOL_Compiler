@@ -379,21 +379,21 @@ void exec_lda(int env_offset, int oid){
 
 void exec_cat(int num, int size){
     char * new_inst = push_istack(size);
-    char * start = new_inst;
+    char * start = new_inst+size;
     int i, temp_size=0;
     for (i=0; i<num; i++) {
         if(top_ostack()->mode == EMB){
-            memcpy(start, &(top_ostack()->inst), top_ostack()->size);
-            temp_size += top_ostack()->size;
+            memcpy(start-top_ostack()->size, &(top_ostack()->inst), top_ostack()->size);
+            //temp_size += top_ostack()->size;
         }else{
-            memcpy(start, top_ostack()->inst.sval, top_ostack()->size);
-            temp_size += top_ostack()->size;
-            move_down_istack(temp_size, top_ostack()->size); // not sure TODO check
+            memcpy(start-top_ostack()->size, top_ostack()->inst.sval, top_ostack()->size);
+            //temp_size += top_ostack()->size;
+            move_down_istack(size, top_ostack()->size); // not sure TODO check
         }
         start += top_ostack()->size;
         pop_ostack();
     }
-    if (temp_size != size) machine_error("exec_cat");
+    //if (temp_size != size) machine_error("exec_cat");
     Odescr * new_obj = push_ostack();
     new_obj->mode = STA;
     new_obj->size = size;
@@ -426,34 +426,53 @@ void exec_fread(int oid, int offset, char * format){
     
 }
 
-void excec_basic_write(char* format, FILE * stream){
-    //printf("entro");
-    if(top_ostack()->mode == STA){
-    //printf("sta\n");
+int basic_write(char* format, FILE * stream, char * addr){
+    //printf("entro\n");
+    if(addr != NULL){
     //vector
         if(format[0]=='['){
-            //printf("vect\n");
-            write_vect(format, stream, top_ostack()->inst.sval);
-            return;
+            printf("vect\n");
+            return write_vect(format, stream, top_ostack()->inst.sval);
         }
         //struct
         else if(format[0]=='('){
-            //printf("struct\n");
-            return;
+            printf("struct\n");
+            return write_struct(format, stream, top_ostack()->inst.sval);
         }
         //atomic
         else{
             //printf("atom\n");
-            return;
+            //printf("nella tipologia atomica il formato è %s\n",format);
+            if (format[0] == 'c'){
+                fprintf(stream, "%c", (char) *addr);
+                return 1;
+            }
+            if (format[0] == 'i'){
+                fprintf(stream, "\'%d\'", (int) *addr);
+                return 4;
+            }
+            if (format[0] == 'r'){
+                fprintf(stream, "%f", (float) *addr);
+                return 4;
+            }
+            if (format[0] == 's'){
+                fprintf(stream, "%s", (char *) addr);
+                return 8;
+            }
+            if (format[0] == 'b'){
+                fprintf(stream, "%s", addr[0]=='0' ? "false" : "true");
+                return 1;
+            }
+            return -1;
         }
     }
     else{
-        fprintf(stream,"\nqualcosa deve pur uscire: \'%s\'\n",format_string(format[0], &(top_ostack()->inst)));
+        return basic_write(format, stream, &(top_ostack()->inst));
     }
 }
 
 void exec_write(char* format){
-    excec_basic_write(format, stdout);
+    basic_write(format, stdout, NULL);
 
 }
 
@@ -461,7 +480,7 @@ void exec_fwrite(char* format){
     FILE * fp;
     char* file_name = pop_string();
     fp = fopen(file_name, "w");
-    excec_basic_write(format, fp);
+    basic_write(format, fp, NULL);
     
 }
 
@@ -559,44 +578,38 @@ void exec_news(int size){
     po->inst.sval = push_istack(size);
 }
 
-char* format_string(char format, Value * inst){//EMBEDDED
-    char * formatted;
-    Value val;
-    printf("il formato in format string vale: %c",format);
-    switch(format){
-        case 'c':
-            // val.cval = pop_char();
-            asprintf(&formatted, "%c", inst->cval);
-        break;
-        case 'i':
-            // val.ival = pop_int();
-            printf("nel format string vale %d\n", inst->ival);
-            asprintf(&formatted, "%d", inst->ival);
-        break;
-        case 'r':
-            // val.rval = pop_real();
-            asprintf(&formatted, "%f", inst->rval );
-        break;
-        case 's':
-            // val.sval = pop_string();
-            asprintf(&formatted, "%s", inst->sval );
-        break;
-        case 'b':
-            // val.cval =pop_bool();
-            asprintf(&formatted, "%s", inst->cval==0 ? "false" : "true");
-    }
-    return formatted;
-}
-char * write_vect(char * format, FILE* stream, char* addr){
+int write_vect(char * format, FILE* stream, char* addr){
+    //printf(" ENTRO\n");
+    int size = 0;
     int i = 0; 
-    while(format[i]!=','){
+    char str_format[strlen(format)]; // todo
+    sscanf(format,"[%d,%s",&size, str_format);
+    for(i=0;i<size;i++){
+        basic_write(str_format, stream, addr+((top_ostack()->size)/size)*(size-i-1));
+    }
+    return top_ostack()->size;
+}
+
+int write_struct(char * format, FILE* stream, char* addr){
+    int size = top_ostack()->size;
+    int i = 0;
+    int j = 0;
+    while(!(format[i]==0 || format[i] == ':')){
         i++;
     }
-    char size_str[i-1];
-    memcpy(size_str,format[1],i-1);
-    size_str[i-1]=0;
-    printf("======> %d <=====", atoi(size_str));
-    //asprintf(size_str);
-    //int size = 
-    return NULL;
+    //printf("format %s\n",format+i);
+
+
+    while(size > 0){
+        printf("%d",size);
+        i+=1;
+        size -= basic_write(format+i, stream, addr + size);
+        while(!(format[i]==0 || format[i] == ':')){
+            i++;
+        }
+        //printf("\nsize residuo: %d\n",size);
+        //getc(stdin);
+    }
+    //printf("%d",top_ostack()->size);
+    return top_ostack()->size;
 }
