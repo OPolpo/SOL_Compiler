@@ -509,13 +509,13 @@ int basic_write(char* format, FILE * stream, char * addr){
         //atomic
         else{
             //printf("atom\n");
-            //printf("nella tipologia atomica il formato è %s\n",format);
+            printf("nella tipologia atomica il formato è %s\n",format);
             if (format[0] == 'c'){
                 fprintf(stream, "%c", (char) *addr);
                 return 1;
             }
             if (format[0] == 'i'){
-                fprintf(stream, "\'%d\'", (int) *addr);
+                fprintf(stream, "======>\'%d\'<======", (int) *addr);
                 return 4;
             }
             if (format[0] == 'r'){
@@ -523,14 +523,14 @@ int basic_write(char* format, FILE * stream, char * addr){
                 return 4;
             }
             if (format[0] == 's'){
-                fprintf(stream, "%s", (char *) addr);
+                fprintf(stream, "======>\'%s\'<======", (char *) addr);
                 return 8;
             }
             if (format[0] == 'b'){
                 fprintf(stream, "%s", addr[0]=='0' ? "false" : "true");
                 return 1;
             }
-            return -1;
+            return 1;
         }
     }
     else{
@@ -544,10 +544,11 @@ void exec_write(char* format){
 }
 
 void exec_fwrite(char* format){
-    FILE * fp;
-    char* file_name = pop_string();
-    fp = fopen(file_name, "w");
-    basic_write(format, fp, NULL);
+    // FILE * fp;
+    // char* file_name = pop_string();
+    // fp = fopen(file_name, "w");
+    // basic_write(format, fp, NULL);
+    basic_write(format, stdout, NULL);
     
 }
 

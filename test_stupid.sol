@@ -6,7 +6,7 @@ var a,b,c:int;
 	fgh:char;
 	vect : vector [4] of int;
 const sss:string="2";
-	pippo:int=99;
+	pippo:char='a';
 begin tester
 	vect = vector(1,2,3,4);
 	write vect;
@@ -18,6 +18,7 @@ begin tester
 	b=0;
 	c=0;
 	boo=true;
+	write (sss);
 	str="ciao";
 	boo = str == "cio";
 	return a;
