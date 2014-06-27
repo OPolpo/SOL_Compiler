@@ -1576,6 +1576,7 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int
     
 	switch(root->type){
 		case T_CHARCONST:
+            printf("expr is char\n");
 			(*stype)->type = CHAR;
             *code = appcode(*code, make_ldc(root->value.cval));
 			break;
@@ -1592,6 +1593,7 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int
             *code =appcode(*code, make_lds(root->value.sval));
 			break;
 		case T_BOOLCONST:
+            printf("expr is bool\n");
 			(*stype)->type = BOOL;
             *code = appcode(*code, make_ldc(root->value.cval));
 			break;

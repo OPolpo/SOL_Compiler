@@ -50,7 +50,7 @@ Adescr * top_astack();
 Adescr * push_astack();
 void pop_astack();
 
-Odescr * get_p2objects(int i);
+Odescr ** get_p2objects(int i);
 int get_next_op();
 
 Odescr * top_ostack();

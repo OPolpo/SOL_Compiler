@@ -98,7 +98,7 @@ void load_scode(FILE * input){
             case S_LDR:
                 prog[pc].op=a;
                 next();
-                prog[pc].args[0].rval=atof(yytext);
+                prog[pc].args[0].rval=(float)atof(yytext);
                 break;
             case S_LDC:
                 prog[pc].op=a;

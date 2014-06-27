@@ -6,7 +6,7 @@ int pc;
 
 void exec(Scode *stat) {
     //print_code_instruction(stat);
-    printf("exec %d\n", stat->op);
+    printf("[%3d] exec %d\n", pc, stat->op);
     switch (stat->op) {
         case S_PUSH: exec_push(stat->args[0].ival, stat->args[1].ival, pc+1); break;
         case S_GOTO: exec_goto(stat->args[0].ival); break;
@@ -361,11 +361,7 @@ void exec_sto(int env_offset, int oid){
         printf("NOOOO\n");
         a_declaration = a_declaration->alink; // not sure TODO check
     }
-    Odescr * o_to_store = get_p2objects(a_declaration->pos_objects) + (oid-1);
-    printf("otosto point: %p  %d\n", o_to_store, sizeof(Odescr));
-        printf("otosto point+1: %p \n", o_to_store+1);
-
-    printf("a_decl pos obj: %d  %p\n", a_declaration->pos_objects, get_p2objects(a_declaration->pos_objects));
+    Odescr * o_to_store = *(get_p2objects(a_declaration->pos_objects) + oid-1);
     memcpy(&(o_to_store->inst), &(top_ostack()->inst), sizeof(Value));
     pop_ostack();
 }
@@ -376,7 +372,7 @@ void exec_lda(int env_offset, int oid){
     for (i=env_offset; i>0; i--) {
         a_declaration = a_declaration->alink; // not sure TODO check
     }
-    Odescr * o_to_lod = get_p2objects(a_declaration->pos_objects) + oid;
+    Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
     push_ostack();
     memcpy(top_ostack(), o_to_lod, sizeof(Odescr));
 }
@@ -410,9 +406,10 @@ void exec_lod(int env_offset, int oid){
     for (i=env_offset; i>0; i--) {
         a_declaration = a_declaration->alink; // not sure TODO check
     }
-    Odescr * o_to_lod = get_p2objects(a_declaration->pos_objects) + oid;
+    Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
     push_ostack();
     memcpy(top_ostack(), o_to_lod, sizeof(Odescr));
+    printf("-->%d\n", top_ostack()->inst.ival);
     
     if (top_ostack()->mode == STA) {
         char * i_address = push_istack(top_ostack()->size);
@@ -436,7 +433,7 @@ void excec_basic_write(char* format, FILE * stream){
     //vector
         if(format[0]=='['){
             //printf("vect\n");
-            write_vect(format, stream, addr);
+            write_vect(format, stream, top_ostack()->inst.sval);
             return;
         }
         //struct
@@ -462,7 +459,7 @@ void exec_write(char* format){
 
 void exec_fwrite(char* format){
     FILE * fp;
-    char* file_name = pop_str();
+    char* file_name = pop_string();
     fp = fopen(file_name, "w");
     excec_basic_write(format, fp);
     
@@ -596,7 +593,7 @@ char * write_vect(char * format, FILE* stream, char* addr){
         i++;
     }
     char size_str[i-1];
-    memcopy(size_str,format[1],i-1);
+    memcpy(size_str,format[1],i-1);
     size_str[i-1]=0;
     printf("======> %d <=====", atoi(size_str));
     //asprintf(size_str);
