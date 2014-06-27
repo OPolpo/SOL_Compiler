@@ -6,7 +6,9 @@ int pc;
 
 void exec(Scode *stat) {
     //print_code_instruction(stat);
-    printf("[%3d] exec %d\n", pc, stat->op);
+    //printf("pc %d, ap %d, op %d, ip %d\n",pc,ap,op,ip);
+    
+    printf("[%3d] exec %d", pc, stat->op);
     switch (stat->op) {
         case S_PUSH: exec_push(stat->args[0].ival, stat->args[1].ival, pc+1); break;
         case S_GOTO: exec_goto(stat->args[0].ival); break;
@@ -70,7 +72,9 @@ void exec(Scode *stat) {
         case S_FWRITE: exec_fwrite(stat->args[0].sval); break;
         case S_FUNC: exec_func(stat->args[0].ival); break;
         case S_RETURN: exec_return(); break;
-        default: machine_error("Unknown operator"); break; }
+        default: machine_error("Unknown operator"); break;
+    }
+    printf("pc %d, op %d\n",pc,get_next_op());
 }
 
 void exec_toint(){
@@ -416,6 +420,69 @@ void exec_lod(int env_offset, int oid){
         memcpy(i_address, top_ostack()->inst.sval, top_ostack()->size);
         top_ostack()->inst.sval = i_address;
     }
+}
+
+int calc_size(char * f){
+    int dim = 0;
+    //char * f = format;
+    //char subformat[strlen(format)];
+    printf("%c\n", f[0]);
+    switch (f[0]) {
+        case 'c':
+        case 'b':
+            f++;
+            return sizeof(char);
+            break;
+        case 'i':
+            f++;
+            return sizeof(int);
+            f++;
+            break;
+        case 'r':
+            f++;
+            return sizeof(float);
+            break;
+        case 's':
+            f++;
+            return sizeof(char *);
+            break;
+        case '(':
+            do{
+                do {
+                    f++;
+                } while( f[0] != ':');
+                printf("%c spero :\n", f[0]);
+                f++;
+                dim += calc_size(f);
+                f++;
+            } while (f[0] == ',');
+            printf("%c spero ,\n", f[0]);
+            return dim;
+            break;
+        case '[':
+            f++;
+            sscanf(f, "%d", &dim);
+            do {
+                f++;
+            } while( f[0] != ',');
+            f++;
+            return dim * calc_size(f);
+        case ')':
+            printf(")");
+            break;
+        case '\0':
+            printf("the end");
+            break;
+        case ']':
+            printf("]");
+            
+            break;
+        case ',':
+            printf("vaffanculo");
+        default:
+            break;
+    }
+    return 0;
 }
 
 void exec_read(int oid, int offset, char * format){
