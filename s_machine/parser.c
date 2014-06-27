@@ -103,7 +103,7 @@ void load_scode(FILE * input){
             case S_LDC:
                 prog[pc].op=a;
                 next();
-                prog[pc].args[0].cval=yytext[0];
+                prog[pc].args[0].cval=yytext[1];
                 break;
                 
             case S_FUNC:
@@ -127,11 +127,11 @@ void load_scode(FILE * input){
         }
         
         
-        if (pc>=total_instruction)
+        if (pc==total_instruction-1)
             break;
         pc++;
     }
-    printf("inizio stampa\n");
+    printf("%d inizio stampa\n", pc);
     print_loaded_code(prog);
     printf("fine stampa\n");
 

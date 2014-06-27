@@ -36,7 +36,6 @@ void start_machine(char * input) {
     osize = OSTACK_UNIT;
     istack = (char*)newmem(ISTACK_UNIT);
     isize = ISTACK_UNIT;
-    
 }
 
 void end_machine() {
@@ -92,8 +91,8 @@ void pop_astack() {
     freemem((char*)astack[--ap], sizeof(Adescr));
 }
 
-Odescr * get_p2objects(int i){
-    return ostack[i];
+Odescr ** get_p2objects(int i){
+    return &ostack[i];
 }
 int get_next_op(){
     return op;

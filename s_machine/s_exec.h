@@ -77,6 +77,7 @@ void exec_ldi(int arg1);
 void exec_new(int arg1);
 void exec_news(int arg1);
 
-char* format_string(char format, Value * inst);
+char * format_string(char format, Value * inst);
+char * write_vect(char * format, FILE* stream, char* addr);
 
 #endif

@@ -358,10 +358,15 @@ void exec_sto(int env_offset, int oid){
     Adescr * a_declaration = top_astack();
     int i;
     for (i=env_offset; i>0; i--) {
+        printf("NOOOO\n");
         a_declaration = a_declaration->alink; // not sure TODO check
     }
-    Odescr * o_to_store = get_p2objects(a_declaration->pos_objects) + oid;
-    memcpy(&(o_to_store->inst), &(top_ostack()->inst), o_to_store->size);
+    Odescr * o_to_store = get_p2objects(a_declaration->pos_objects) + (oid-1);
+    printf("otosto point: %p  %d\n", o_to_store, sizeof(Odescr));
+        printf("otosto point+1: %p \n", o_to_store+1);
+
+    printf("a_decl pos obj: %d  %p\n", a_declaration->pos_objects, get_p2objects(a_declaration->pos_objects));
+    memcpy(&(o_to_store->inst), &(top_ostack()->inst), sizeof(Value));
     pop_ostack();
 }
 
@@ -424,13 +429,14 @@ void exec_fread(int oid, int offset, char * format){
     
 }
 
-void exec_write(char* format){
+void excec_basic_write(char* format, FILE * stream){
     //printf("entro");
     if(top_ostack()->mode == STA){
-        //printf("sta\n");
+    //printf("sta\n");
     //vector
         if(format[0]=='['){
             //printf("vect\n");
+            write_vect(format, stream, addr);
             return;
         }
         //struct
@@ -445,17 +451,20 @@ void exec_write(char* format){
         }
     }
     else{
-        //printf("\nemb <=====\n");
-        // printf("\n%c <=====\n",format[0]);
-        // printf("\n%c <=====\n",format[1]);
-        // printf("\n%c <=====\n",format[2]);
-        // printf("\n%s <=====\n",format);
-
-        fprintf(stdout,"\nqualcosa deve pur uscire: \'%s\'\n",format_string(format[0], &(top_ostack()->inst)));
+        fprintf(stream,"\nqualcosa deve pur uscire: \'%s\'\n",format_string(format[0], &(top_ostack()->inst)));
     }
 }
 
+void exec_write(char* format){
+    excec_basic_write(format, stdout);
+
+}
+
 void exec_fwrite(char* format){
+    FILE * fp;
+    char* file_name = pop_str();
+    fp = fopen(file_name, "w");
+    excec_basic_write(format, fp);
     
 }
 
@@ -581,9 +590,16 @@ char* format_string(char format, Value * inst){//EMBEDDED
     }
     return formatted;
 }
-char * pop_vect_to_string(char * format){
-    // char * size_str;
-    // asprintf(size_str);
-    // int size = 
+char * write_vect(char * format, FILE* stream, char* addr){
+    int i = 0; 
+    while(format[i]!=','){
+        i++;
+    }
+    char size_str[i-1];
+    memcopy(size_str,format[1],i-1);
+    size_str[i-1]=0;
+    printf("======> %d <=====", atoi(size_str));
+    //asprintf(size_str);
+    //int size = 
     return NULL;
 }
