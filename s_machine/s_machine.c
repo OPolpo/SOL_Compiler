@@ -40,6 +40,9 @@ void start_machine(char * input) {
 }
 
 void end_machine() {
+    printf("pc %d, ap %d, op %d, ip %d\n",pc,ap,op,ip);
+    printf("%d %f %c %s\n",top_ostack()->inst.ival,top_ostack()->inst.rval,top_ostack()->inst.cval,top_ostack()->inst.sval);
+    
     freemem((char*)prog, sizeof(Scode)*code_size);
     freemem((char*)astack, sizeof(Adescr*)*asize);
     freemem((char*)ostack, sizeof(Odescr*)*osize);
@@ -92,8 +95,8 @@ void pop_astack() {
     freemem((char*)astack[--ap], sizeof(Adescr));
 }
 
-Odescr * get_p2objects(int i){
-    return ostack[i];
+Odescr ** get_p2objects(int i){
+    return &ostack[i];
 }
 int get_next_op(){
     return op;

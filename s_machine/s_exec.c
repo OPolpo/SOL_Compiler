@@ -6,7 +6,7 @@ int pc;
 
 void exec(Scode *stat) {
     //print_code_instruction(stat);
-    printf("exec %d\n", stat->op);
+    printf("[%3d] exec %d\n", pc, stat->op);
     switch (stat->op) {
         case S_PUSH: exec_push(stat->args[0].ival, stat->args[1].ival, pc+1); break;
         case S_GOTO: exec_goto(stat->args[0].ival); break;
@@ -360,8 +360,8 @@ void exec_sto(int env_offset, int oid){
     for (i=env_offset; i>0; i--) {
         a_declaration = a_declaration->alink; // not sure TODO check
     }
-    Odescr * o_to_store = get_p2objects(a_declaration->pos_objects) + oid;
-    memcpy(&(o_to_store->inst), &(top_ostack()->inst), o_to_store->size);
+    Odescr * o_to_store = *(get_p2objects(a_declaration->pos_objects) + oid-1);
+    memcpy(&(o_to_store->inst), &(top_ostack()->inst), sizeof(Value));
     pop_ostack();
 }
 
@@ -371,7 +371,7 @@ void exec_lda(int env_offset, int oid){
     for (i=env_offset; i>0; i--) {
         a_declaration = a_declaration->alink; // not sure TODO check
     }
-    Odescr * o_to_lod = get_p2objects(a_declaration->pos_objects) + oid;
+    Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
     push_ostack();
     memcpy(top_ostack(), o_to_lod, sizeof(Odescr));
 }
@@ -405,9 +405,10 @@ void exec_lod(int env_offset, int oid){
     for (i=env_offset; i>0; i--) {
         a_declaration = a_declaration->alink; // not sure TODO check
     }
-    Odescr * o_to_lod = get_p2objects(a_declaration->pos_objects) + oid;
+    Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
     push_ostack();
     memcpy(top_ostack(), o_to_lod, sizeof(Odescr));
+    printf("-->%d\n", top_ostack()->inst.ival);
     
     if (top_ostack()->mode == STA) {
         char * i_address = push_istack(top_ostack()->size);
