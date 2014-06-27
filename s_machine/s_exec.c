@@ -652,7 +652,7 @@ int write_vect(char * format, FILE* stream, char* addr){
     char str_format[strlen(format)]; // todo
     sscanf(format,"[%d,%s",&size, str_format);
     for(i=0;i<size;i++){
-        basic_write(str_format, stream, addr+((top_ostack()->size)/size)*(size-i-1));
+        basic_write(str_format, stream, addr+((top_ostack()->size)/size)*i);
     }
     return top_ostack()->size;
 }
