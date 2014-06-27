@@ -497,12 +497,12 @@ int basic_write(char* format, FILE * stream, char * addr){
     if(addr != NULL){
     //vector
         if(format[0]=='['){
-            printf("vect\n");
+            //printf("vect\n");
             return write_vect(format, stream, top_ostack()->inst.sval);
         }
         //struct
         else if(format[0]=='('){
-            printf("struct\n");
+            //printf("struct\n");
             return write_struct(format, stream, top_ostack()->inst.sval);
         }
         //atomic
@@ -511,37 +511,37 @@ int basic_write(char* format, FILE * stream, char * addr){
             //printf("nella tipologia atomica il formato è %s\n",format);
             if (format[0] == 'c'){
                 if(top_ostack()->mode==STA)
-                    fprintf(stream, "%c", *addr);
+                    fprintf(stream, "====>%c<====", *addr);
                 else
-                    fprintf(stream, "%c", ((Value *) addr)->cval);
+                    fprintf(stream, "====>%c<====", ((Value *) addr)->cval);
                 return 1;
             }
             if (format[0] == 'i'){
                 if(top_ostack()->mode==STA)
-                    fprintf(stream, "%d", *((int*)addr));
+                    fprintf(stream, "====>%d<====", *((int*)addr));
                 else
-                    fprintf(stream, "======>\'%d\'<======", ((Value *) addr)->ival);
+                    fprintf(stream, "====>\'%d\'<====", ((Value *) addr)->ival);
                 return 4;
             }
             if (format[0] == 'r'){
                 if(top_ostack()->mode==STA)
-                    fprintf(stream, "%f", *(float*)addr);
+                    fprintf(stream, "====>%f<====", *(float*)addr);
                 else
-                    fprintf(stream, "%f", ((Value *) addr)->rval);
+                    fprintf(stream, "====>%f<====", ((Value *) addr)->rval);
                 return 4;
             }
             if (format[0] == 's'){
                 if(top_ostack()->mode==STA)
-                    fprintf(stream, "======>\'%s\'<======",  (char**)addr);
+                    fprintf(stream, "====>\'%s\'<====",  (char**)addr);
                 else
-                    fprintf(stream, "======>\'%s\'<======", ((Value *) addr)->sval);
+                    fprintf(stream, "====>\'%s\'<====", ((Value *) addr)->sval);
                 return 8;
             }
             if (format[0] == 'b'){
                 if(top_ostack()->mode==STA)
-                    fprintf(stream, "%s", ((char) *addr) =='0' ? "false" : "true");
+                    fprintf(stream, "====>%s<====", ((char) *addr) =='0' ? "false" : "true");
                 else
-                    fprintf(stream, "%s", ((Value *) addr)->cval=='0' ? "false" : "true");
+                    fprintf(stream, "====>%s<====", ((Value *) addr)->cval=='0' ? "false" : "true");
                 return 1;
             }
             return 1;
@@ -553,7 +553,12 @@ int basic_write(char* format, FILE * stream, char * addr){
 }
 
 void exec_write(char* format){
+    printf("\n");
+    printf("\n");
     basic_write(format, stdout, NULL);
+    printf("\n");
+    printf("\n");
+
 
 }
 
@@ -673,7 +678,7 @@ int write_vect(char * format, FILE* stream, char* addr){
     sscanf(format,"[%d,%s",&size, str_format);
     int element_size = (top_ostack()->size)/size;
     for(i=0;i<size;i++){
-        printf("dimensione elemento %d\n", element_size);
+        //printf("dimensione elemento %d\n", element_size);
         basic_write(str_format, stream, addr+element_size*i);
     }
     return top_ostack()->size;
@@ -689,14 +694,14 @@ int write_struct(char * format, FILE* stream, char* addr){
 
 
     while(size > 0){
-        printf("%d",size);
+        //printf("%d",size);
         i+=1;
         size -= basic_write(format+i, stream, addr + size);
         while(!(format[i]==0 || format[i] == ':')){
             i++;
         }
-        printf("\nsize residuo: %d\n",size);
-        getc(stdin);
+        //printf("\nsize residuo: %d\n",size);
+        //getc(stdin);
     }
     //printf("%d",top_ostack()->size);
     return top_ostack()->size;
