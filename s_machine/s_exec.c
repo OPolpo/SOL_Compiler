@@ -394,7 +394,7 @@ void exec_cat(int num, int size){
             //temp_size += top_ostack()->size;
             move_down_istack(size, top_ostack()->size); // not sure TODO check
         }
-        start += top_ostack()->size;
+        start -= top_ostack()->size;
         pop_ostack();
     }
     //if (temp_size != size) machine_error("exec_cat");
