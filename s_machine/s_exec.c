@@ -451,12 +451,12 @@ int calc_size(char * f){
                 do {
                     f++;
                 } while( f[0] != ':');
-                printf("%c spero :\n", f[0]);
+                //printf("%c spero :\n", f[0]);
                 f++;
                 dim += calc_size(f);
                 f++;
             } while (f[0] == ',');
-            printf("%c spero ,\n", f[0]);
+            //printf("%c spero ,\n", f[0]);
             return dim;
             break;
         case '[':
