@@ -421,7 +421,22 @@ void exec_fread(int oid, int offset, char * format){
 }
 
 void exec_write(char* format){
-    
+    if(top_ostack->mode == STA)
+    //vector
+        if(format[0]=='['){
+            return;
+        }
+        //struct
+        else if(format[0]=='('){
+            return;
+        }
+        //atomic
+        else{
+            return;
+        }
+    else{
+        printf(stdout,"%s",pop_atom_to_string(format));
+    }
 }
 
 void exec_fwrite(char* format){
@@ -522,3 +537,34 @@ void exec_news(int size){
     po->inst.sval = push_istack(size);
 }
 
+char* pop_atom_to_string(char format){//EMBEDDED
+    char * formatted;
+    Value val;
+    switch(format){
+        case 'c':
+            val.cval = pop_char();
+            asprintf(&formatted, "%c", val.cval);
+        break;
+        case 'i':
+            val.ival = pop_int();
+            asprintf(&formatted, "%d", val.ival);
+        break;
+        case 'r':
+            val.rval = pop_real();
+            asprintf(&formatted, "%f", val.rval );
+        break;
+        case 's':
+            val.sval = pop_string();
+            asprintf(&formatted, "%s", val.sval );
+        break;
+        case 'b':
+            val.cval =pop_string();
+            asprintf(&formatted, "%s", val.cval==0 ? "false" : "true");
+    }
+    return formatted;
+}
+char * pop_vect_to_string(char * format){
+    char * size_str;
+    asprintf(size_str)
+    int size = 
+}

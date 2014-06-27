@@ -4,7 +4,6 @@ var a,b,c:int;
 	str:string;
 	boo:bool;
 const sss:string="2";
-
 	func tester1():int
 	var a1,b1,c1:int;
 	
@@ -22,6 +21,7 @@ const sss:string="2";
 	end tester1
 
 begin tester
+	write (sss);
 	a=0;
 	str="ciao";
 	boo = str == "cio";

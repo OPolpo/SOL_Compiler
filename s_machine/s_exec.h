@@ -77,4 +77,6 @@ void exec_ldi(int arg1);
 void exec_new(int arg1);
 void exec_news(int arg1);
 
+char* pop_atom_to_string(char format);
+
 #endif
