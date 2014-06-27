@@ -102,15 +102,18 @@ void exec_ist(){
 
 void exec_equ(){
     void * n, * m;
-    if (top_ostack()->mode == EMB){
-        n = &(top_ostack()->inst);
-        m = &(under_top_ostack()->inst);
+    int res = top_ostack()->size == under_top_ostack()->size;
+    if (res) {
+        if (top_ostack()->mode == EMB){
+            n = &(top_ostack()->inst);
+            m = &(under_top_ostack()->inst);
+        }
+        else{
+            n = (top_ostack()->inst).sval;
+            m = (under_top_ostack()->inst).sval;
+        }
+        res = memcmp(n, m, top_ostack()->size);
     }
-    else{
-        n = (top_ostack()->inst).sval;
-        m = (under_top_ostack()->inst).sval;
-    }
-    int res = memcmp(n, m, top_ostack()->size);
     pop_ostack();
     pop_ostack();
     push_bool(res);
@@ -351,6 +354,7 @@ void exec_push(int size, int chain, int raddr){
 }
 
 void exec_sto(int env_offset, int oid){
+    printf("STO %d %d\n", env_offset, oid);
     Adescr * a_declaration = top_astack();
     int i;
     for (i=env_offset; i>0; i--) {
