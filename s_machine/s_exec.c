@@ -508,7 +508,7 @@ int basic_write(char* format, FILE * stream, char * addr){
         //atomic
         else{
             //printf("atom\n");
-            //printf("nella tipologia atomica il formato è %s\n",format);
+            printf("nella tipologia atomica il formato è %s\n",format);
             if (format[0] == 'c'){
                 if(top_ostack()->mode==STA)
                     fprintf(stream, "====>%c<====", *addr);
@@ -695,6 +695,7 @@ int write_struct(char * format, FILE* stream, char* addr){
 
     while(size > 0){
         //printf("%d",size);
+        //printf("format in struct %s\n",format+i);
         i+=1;
         size -= basic_write(format+i, stream, addr + size);
         while(!(format[i]==0 || format[i] == ':')){
