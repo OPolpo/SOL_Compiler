@@ -78,6 +78,7 @@ void push_bool(int b);
 char * pop_string();
 void push_string(char * s);
 
+char * insert_strWclean(char * s);
 char * insert_str_c(char * s);
 char * get_str_c(char * s);
 int hash_str_c(char * s);
