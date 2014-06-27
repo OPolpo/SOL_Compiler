@@ -44,7 +44,7 @@ void end_machine() {
     freemem((char*)astack, sizeof(Adescr*)*asize);
     freemem((char*)ostack, sizeof(Odescr*)*osize);
     freemem(istack, isize);
-    freemem((char*)str_const_table, sizeof(Str_c_node*)*STR_CONST_DIM);
+    free_str_c_table();
     char * pippo;
     asprintf(&pippo, "%%d pippo\n");
     printf(pippo,10);
@@ -155,6 +155,8 @@ void pop_istack(int size) {
 }
 
 void move_down_istack(int to_move, int this_much){
+    
+    printf("hai chiamato move_down_istack\n");
     if(ip - to_move - this_much < 0) machine_error("move_down_istack()");
     if (to_move<0 || this_much<0) machine_error("move_down_istack() parameters");
     memmove(&istack[ip-to_move-this_much], &istack[ip-to_move], to_move);
@@ -231,14 +233,17 @@ void push_string(char * s){ //assuming is "mallocated" and is in the hash table
 
 //manage str_const_table
 char * insert_str_c(char * s){
-    char * p_on_table = get_str_c(s);
+    char * without = s+1;
+    without[strlen(without)-1]=0;
+    
+    char * p_on_table = get_str_c(without);
     if (!p_on_table){
-        int pos = hash_str_c(s);
+        int pos = hash_str_c(without);
         Str_c_node * new_node = (Str_c_node *)newmem(sizeof(Str_c_node));
-        new_node->string = (char*)newmem(((int)strlen(s)+1) * sizeof(char));
+        new_node->string = (char*)newmem(((int)strlen(without)+1) * sizeof(char));
         
         //new_node->string = calloc(strlen(s)+1, sizeof(char));
-        strcpy(new_node->string, s);
+        strcpy(new_node->string, without);
         p_on_table = new_node->string;
         new_node->next = str_const_table[pos];
         str_const_table[pos] = new_node;
@@ -264,6 +269,21 @@ int hash_str_c(char * s){
         h = ((h << STR_SHIFT) + s[i]) % STR_CONST_DIM;
     }
     return h;
+}
+
+void free_str_c_table(){
+    int i=0;
+    for (i=0; i<STR_CONST_DIM; i++) {
+        if (str_const_table[i]!=NULL) {
+            Str_c_node * newhead = str_const_table[i]->next;
+            while (newhead) {
+                freemem((char *)str_const_table[i], sizeof(Str_c_node));
+                str_const_table[i] = newhead;
+                newhead = newhead->next;
+            }
+        }
+    }
+    freemem((char*)str_const_table, sizeof(Str_c_node*)*STR_CONST_DIM);
 }
 
 void machine_error(char * msg){

@@ -81,5 +81,6 @@ void push_string(char * s);
 char * insert_str_c(char * s);
 char * get_str_c(char * s);
 int hash_str_c(char * s);
+void free_str_c_table();
 
 #endif
