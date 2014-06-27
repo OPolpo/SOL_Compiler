@@ -7,7 +7,7 @@ int pc;
 void exec(Scode *stat) {
     //print_code_instruction(stat);
     //printf("pc %d, ap %d, op %d, ip %d\n",pc,ap,op,ip);
-
+    
     printf("[%3d] exec %d", pc, stat->op);
     switch (stat->op) {
         case S_PUSH: exec_push(stat->args[0].ival, stat->args[1].ival, pc+1); break;
@@ -421,6 +421,69 @@ void exec_lod(int env_offset, int oid){
     }
 }
 
+int calc_size(char * f){
+    int dim = 0;
+    //char * f = format;
+    //char subformat[strlen(format)];
+    printf("%c\n", f[0]);
+    switch (f[0]) {
+        case 'c':
+        case 'b':
+            f++;
+            return sizeof(char);
+            break;
+        case 'i':
+            f++;
+            return sizeof(int);
+            f++;
+            break;
+        case 'r':
+            f++;
+            return sizeof(float);
+            break;
+        case 's':
+            f++;
+            return sizeof(char *);
+            break;
+        case '(':
+            do{
+                do {
+                    f++;
+                } while( f[0] != ':');
+                printf("%c spero :\n", f[0]);
+                f++;
+                dim += calc_size(f);
+                f++;
+            } while (f[0] == ',');
+            printf("%c spero ,\n", f[0]);
+            return dim;
+            break;
+        case '[':
+            f++;
+            sscanf(f, "%d", &dim);
+            do {
+                f++;
+            } while( f[0] != ',');
+            f++;
+            return dim * calc_size(f);
+        case ')':
+            printf(")");
+            break;
+        case '\0':
+            printf("the end");
+            break;
+        case ']':
+            printf("]");
+            
+            break;
+        case ',':
+            printf("vaffanculo");
+        default:
+            break;
+    }
+    return 0;
+}
+
 void exec_read(int oid, int offset, char * format){
     
 }
@@ -433,7 +496,7 @@ void exec_write(char* format){
     //printf("entro");
     if(top_ostack()->mode == STA){
         //printf("sta\n");
-    //vector
+        //vector
         if(format[0]=='['){
             //printf("vect\n");
             return;
@@ -455,7 +518,7 @@ void exec_write(char* format){
         // printf("\n%c <=====\n",format[1]);
         // printf("\n%c <=====\n",format[2]);
         // printf("\n%s <=====\n",format);
-
+        
         fprintf(stdout,"\nqualcosa deve pur uscire: \'%s\'\n",format_string(format[0], &(top_ostack()->inst)));
     }
 }
@@ -566,20 +629,20 @@ char* format_string(char format, Value * inst){//EMBEDDED
         case 'c':
             // val.cval = pop_char();
             asprintf(&formatted, "%c", inst->cval);
-        break;
+            break;
         case 'i':
             // val.ival = pop_int();
             printf("nel format string vale %d\n", inst->ival);
             asprintf(&formatted, "%d", inst->ival);
-        break;
+            break;
         case 'r':
             // val.rval = pop_real();
             asprintf(&formatted, "%f", inst->rval );
-        break;
+            break;
         case 's':
             // val.sval = pop_string();
             asprintf(&formatted, "%s", inst->sval );
-        break;
+            break;
         case 'b':
             // val.cval =pop_bool();
             asprintf(&formatted, "%s", inst->cval==0 ? "false" : "true");

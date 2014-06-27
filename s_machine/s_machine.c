@@ -14,6 +14,8 @@ long size_allocated = 0, size_deallocated = 0;
 Str_c_node ** str_const_table;
 
 int main(int argc, char* argv[]){
+    printf("%d\n", calc_size("(a:(a:c,b:c),b:i)"));
+    return 0;
 	Scode * stat;
 	start_machine(argv[1]);
 	while((stat = &prog[pc++])->op != S_HALT)
