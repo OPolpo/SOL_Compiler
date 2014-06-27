@@ -90,10 +90,10 @@ HALT			{return (S_HALT);}
 
 {spacing}		;
 {eol}			;
-{intconst}		{return (0);}
-{realconst}		{return (0);}
-{charconst}		{return (0);}
-{stringconst}	{return (0);}
-.				{return (0);}
+{intconst}		{return (0);} //todo
+{realconst}		{return (0);} //todo
+{charconst}		{return (0);} //todo
+{stringconst}	{return (0);} //todo
+.				{return (0);} //todo
 
 %%

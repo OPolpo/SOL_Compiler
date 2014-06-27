@@ -5,6 +5,28 @@
 #include <stdlib.h>
 #include "s_machine.h"
 
+
+typedef enum{
+    T_CHAR,
+    T_INT, 
+    T_REAL,
+    T_STRING,
+    T_BOOL,
+    T_STRUCT,
+    T_VECTOR,
+    T_ATTR
+} Type;
+
+
+typedef struct sformat{
+    Type type;
+    char *id;
+    int size;
+    struct sformat *child;
+    struct sformat *brother;
+}Format, *Pformat;
+
+
 void exec(Scode *stat);
 
 void exec_push(int arg1, int arg2, int pc);
