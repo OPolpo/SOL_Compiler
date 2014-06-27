@@ -31,6 +31,8 @@ void start_machine(char * input) {
         machine_error("ERRORE nel caricamento del file");
     }
     load_scode(input_file);
+    fclose (input_file);
+    
     pc = ap = op = ip = 0;
     astack = (Adescr**)newmem(sizeof(Adescr*)*ASTACK_UNIT);
     asize = ASTACK_UNIT;

@@ -494,7 +494,6 @@ void exec_fread(int oid, int offset, char * format){
 }
 
 int basic_write(char* format, FILE * stream, char * addr){
-    //printf("entro\n");
     if(addr != NULL){
     //vector
         if(format[0]=='['){
@@ -512,28 +511,28 @@ int basic_write(char* format, FILE * stream, char * addr){
             //printf("nella tipologia atomica il formato è %s\n",format);
             if (format[0] == 'c'){
                 if(top_ostack()->mode==STA)
-                    fprintf(stream, "%c", (char) *addr);
+                    fprintf(stream, "%c", *addr);
                 else
                     fprintf(stream, "%c", ((Value *) addr)->cval);
                 return 1;
             }
             if (format[0] == 'i'){
                 if(top_ostack()->mode==STA)
-                    fprintf(stream, "%d", (int) *addr);
+                    fprintf(stream, "%d", *((int*)addr));
                 else
                     fprintf(stream, "======>\'%d\'<======", ((Value *) addr)->ival);
                 return 4;
             }
             if (format[0] == 'r'){
                 if(top_ostack()->mode==STA)
-                    fprintf(stream, "%f", (float) *addr);
+                    fprintf(stream, "%f", *(float*)addr);
                 else
                     fprintf(stream, "%f", ((Value *) addr)->rval);
                 return 4;
             }
             if (format[0] == 's'){
                 if(top_ostack()->mode==STA)
-                    fprintf(stream, "======>\'%s\'<======",  (char*) *addr);
+                    fprintf(stream, "======>\'%s\'<======",  (char**)addr);
                 else
                     fprintf(stream, "======>\'%s\'<======", ((Value *) addr)->sval);
                 return 8;
@@ -559,12 +558,17 @@ void exec_write(char* format){
 }
 
 void exec_fwrite(char* format){
-    // FILE * fp;
+    FILE * fp;
     char* file_name = pop_string();
-    // fp = fopen(file_name, "w");
+    fp = fopen(file_name, "w");
+    if(!fp){
+        char* msg;
+        asprintf(&msg,"Can't write %s", file_name);
+        machine_error(msg);
+    }
     // basic_write(format, fp, NULL);
     basic_write(format, stdout, NULL);
-    
+    fclose (fp);
 }
 
 void exec_rd(char* format){
