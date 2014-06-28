@@ -1,35 +1,43 @@
 CC = cc -g $(CFLAGS)
 CFLAGS = -Wall -Wextra
-COMP_PATH = s_compiler
-COMP_PATH_LEXER = s_compiler
-COMP_PATH_PARSER = s_compiler
+C_PATH = s_compiler
+C_PATH_LEX = s_compiler
+C_PATH_PRSR = s_compiler
 
-MACH_PATH = s_machine
-MACH_PATH_LEXER = s_machine
-MACH_PATH_PARSER = s_machine
+M_PATH = s_machine
+M_PATH_LEX = s_machine
+M_PATH_PRSR = s_machine
+M_PATH_F_LEX = s_machine
+M_PATH_F_PRSR = s_machine
 
-COMP_OBJ = $(COMP_PATH_LEXER)/lex.o $(COMP_PATH_PARSER)/parser.o $(COMP_PATH)/tree.o $(COMP_PATH)/hash_table.o $(COMP_PATH)/symbol_table.o $(COMP_PATH)/semantic.o $(COMP_PATH)/code_gen.o
-MACH_OBJ = $(MACH_PATH_LEXER)/lex.o $(MACH_PATH_PARSER)/parser.o $(MACH_PATH)/parser.o $(MACH_PATH)/s_exec.o $(MACH_PATH)/s_machine.o $(COMP_PATH)/code_gen.o
+C_OBJ = $(C_PATH_LEX)/lex.o $(C_PATH_PRSR)/parser.o $(C_PATH)/tree.o $(C_PATH)/hash_table.o $(C_PATH)/symbol_table.o $(C_PATH)/semantic.o $(C_PATH)/code_gen.o
+M_OBJ = $(M_PATH_LEX)/lex.o $(M_PATH_PRSR)/parser.o $(M_PATH)/parser.o $(M_PATH)/s_exec.o $(M_PATH)/s_machine.o $(C_PATH)/code_gen.o $(M_PATH_F_LEX)/format_lexer.o $(M_PATH_F_PRSR)/format_parser.o
 
-all:
+all: compiler machine
 
-machine: $(MACH_OBJ)
+machine: $(M_OBJ)
 	$(CC) -o $@ $^
 
-compiler: $(COMP_OBJ)
+compiler: $(C_OBJ)
 	$(CC) -o $@ $^
 
 %.o: %.c
 	$(CC) -o $*.o -c $*.c
 
-$(MACH_PATH_LEXER)/lex.c: $(MACH_PATH_LEXER)/lexer.lex
-	flex -o $(MACH_PATH_LEXER)/lex.c $(MACH_PATH_LEXER)/lexer.lex
+$(M_PATH_LEX)/lex.c: $(M_PATH_LEX)/lexer.lex
+	flex -o $(M_PATH_LEX)/lex.c $(M_PATH_LEX)/lexer.lex
 
-$(COMP_PATH_LEXER)/lex.c: $(COMP_PATH_LEXER)/lexer.lex $(COMP_PATH_PARSER)/parser.h
-	flex -o $(COMP_PATH_LEXER)/lex.c $(COMP_PATH_LEXER)/lexer.lex
+$(M_PATH_F_LEX)/lex.c: $(M_PATH_F_LEX)/format_lexer.lex $(M_PATH_F_PRSR)/parser.h
+	flex -o $(M_PATH_F_LEX)/format_lexer.c $(M_PATH_F_LEX)/format_lexer.lex
 
-$(COMP_PATH_PARSER)/parser.h: $(COMP_PATH_PARSER)/parser.y
-	bison -d -o $(COMP_PATH_PARSER)/parser.c $(COMP_PATH_PARSER)/parser.y
+$(M_PATH_F_PRSR)/parser.h: $(M_PATH_F_PRSR)/format_parser.y
+	bison -d -o $(M_PATH_F_PRSR)/format_parser.c $(M_PATH_F_PRSR)/format_parser.y
+
+$(C_PATH_LEX)/lex.c: $(C_PATH_LEX)/lexer.lex $(C_PATH_PRSR)/parser.h
+	flex -o $(C_PATH_LEX)/lex.c $(C_PATH_LEX)/lexer.lex
+
+$(C_PATH_PRSR)/parser.h: $(C_PATH_PRSR)/parser.y
+	bison -d -o $(C_PATH_PRSR)/parser.c $(C_PATH_PRSR)/parser.y
 
 clean: 
-	rm -f $(COMP_PATH)/lex.c $(COMP_PATH)/*.o $(COMP_PATH)/parser.h $(MACH_PATH)/lex.c $(MACH_PATH)/*.o machine compiler
+	rm -f $(C_PATH)/lex.c $(C_PATH)/*.o $(C_PATH)/parser.h $(M_PATH)/lex.c $(M_PATH)/*.o machine compiler
