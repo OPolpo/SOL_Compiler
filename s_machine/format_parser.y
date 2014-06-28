@@ -31,7 +31,9 @@ Pformat sizenode(){
 %}
 %token FORMAT_LEX_STRING FORMAT_LEX_INT FORMAT_LEX_CHAR FORMAT_LEX_ERROR
 %%
-    
+
+format_string : '"' format '"' {$$ = $2;}
+
 format : simple_format {last_parsed_format = $$;} | complex_format {last_parsed_format = $$;};
 
 simple_format : format_LEXER_CHAR {
