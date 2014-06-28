@@ -563,17 +563,18 @@ void exec_write(char* format){
 }
 
 void exec_fwrite(char* format){
-    // FILE * fp;
-    // char* file_name = pop_string();
-    // fp = fopen(file_name, "w");
-    // if(!fp){
-    //     char* msg;
-    //     asprintf(&msg,"Can't write %s", file_name);
-    //     machine_error(msg);
-    // }
+    FILE * fp;
+    char* file_name = pop_string();
+    fp = fopen(file_name, "w");
+    if(!fp){
+        char* msg;
+        asprintf(&msg,"Can't write %s", file_name);
+        machine_error(msg);
+    }
+    
     // // basic_write(format, fp, NULL);
     // basic_write(format, stdout, NULL);
-    // fclose (fp);
+    fclose (fp);
 }
 
 void exec_rd(char* format){
