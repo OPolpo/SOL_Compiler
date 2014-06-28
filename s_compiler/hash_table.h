@@ -5,6 +5,7 @@
 #define SHIFT 4
 #include <string.h>
 #include "def.h"
+#include "schema.h"
 
 typedef enum{
     CLTYPE,
@@ -28,13 +29,6 @@ typedef struct saux_fun_param{
     Formal * formal;
 } Aux_fun_param, *Paux_fun_param;
 
-typedef struct sschema{
-    int type; //CHAR, INT, REAL, STRING, BOOL, STRUCT, VECTOR (ATTR no more)
-    char * id; //field name
-    int size; //array size (type = VECTOR)
-    struct sschema *p1, *p2;
-} Schema, * Pschema;
-
 typedef struct shash_node{
     char * name;
     int oid; 
@@ -52,12 +46,9 @@ Phash_node getNode(char * id, Phash_node * table);
 Phash_node find_visible_node(char * id, Phash_node func_node, int * offset);
 
 Phash_node * new_hash_table();
+
 void print_func_node(Phash_node node);
-
 void print_generic_node(Phash_node node);
-
-void printSchema(Pschema root, char* father_indent);
-void print_sch(Pschema root);
 void print_hash_content(Phash_node * table);
 
 #endif
