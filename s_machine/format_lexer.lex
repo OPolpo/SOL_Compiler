@@ -12,7 +12,7 @@ spacing     ([ \t])+
 digit       [0-9]
 letter      [A-Za-z]
 string      {letter}+
-sugar       [\[\]\(\)\:\,]
+sugar       [\[\]\(\)\:\,\"]
 %%
 {spacing}   ;
 {digit}+    {lexval.ival = atoi(yytext); return(FORMAT_LEX_INT);}
