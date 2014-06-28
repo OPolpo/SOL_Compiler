@@ -4,7 +4,7 @@
 #include "format_parser.h"
 #include "s_machine.h"
 
-Arg lexval;
+Value lexval;
 Str_c_node **  format_stringtable;
 %}
 %option noyywrap
