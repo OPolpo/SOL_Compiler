@@ -27,7 +27,7 @@ compiler: $(C_OBJ)
 $(M_PATH_LEX)/lex.c: $(M_PATH_LEX)/lexer.lex
 	flex -o $(M_PATH_LEX)/lex.c $(M_PATH_LEX)/lexer.lex
 
-$(M_PATH_F_LEX)/lex.c: $(M_PATH_F_LEX)/format_lexer.lex $(M_PATH_F_PRSR)/parser.h
+$(M_PATH_F_LEX)/format_lex.c: $(M_PATH_F_LEX)/format_lexer.lex $(M_PATH_F_PRSR)/parser.h
 	flex -o $(M_PATH_F_LEX)/format_lexer.c $(M_PATH_F_LEX)/format_lexer.lex
 
 $(M_PATH_F_PRSR)/parser.h: $(M_PATH_F_PRSR)/format_parser.y
