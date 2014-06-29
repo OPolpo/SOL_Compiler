@@ -28,7 +28,7 @@ $(M_PATH_LEX)/lex.c: $(M_PATH_LEX)/lexer.lex
 	flex -o $(M_PATH_LEX)/lex.c $(M_PATH_LEX)/lexer.lex
 
 $(M_PATH_F_LEX)/format_lex.c: $(M_PATH_F_LEX)/format_lexer.lex $(M_PATH_F_PRSR)/format_parser.h
-	flex -o $(M_PATH_F_LEX)/format_lexer.c $(M_PATH_F_LEX)/format_lexer.lex
+	flex -o $(M_PATH_F_LEX)/format_lexer.c $(M_PATH_F_LEX)/format_lexer.lex -Pformat
 
 $(M_PATH_F_PRSR)/format_parser.h: $(M_PATH_F_PRSR)/format_parser.y
 	bison -d -o $(M_PATH_F_PRSR)/format_parser.c $(M_PATH_F_PRSR)/format_parser.y
