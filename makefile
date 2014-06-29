@@ -40,4 +40,4 @@ $(C_PATH_PRSR)/parser.h: $(C_PATH_PRSR)/parser.y
 	bison -d -o $(C_PATH_PRSR)/parser.c $(C_PATH_PRSR)/parser.y
 
 clean: 
-	rm -f $(C_PATH)/lex.c $(C_PATH)/*.o $(C_PATH)/parser.h $(M_PATH)/lex.c $(M_PATH)/*.o machine compiler
+	rm -f $(C_PATH)/lex.c $(C_PATH)/*.o $(C_PATH)/parser.h $(M_PATH)/lex.c $(M_PATH)/*.o $(M_PATH_F_PRSR)/format_parser.h $(M_PATH_F_PRSR)/format_lexer.c machine compiler
