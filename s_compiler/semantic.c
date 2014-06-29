@@ -124,7 +124,7 @@ int sem_decl(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int
     int ok = sem_domain(domain_node, f_loc_env, stype, code);
     sem_id_list(root->child, num_objects);
     int i;
-    if((*stype)->type==STRUCT || (*stype)->type==VECTOR)
+    if((*stype)->type==SCSTRUCT || (*stype)->type==SCVECTOR)
         for(i = 0; i< *num_objects; i++)
             *code = appcode(*code, makecode1(S_NEWS,compute_size(*stype)));
     else
@@ -183,10 +183,26 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 #if VERBOSE
             printf("@@ T_ATOMIC_DOMAIN\n");
 #endif
-            (*stype)->type = dom_node->value.ival;
+            switch (dom_node->value.ival) {
+                case INT:
+                    (*stype)->type = SCINT;
+                    break;
+                case REAL:
+                    (*stype)->type = SCREAL;
+                    break;
+                case STRING:
+                    (*stype)->type = SCSTRING;
+                    break;
+                case CHAR:
+                    (*stype)->type = SCCHAR;
+                    break;
+                case BOOL:
+                    (*stype)->type = SCBOOL;
+                    break;
+                default:
+                    break;
+            }
             break;
-            
-            
         default:
             break;
     }
@@ -198,7 +214,7 @@ int sem_struct_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
 #endif
     int ok =1;
     Pnode decl = root->child;
-    (*stype)->type = STRUCT;
+    (*stype)->type = SCSTRUCT;
     //(*stype)->p1 = new_schema_node(-1);
     
     
@@ -230,7 +246,7 @@ int sem_vector_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
     printf("@@ in sem_vector_domain\n");
 #endif
     int ok =1;
-    (*stype)->type = VECTOR;
+    (*stype)->type = SCVECTOR;
     (*stype)->size = root->child->value.ival;
     (*stype)->p1 = new_schema_node(-1);
     ok = ok && sem_domain(root->child->brother, f_loc_env, &(*stype)->p1, code);
@@ -516,7 +532,7 @@ int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     //printf("\n## lhs_type\n");
     printSchema(lhs_type, " ");
     
-    ok_field = ok_field && (lhs_type->type == STRUCT);
+    ok_field = ok_field && (lhs_type->type == SCSTRUCT);
     if (!ok_field) {
         sem_error(root, "Type error, cannot use . on a lhs that is not a STRUCT\n");//to_do
     }
@@ -534,7 +550,7 @@ int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
             *stype = lhs_attr;
             found = 1;
             if (!is_addr && first_field) {
-                if (lhs_attr->type == VECTOR || lhs_attr->type == STRUCT) {
+                if (lhs_attr->type == SCVECTOR || lhs_attr->type == SCSTRUCT) {
                     end_code = makecode1(S_SIL, compute_size(lhs_attr));
                 }else{
                     end_code = makecode1(S_EIL, compute_size(lhs_attr));
@@ -573,21 +589,21 @@ int sem_indexing(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     
     ok_index = sem_left_hand_side(lhs_node, f_loc_env, &lhs_type, lhs_class, code, is_addr, is_s);
     
-    ok_index = ok_index && (lhs_type->type == VECTOR);
+    ok_index = ok_index && (lhs_type->type == SCVECTOR);
     if (!ok_index) {
         sem_error(root, "Semantic error, cannot index a non-VECTOR\n");//to_do
     }
     
     Pschema index_type = new_schema_node(-1);
     ok_index = ok_index && sem_expr(index_node, f_loc_env, &index_type, code, is_addr);
-    ok_index = ok_index && (index_type->type == INT);
+    ok_index = ok_index && (index_type->type == SCINT);
     if (!ok_index) {
         sem_error(root, "Semantic error, index must be of type INT\n");//to_do
     }
     
     *code = appcode(*code, makecode1(S_IXA, compute_size(lhs_type->p1)));
     if (!is_addr && first_index) {
-        if (lhs_type->p1->type == VECTOR || lhs_type->p1->type == STRUCT) {
+        if (lhs_type->p1->type == SCVECTOR || lhs_type->p1->type == SCSTRUCT) {
             *code = appcode(*code, makecode1(S_SIL, compute_size(lhs_type->p1)));
         }else{
             *code = appcode(*code, makecode1(S_EIL, compute_size(lhs_type->p1)));
@@ -611,7 +627,7 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
 	Pschema main_expr_type = new_schema_node(-1);;
 	int main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, code, 0);
     
-	if (main_expr_type->type!=BOOL){
+	if (main_expr_type->type!=SCBOOL){
 		sem_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
 	}
     
@@ -675,7 +691,7 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
         Pschema main_expr_type = new_schema_node(-1);;
         main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, ptemp_code, 0);
         
-        if (main_expr_type->type!=BOOL){
+        if (main_expr_type->type!=SCBOOL){
             sem_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
         }
         int return_stat = 0;
@@ -716,7 +732,7 @@ int sem_while_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Code expr_code = makecode(S_NOOP);
     int ok = sem_expr(expr_node, f_loc_env, &expr_schema, &expr_code, 0);
     
-    ok = ok && (expr_schema->type == BOOL);
+    ok = ok && (expr_schema->type == SCBOOL);
     if(!ok){
         sem_error(root, "Type Error, expected BOOL in WHILE clause\n");
     }
@@ -756,7 +772,7 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
         sprintf(error_msg, "Variable ID \"%s\" in FOR-STAT must be a VAR or a PAR\n",id_node->value.sval);
         sem_error(id_node, error_msg);
     }
-    ok = ok && (id_hash_node->schema->type == INT);
+    ok = ok && (id_hash_node->schema->type == SCINT);
     if (!ok) {
         sprintf(error_msg, "Variable ID \"%s\" in FOR-STAT must be of type INT\n",id_node->value.sval);
         sem_error(id_node, error_msg);
@@ -765,14 +781,14 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Pschema expr1_schema = new_schema_node(-1);
     Code expr1_code = makecode(S_NOOP);
     ok = ok && sem_expr(expr1_node, f_loc_env, &expr1_schema, &expr1_code, 0);
-    ok = ok && (expr1_schema->type == INT);
+    ok = ok && (expr1_schema->type == SCINT);
     if (!ok) {
         sem_error(expr1_node, "Type error: expected INT in FOR-STAT\n");
     }
     Pschema expr2_schema = new_schema_node(-1);
     Code expr2_code = makecode(S_NOOP);
     ok = ok && sem_expr(expr2_node, f_loc_env, &expr2_schema, &expr2_code, 0);
-    ok = ok && (expr2_schema->type == INT);
+    ok = ok && (expr2_schema->type == SCINT);
     if (!ok) {
         sem_error(expr2_node, "Type error: expected INT in FOR-STAT\n");
     }
@@ -790,7 +806,7 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Phash_node end_condition_expr_value = new_id_node(id_aux, CLCONST, f_loc_env->aux->last_oid); //todo
     f_loc_env->aux->last_oid++;
     f_loc_env->aux->num_obj++;
-    end_condition_expr_value->schema = new_schema_node(INT);
+    end_condition_expr_value->schema = new_schema_node(SCINT);
     insert(end_condition_expr_value, f_loc_env->aux->locenv);
     
     *code = concode(*code,
@@ -839,7 +855,7 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Pschema expr_schema = new_schema_node(-1);
     Code expr_code = makecode(S_NOOP);
     ok = ok && sem_expr(expr_node, f_loc_env, &expr_schema, &expr_code, 0);
-    ok = ok && (expr_schema->type == VECTOR);
+    ok = ok && (expr_schema->type == SCVECTOR);
     if (!ok) {
         sem_error(expr_node, "Type error: expr must be a VECTOR in FOR-EACH STAT\n");
     }
@@ -856,18 +872,18 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     asprintf(&id_aux_1, "0_AUX_%d", f_loc_env->aux->last_oid);
     Phash_node expr_value = new_id_node(id_aux_1, CLCONST, f_loc_env->aux->last_oid);//todo
     f_loc_env->aux->last_oid++;
-    expr_value->schema = new_schema_node(INT);
+    expr_value->schema = new_schema_node(SCINT);
     insert(expr_value, f_loc_env->aux->locenv);
     
     char * id_aux_2;
     asprintf(&id_aux_2, "0_AUX_%d", f_loc_env->aux->last_oid);
     Phash_node index = new_id_node(id_aux_2, CLCONST, f_loc_env->aux->last_oid);//todo
     f_loc_env->aux->last_oid++;
-    index->schema = new_schema_node(INT);
+    index->schema = new_schema_node(SCINT);
     insert(index, f_loc_env->aux->locenv);
     
     Code e_s_il_code;
-    if((expr_schema->p1)->type == STRUCT || (expr_schema->p1)->type == VECTOR)
+    if((expr_schema->p1)->type == SCSTRUCT || (expr_schema->p1)->type == SCVECTOR)
         e_s_il_code = makecode1(S_SIL, compute_size(expr_schema->p1));
     else
         e_s_il_code = makecode1(S_EIL, compute_size(expr_schema->p1));
@@ -954,7 +970,7 @@ int sem_specifier_opt(Pnode root, Phash_node f_loc_env, Code * code, int * is_nu
     int spec_ok = *is_null;
     if (!spec_ok) {
         ok = sem_expr(specifier, f_loc_env, &type_spec, code, 0);
-        spec_ok = (type_spec->type == STRING);
+        spec_ok = (type_spec->type == SCSTRING);
     }
     
     if (!spec_ok) {
@@ -991,7 +1007,7 @@ int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 	Pschema expr2_type = new_schema_node(-1);
 	
 	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, code, 0);
-	if(expr1_type->type != INT && expr1_type->type != REAL){
+	if(expr1_type->type != SCINT && expr1_type->type != SCREAL){
         
         printf("\n## expr1 math_expr\n");
         printSchema(expr1_type," ");
@@ -1010,7 +1026,7 @@ int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 	}
 	(*stype)->type = expr1_type->type;
     
-    if (expr1_type->type == INT) {
+    if (expr1_type->type == SCINT) {
         switch (root->qualifier) {
             case '+':
                 *code = appcode(*code, makecode(S_IPLUS));
@@ -1063,14 +1079,14 @@ int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * cod
     Code expr1_code = makecode(S_NOOP);
     Code expr2_code = makecode(S_NOOP);
 	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, &expr1_code, 0);
-	if(expr1_type->type != BOOL)
+	if(expr1_type->type != SCBOOL)
 		sem_error(expr1, "Type error, expected BOOL in LOGIC-EXPR\n");
     
 	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, &expr2_code, 0);
-	if(expr2_type->type != BOOL)
+	if(expr2_type->type != SCBOOL)
 		sem_error(expr2, "Type error, expected BOOL in LOGIC-EXPR\n");
 	
-    (*stype)->type = BOOL;
+    (*stype)->type = SCBOOL;
     
     if (root->qualifier == AND) {
         *code = concode(*code,
@@ -1117,7 +1133,7 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 		case GE:
 		case '<':
 		case LE:
-            type_ok = (expr1_type->type == INT || expr1_type->type == CHAR || expr1_type->type == REAL || expr1_type->type == STRING);
+            type_ok = (expr1_type->type == SCINT || expr1_type->type == SCCHAR || expr1_type->type == SCREAL || expr1_type->type == SCSTRING);
             if (!type_ok) {
                 sem_error(root, "Type error in relational expression, expected INT, CHAR, REAL or STRING\n");//to_do
             }
@@ -1126,7 +1142,7 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
                 sem_error(root, "Type mismatch in relational expression\n");//to_do
 			break;
 		case IN:
-            if (expr2_type->type == VECTOR) {
+            if (expr2_type->type == SCVECTOR) {
                 type_ok = are_compatible(expr1_type, expr2_type->p1 );
             }
             if(!type_ok)
@@ -1137,7 +1153,7 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 			sem_error(root, "Some weird qualification in relational expression\n");
 	}
     
-	(*stype)->type = BOOL;
+	(*stype)->type = SCBOOL;
     
     switch (root->qualifier) {
         case EQ:
@@ -1151,68 +1167,76 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
             break;
         case '<':
             switch(expr1_type->type){
-                case CHAR:
+                case SCCHAR:
                     *code = appcode(*code, makecode(S_CLT));
                     break;
-                case INT:
+                case SCINT:
                     *code = appcode(*code, makecode(S_ILT));
                     break;
-                case REAL:
+                case SCREAL:
                     *code = appcode(*code, makecode(S_RLT));
                     break;
-                case STRING:
+                case SCSTRING:
                     *code = appcode(*code, makecode(S_SLT));
                     break;
+                default:
+                    sem_error(root, "Some weird qualification in < expression\n");
             }
             break;
         case '>':
             switch(expr1_type->type){
-                case CHAR:
+                case SCCHAR:
                     *code = appcode(*code, makecode(S_CGT));
                     break;
-                case INT:
+                case SCINT:
                     *code = appcode(*code, makecode(S_IGT));
                     break;
-                case REAL:
+                case SCREAL:
                     *code = appcode(*code, makecode(S_RGT));
                     break;
-                case STRING:
+                case SCSTRING:
                     *code = appcode(*code, makecode(S_SGT));
                     break;
+                default:
+                    sem_error(root, "Some weird qualification in > expression\n");
             }
             break;
         case LE:
             switch(expr1_type->type){
-                case CHAR:
+                case SCCHAR:
                     *code = appcode(*code, makecode(S_CLE));
                     break;
-                case INT:
+                case SCINT:
                     *code = appcode(*code, makecode(S_ILE));
                     break;
-                case REAL:
+                case SCREAL:
                     *code = appcode(*code, makecode(S_RLE));
                     break;
-                case STRING:
+                case SCSTRING:
                     *code = appcode(*code, makecode(S_SLE));
                     break;
+                default:
+                    sem_error(root, "Some weird qualification in <= expression\n");
             }
             break;
             
             break;
         case GE:
             switch(expr1_type->type){
-                case CHAR:
+                case SCCHAR:
                     *code = appcode(*code, makecode(S_CGE));
                     break;
-                case INT:
+                case SCINT:
                     *code = appcode(*code, makecode(S_IGE));
                     break;
-                case REAL:
+                case SCREAL:
                     *code = appcode(*code, makecode(S_RGE));
                     break;
-                case STRING:
+                case SCSTRING:
                     *code = appcode(*code, makecode(S_SGE));
                     break;
+                default:
+                    sem_error(root, "Some weird qualification in >= expression\n");
             }
             break;
         default:
@@ -1230,26 +1254,26 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 	switch(root->qualifier){
 		case '-':
             print_sch(expr_type);
-			if(expr_type->type != INT && expr_type->type != REAL){
+			if(expr_type->type != SCINT && expr_type->type != SCREAL){
 				//sprintf(error_msg,"Type error, expected INT | REAL instead of %s \n", tabsem_types[expr_type]);//
 				sprintf(error_msg,"Type error, expected INT | REAL\n");
 				sem_error(root->child, error_msg);
 			}
 			(*stype)->type = expr_type->type;
             
-            if (expr_type->type == INT) {
+            if (expr_type->type == SCINT) {
                 *code = appcode(*code, makecode(S_IUMI));
             }else{ //expr_type->type == REAL
                 *code = appcode(*code, makecode(S_RUMI));
             }
             break;
 		case NOT:
-			if(expr_type->type != BOOL){
+			if(expr_type->type != SCBOOL){
 				//sprintf(error_msg,"Type error, expected BOOL instead of %s \n", tabsem_types[expr_type]);//
 				sprintf(error_msg,"Type error, expected BOOL in NEG-EXPR\n");
 				sem_error(root->child, error_msg);
 			}
-			(*stype)->type = BOOL;
+			(*stype)->type = SCBOOL;
             
             *code = appcode(*code, makecode(S_NEG));
             break;
@@ -1306,7 +1330,7 @@ int sem_instance_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
 	Pnode current_node;
 	switch(root->qualifier){
 		case STRUCT:
-			(*stype)->type = STRUCT;
+			(*stype)->type = SCSTRUCT;
 			
 			current_node = root->child; //first element of struct
 			
@@ -1329,7 +1353,7 @@ int sem_instance_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
             
             break;
 		case VECTOR:
-			(*stype)->type = VECTOR;
+			(*stype)->type = SCVECTOR;
 			
 			current_node = root->child;
 			
@@ -1417,7 +1441,7 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 	Pschema main_expr_type = new_schema_node(-1);
 	int main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, code, 0);
     
-	if (main_expr_type->type!=BOOL){
+	if (main_expr_type->type!=SCBOOL){
 		sem_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
 	}
     
@@ -1490,7 +1514,7 @@ int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype, C
         Pschema main_expr_type = new_schema_node(-1);
         main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, ptemp_code, 0);
         
-        if (main_expr_type->type!=BOOL){
+        if (main_expr_type->type!=SCBOOL){
             sem_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
         }
         
@@ -1547,17 +1571,17 @@ int sem_built_in_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
     
 	switch(root->qualifier){
 		case TOINT:
-			if(built_in_call_type->type != REAL){
+			if(built_in_call_type->type != SCREAL){
 				sem_error(root->child, "Type error, expected REAL\n");
 			}
-			(*stype)->type = INT;
+			(*stype)->type = SCINT;
             *code = appcode(*code, makecode(S_TOINT));
             break;
 		case TOREAL:
-			if(built_in_call_type->type != INT){
+			if(built_in_call_type->type != SCINT){
 				sem_error(root->child, "Type error, expected INT\n");
 			}
-			(*stype)->type = REAL;
+			(*stype)->type = SCREAL;
             *code = appcode(*code, makecode(S_TOREAL));
             break;
 	}
@@ -1577,24 +1601,24 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int
 	switch(root->type){
 		case T_CHARCONST:
             printf("expr is char\n");
-			(*stype)->type = CHAR;
+			(*stype)->type = SCCHAR;
             *code = appcode(*code, make_ldc(root->value.cval));
 			break;
 		case T_INTCONST:
-			(*stype)->type = INT;
+			(*stype)->type = SCINT;
             *code =appcode(*code, make_ldi(root->value.ival));
 			break;
 		case T_REALCONST:
-			(*stype)->type = REAL;
+			(*stype)->type = SCREAL;
             *code =appcode(*code, make_ldr(root->value.rval));
 			break;
 		case T_STRCONST:
-			(*stype)->type = STRING;
+			(*stype)->type = SCSTRING;
             *code =appcode(*code, make_lds(root->value.sval));
 			break;
 		case T_BOOLCONST:
             printf("expr is bool\n");
-			(*stype)->type = BOOL;
+			(*stype)->type = SCBOOL;
             *code = appcode(*code, make_ldc(root->value.cval));
 			break;
 		case T_NONTERMINAL:

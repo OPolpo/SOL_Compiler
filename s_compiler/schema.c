@@ -24,26 +24,26 @@ void printSchema(Pschema root, char* father_indent){
     
     //--PRINTING SINGLE NODE
     switch(root->type){
-        case VECTOR:
+        case SCVECTOR:
             printf("%s [ %s ] [ %d ]", "VECTOR", root->id, root->size);
             break;
-        case STRUCT:
+        case SCSTRUCT:
             printf("%s [ %s ] [ - ]", "STRUCT", root->id);
             break;
-        case CHAR:
+        case SCCHAR:
             printf("%s [ %s ] [ - ]", "CHAR", root->id);
             break;
-        case INT:
+        case SCINT:
             //printf("\n## %d\n",INT);
             printf("%s [ %s ] [ - ]", "INT", root->id);
             break;
-        case REAL:
+        case SCREAL:
             printf("%s [ %s ] [ - ]", "REAL", root->id);
             break;
-        case STRING:
+        case SCSTRING:
             printf("%s [ %s ] [ - ]", "STRING", root->id);
             break;
-        case BOOL:
+        case SCBOOL:
             printf("%s [ %s ] [ - ]", "BOOL", root->id);
             break;
             // case ATTR:
@@ -81,23 +81,23 @@ Pschema new_schema_node(int _type){
 
 int compute_size(Pschema schema){
     switch(schema->type){
-        case CHAR:
-        case BOOL:
+        case SCCHAR:
+        case SCBOOL:
             return sizeof(char);
             break;
-        case INT:
+        case SCINT:
             return sizeof(int);
             break;
-        case REAL:
+        case SCREAL:
             return sizeof(float);
             break;
-        case STRING:
+        case SCSTRING:
             return sizeof(char*);
             break;
-        case VECTOR:
+        case SCVECTOR:
             return (schema->size)*compute_size(schema->p1);
             break;
-        case STRUCT:{
+        case SCSTRUCT:{
             Pschema current = schema->p1;
             int dimension = 0;
             while(current){
@@ -123,15 +123,15 @@ int are_compatible(Pschema a, Pschema b){
         return 0;
     }
     switch (a->type) {//CHAR, INT, REAL, STRING, BOOL, STRUCT, VECTOR
-        case CHAR:
-        case INT:
-        case REAL:
-        case BOOL:
-        case STRING:
+        case SCCHAR:
+        case SCINT:
+        case SCREAL:
+        case SCBOOL:
+        case SCSTRING:
             return (a->type == b->type);
             break;
-        case STRUCT:
-            if (b->type == STRUCT) {
+        case SCSTRUCT:
+            if (b->type == SCSTRUCT) {
                 Pschema a_child = a->p1;
                 Pschema b_child = b->p1;
                 while (a_child != NULL && b_child != NULL) {
@@ -148,7 +148,7 @@ int are_compatible(Pschema a, Pschema b){
             }
             return 0;
             break;
-        case VECTOR:
+        case SCVECTOR:
             if (a->size != b->size) {
                 return 0; //FALSE
             }
@@ -165,33 +165,33 @@ char * schema2format(Pschema schema){
     char * str, * tmp_str, * tmp2_str; //mallocami
     Pschema tmp_schema;
     switch (schema->type) {
-        case CHAR:
+        case SCCHAR:
             //str = (char *)malloc(2*sizeof(char));
             str = "c";
             break;
-        case INT:
+        case SCINT:
             //str = (char *)malloc(2*sizeof(char));
             str = "i";
             break;
-        case REAL:
+        case SCREAL:
             //str = (char *)malloc(2*sizeof(char));
             str = "r";
             break;
-        case STRING:
+        case SCSTRING:
             //str = (char *)malloc(2*sizeof(char));
             str = "s";
             break;
-        case BOOL:
+        case SCBOOL:
             //str = (char *)malloc(2*sizeof(char));
             str = "b";
             break;
-        case VECTOR:
+        case SCVECTOR:
             tmp_str = schema2format(schema->p1);
             //i=log10(schema->size);
             //str = (char *)calloc((strlen(tmp_str)+i+1+3+1),sizeof(char));
             asprintf(&str, "[%d,%s]", schema->size, tmp_str);
             break;
-        case STRUCT:
+        case SCSTRUCT:
             tmp_schema = schema->p1;
             tmp_str = schema2format(tmp_schema);
             str = calloc((strlen(tmp_schema->id)+strlen(tmp_str)+5),sizeof(char));

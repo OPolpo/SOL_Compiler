@@ -4,8 +4,18 @@
 #include <string.h>
 #include "def.h"
 
+typedef enum{
+    SCCHAR,
+    SCINT,
+    SCREAL,
+    SCSTRING,
+    SCBOOL,
+    SCSTRUCT,
+    SCVECTOR
+} Schema_type;
+
 typedef struct sschema{
-    int type; //CHAR, INT, REAL, STRING, BOOL, STRUCT, VECTOR (ATTR no more)
+    Schema_type type; //CHAR, INT, REAL, STRING, BOOL, STRUCT, VECTOR (ATTR no more)
     char * id; //field name
     int size; //array size (type = VECTOR)
     struct sschema *p1, *p2;
