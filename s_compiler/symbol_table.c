@@ -166,7 +166,7 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
         case T_NONTERMINAL:
             switch (dom_child->value.ival) {
                 case NSTRUCT_DOMAIN:
-                    node = new_schema_node(STRUCT);
+                    node = new_schema_node(SCSTRUCT);
                     node->id = id;
                     Pnode decl = dom_child->child;
                     
@@ -202,7 +202,7 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                     }
                     break;
                 case NVECTOR_DOMAIN:
-                    node = new_schema_node(VECTOR);
+                    node = new_schema_node(SCVECTOR);
                     node->id = id;
                     node->size = dom_child->child->value.ival;
                     node->p1 = create_schema(dom_child->child->brother, func, NULL);
@@ -227,7 +227,25 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
             break;
         case T_ATOMIC_DOMAIN:
             //CHAR, INT, REAL, STRING, BOOL
-            node = new_schema_node(dom_child->value.ival);
+            switch (dom_child->value.ival) {
+                case CHAR:
+                    node = new_schema_node(SCCHAR);
+                    break;
+                case INT:
+                    node = new_schema_node(SCINT);
+                    break;
+                case REAL:
+                    node = new_schema_node(SCREAL);
+                    break;
+                case STRING:
+                    node = new_schema_node(SCSTRING);
+                    break;
+                case BOOL:
+                    node = new_schema_node(SCBOOL);
+                    break;
+                default:
+                    break;
+            }
             node->id = id;
             break;
         default:

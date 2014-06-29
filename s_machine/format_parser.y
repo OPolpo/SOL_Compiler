@@ -5,7 +5,6 @@
 #include "s_exec.h"
 #include "s_machine.h"
 #include "../s_compiler/schema.h"
-#include "../s_compiler/parser.h"
 
 #define YYSTYPE Pschema
 
@@ -23,13 +22,13 @@ format : atomic_format
         | struct_format
         | vector_format
 
-atomic_format   : 'c' {$$ = new_schema_node(CHAR);}
-                | 'i' {$$ = new_schema_node(INT);}
-                | 'r' {$$ = new_schema_node(REAL);}
-                | 's' {$$ = new_schema_node(STRING);}
-                | 'b' {$$ = new_schema_node(BOOL);}
+atomic_format   : 'c' {$$ = new_schema_node(SCCHAR);}
+                | 'i' {$$ = new_schema_node(SCINT);}
+                | 'r' {$$ = new_schema_node(SCREAL);}
+                | 's' {$$ = new_schema_node(SCSTRING);}
+                | 'b' {$$ = new_schema_node(SCBOOL);}
 
-struct_format : '(' attr attr_list ')' {$$ = new_schema_node(STRUCT);
+struct_format : '(' attr attr_list ')' {$$ = new_schema_node(SCSTRUCT);
                                         $$->p1 = $2;
                                         $2->p2 = $3;}
 
@@ -39,7 +38,7 @@ attr_list : ',' attr attr_list {$$ = $2;
 
 attr : FORMAT_LEX_ID ':' format {$$ = $3; $3->id = $1;}
 
-vector_format : '[' FORMAT_LEX_INT ',' format ']' {$$ = new_schema_node(VECTOR);
+vector_format : '[' FORMAT_LEX_INT ',' format ']' {$$ = new_schema_node(SCVECTOR);
                                                     $$->size = $2;
                                                     $$->p1 = $4;}
 
@@ -51,8 +50,9 @@ int yyerror(){
 }
 
 int parse_format(char *format){
+    int result;
     if((result = yyparse()) == 0)
-        print_sch();
+        print_sch(root);
     
     return 0;
 }
