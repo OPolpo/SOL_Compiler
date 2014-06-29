@@ -11,6 +11,8 @@
 extern Value lexval;
 extern Str_c_node ** format_stringtable;
 Pschema root = NULL;
+char * temp_s;
+int temp_i;
 
 %}
 %token FORMAT_LEX_ID FORMAT_LEX_INT FORMAT_LEX_ERROR
@@ -36,11 +38,9 @@ attr_list : ',' attr attr_list {$$ = $2;
                                 $2->p2 = $3;}
         | /*eps*/ {$$ = NULL;}
 
-attr : FORMAT_LEX_ID ':' format {$$ = $3; $3->id = $1;}
+attr : FORMAT_LEX_ID {temp_s = lexval.sval;} format {$$ = $3; $3->id = temp_s;}
 
-vector_format : '[' FORMAT_LEX_INT ',' format ']' {$$ = new_schema_node(SCVECTOR);
-                                                    $$->size = $2;
-                                                    $$->p1 = $4;}
+vector_format : '[' FORMAT_LEX_INT {$$ = new_schema_node(SCVECTOR); $$->size = lexval.ival;} ',' format ']' {$$ = $3; $$->p1 = $5;}
 
 %%
 
@@ -49,9 +49,10 @@ int yyerror(){
     return -1;
 }
 
-int parse_format(char *format){
+int parse_format(char * format){
     int result;
-    if((result = yyparse()) == 0)
+    format_scan_string(format,strlen(format));
+    if((result = formatparse()) == 0)
         print_sch(root);
     
     return 0;
