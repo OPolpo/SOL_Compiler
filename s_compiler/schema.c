@@ -1,6 +1,6 @@
 //http://en.wikipedia.org/wiki/List_of_prime_numbers
 #include "schema.h"
-#include "parser.h"
+//#include "parser.h"
 
 void printSchema(Pschema root, char* father_indent){
     if(root==NULL) return;

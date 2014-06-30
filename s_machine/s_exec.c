@@ -1,5 +1,6 @@
 #include "s_exec.h"
-#include "parser.h"
+//#include "parser.h"
+#include "format_parser.h"
 
 Scode *prog;
 int pc;
@@ -384,7 +385,7 @@ void exec_lda(int env_offset, int oid){
 void exec_cat(int num, int size){
     char * new_inst = push_istack(size);
     char * start = new_inst+size;
-    int i, temp_size=0;
+    int i;
     for (i=0; i<num; i++) {
         if(top_ostack()->mode == EMB){
             memcpy(start-top_ostack()->size, &(top_ostack()->inst), top_ostack()->size);
@@ -553,13 +554,38 @@ void exec_fread(int oid, int offset, char * format){
 // }
 
 void exec_write(char* format){
-    // printf("\n");
-    // printf("\n");
-    // basic_write(format, stdout, NULL);
-    // printf("\n");
-    // printf("\n");
-
-
+    Pschema sch = parse_format(format);
+    print_sch(sch);
+    
+    switch (sch->type) {
+        case SCCHAR:
+            printf("%c",pop_char());
+            break;
+        case SCINT:
+            printf("%d",pop_int());
+            break;
+        case SCREAL:
+            printf("%f",pop_real());
+            break;
+        case SCSTRING:
+            printf("%s", pop_string());
+            break;
+        case SCBOOL:
+            printf("%s", pop_bool()? "true" : "false");
+            break;
+        case SCVECTOR:
+            printf("[");
+            
+            printf("]");
+            break;
+        case SCSTRUCT:
+            printf("(");
+            
+            printf(")");
+            break;
+        default:
+            break;
+    }
 }
 
 void exec_fwrite(char* format){
