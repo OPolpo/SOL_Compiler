@@ -1,5 +1,5 @@
 --test :P
-func tester():int
+func tester(d:real;):int
 var a,b,c:int;
 	str:string;
 	boo:bool;
