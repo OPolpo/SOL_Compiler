@@ -14,13 +14,8 @@ long size_allocated = 0, size_deallocated = 0;
 Str_c_node ** str_const_table;
 
 int main(int argc, char* argv[]){
-    
-    
 	Scode * stat;
 	start_machine(argv[1]);
-    parse_format("[13,[10,s]]");
-    parse_format("(a:i,ere:c,b:b)");
-    return 0;
     
 	while((stat = &prog[pc++])->op != S_HALT)
         exec(stat);

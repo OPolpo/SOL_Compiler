@@ -5,6 +5,7 @@
 #include "hash_table.h"
 #include "symbol_table.h"
 #include "code_gen.h"
+#include "schema.h"
 
 // typedef enum{
 // 	SEM_CHAR,
