@@ -11,7 +11,7 @@ M_PATH_F_LEX = s_machine
 M_PATH_F_PRSR = s_machine
 
 C_OBJ = $(C_PATH_LEX)/lex.o $(C_PATH_PRSR)/parser.o $(C_PATH)/tree.o $(C_PATH)/hash_table.o $(C_PATH)/symbol_table.o $(C_PATH)/semantic.o $(C_PATH)/code_gen.o $(C_PATH)/schema.o
-M_OBJ = $(M_PATH_LEX)/lex.o $(M_PATH)/s_exec.o $(M_PATH)/s_machine.o $(C_PATH)/code_gen.o $(M_PATH_F_LEX)/format_lexer.o $(M_PATH_F_PRSR)/format_parser.o $(C_PATH)/schema.o
+M_OBJ = $(M_PATH_LEX)/lex.o $(M_PATH_PRSR)/parser.o $(M_PATH)/s_exec.o $(M_PATH)/s_machine.o $(C_PATH)/code_gen.o $(M_PATH_F_LEX)/format_lexer.o $(M_PATH_F_PRSR)/format_parser.o $(C_PATH)/schema.o
 
 all: compiler machine
 
