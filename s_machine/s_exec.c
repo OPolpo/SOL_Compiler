@@ -594,7 +594,6 @@ void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
 
 void exec_write(char* format){
     Pschema sch = parse_format(format);
-    print_sch(sch);
     
     switch (sch->type) {
         case SCCHAR:
@@ -613,7 +612,7 @@ void exec_write(char* format){
             printf("%s", pop_bool()? "true" : "false");
             break;
         case SCVECTOR:
-            print_vector(top_ostack()->inst.sval, sche->size, sch->p1);
+            print_vector(top_ostack()->inst.sval, sch->size, sch->p1);
             break;
         case SCSTRUCT:
             printf("(");
