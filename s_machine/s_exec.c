@@ -1,5 +1,5 @@
 #include "s_exec.h"
-#include "parser.h"
+//#include "parser.h"
 #include "format_parser.h"
 
 Scode *prog;
