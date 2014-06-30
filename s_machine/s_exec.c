@@ -5,6 +5,8 @@
 
 Scode *prog;
 int pc;
+extern Pschema root;
+extern int parse_format();
 
 void exec(Scode *stat) {
     //print_code_instruction(stat);
