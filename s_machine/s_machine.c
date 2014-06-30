@@ -16,9 +16,10 @@ Str_c_node ** str_const_table;
 int main(int argc, char* argv[]){
 	Scode * stat;
 	start_machine(argv[1]);
-    
+    print_str_c_table();
 	while((stat = &prog[pc++])->op != S_HALT)
         exec(stat);
+    print_str_c_table();
     end_machine();
     return 0;
 }
@@ -163,6 +164,7 @@ void move_down_istack(int to_move, int this_much){
     if(ip - to_move - this_much < 0) machine_error("move_down_istack()");
     if (to_move<0 || this_much<0) machine_error("move_down_istack() parameters");
     memmove(&istack[ip-to_move-this_much], &istack[ip-to_move], to_move);
+    ip -= this_much;
 }
 
 int pop_int(){
@@ -228,8 +230,8 @@ char * pop_string(){
 
 void push_string(char * s){ //assuming is "mallocated" and is in the hash table
     Odescr * new_o = push_ostack();
-    new_o->mode = STA;
-    new_o->size = (int)strlen(s)+1;
+    new_o->mode = EMB;
+    new_o->size = sizeof(char*);
     new_o->inst.sval = insert_str_c(s);
 }
 
@@ -237,8 +239,6 @@ void push_string(char * s){ //assuming is "mallocated" and is in the hash table
 //manage str_const_table
 char * insert_str_c(char * s){
     char *without = s;
-    printf("vorrei inserire %s, pulisco e ho: %s\n", s, without);
-    
     
     char * p_on_table = get_str_c(without);
     if (!p_on_table){
@@ -296,6 +296,23 @@ void free_str_c_table(){
     }
     freemem((char*)str_const_table, sizeof(Str_c_node*)*STR_CONST_DIM);
 }
+
+void print_str_c_table(){
+    int i;
+    Str_c_node * temp;
+    printf("-------------Str_c_node\n");
+    for (i=0; i<STR_CONST_DIM; i++){
+        temp = str_const_table[i];
+        while (temp != NULL) {
+            printf("%3d. ", i);
+            printf("[%s]", temp->string);
+            printf("\t%p\n", (temp->string));
+            temp = temp->next;
+        }
+    }
+    printf("-------------Str_c_node end\n");
+}
+
 
 void machine_error(char * msg){
     fprintf(stderr, "Machine error: %s\n", msg);

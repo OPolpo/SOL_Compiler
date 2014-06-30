@@ -5,6 +5,7 @@
 
 Scode *prog;
 int pc;
+extern Pschema root;
 
 void exec(Scode *stat) {
     //print_code_instruction(stat);
@@ -395,6 +396,9 @@ void exec_cat(int num, int size){
             memcpy(start-top_ostack()->size, top_ostack()->inst.sval, top_ostack()->size);
             //temp_size += top_ostack()->size;
             move_down_istack(size, top_ostack()->size); // not sure TODO check
+            start -= top_ostack()->size;
+            new_inst -= top_ostack()->size;
+            //FIND A WAY TO USE IT
         }
         start -= top_ostack()->size;
         pop_ostack();
@@ -556,9 +560,20 @@ void exec_fread(int oid, int offset, char * format){
 
 void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
     int elem_dim = compute_size(elem_type);
+    printf("%d dim\n",elem_dim);
     int i;
     printf("[");
+    //if(top_ostack()->size==40)
+    //    for(i=0;i<10;i++)
+    //        printf("%d",*((int *)elem_addr+i));
+    //else
+    //    printf("non è 40\n");
+            
     for (i=0; i< elem_num; i++){
+        
+        if (i!=0) {
+            printf(", ");
+        }
         switch (elem_type->type) {
             case SCCHAR:
                 printf("%c",*elem_addr);
@@ -570,7 +585,7 @@ void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
                 printf("%f",*(float *)elem_addr);
                 break;
             case SCSTRING:
-                printf("%s",(char*)elem_addr);
+                printf("%s",*(char**)elem_addr);
                 break;
             case SCBOOL:
                 printf("%s", (*(int *)elem_addr)? "true" : "false");
@@ -586,16 +601,15 @@ void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
             default:
                 break;
         }
-        elem_addr += elem_dim;
+        elem_addr += (elem_dim);
     }
-    
     printf("]");
 }
 
 void exec_write(char* format){
-    Pschema sch = parse_format(format);
-    
-    switch (sch->type) {
+    //printf("   ->%d\n",top_ostack()->size);
+    parse_format(format);
+    switch (root->type) {
         case SCCHAR:
             printf("%c",pop_char());
             break;
@@ -612,16 +626,21 @@ void exec_write(char* format){
             printf("%s", pop_bool()? "true" : "false");
             break;
         case SCVECTOR:
-            print_vector(top_ostack()->inst.sval, sch->size, sch->p1);
+            print_vector(top_ostack()->inst.sval, root->size, root->p1);
+            pop_istack(top_ostack()->size);
             break;
         case SCSTRUCT:
             printf("(");
             
             printf(")");
+            pop_istack(top_ostack()->size);
             break;
         default:
             break;
     }
+    printf("\n<-->\n");
+    
+    pop_ostack();
 }
 
 

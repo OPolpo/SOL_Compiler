@@ -13,8 +13,6 @@ extern Str_c_node ** format_stringtable;
 Pschema root = NULL;
 char * temp_s;
 int temp_i;
-Pschema parse_format(char * format);
-
 
 %}
 %token FORMAT_LEX_ID FORMAT_LEX_INT FORMAT_LEX_ERROR
@@ -51,11 +49,11 @@ int yyerror(){
     return -1;
 }
 
-Pschema parse_format(char * format){
+int parse_format(char * format){
     int result;
     format_scan_string(format,strlen(format));
     if((result = formatparse()) == 0)
         print_sch(root);
     
-    return root;
+    return 0;
 }
