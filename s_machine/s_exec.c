@@ -1,6 +1,7 @@
 #include "s_exec.h"
 //#include "parser.h"
 #include "format_parser.h"
+#include "../s_compiler/schema.h"
 
 Scode *prog;
 int pc;
@@ -476,7 +477,7 @@ void exec_lod(int env_offset, int oid){
 //             break;
 //         case ']':
 //             printf("]");
-            
+
 //             break;
 //         case ',':
 //             printf("vaffanculo");
@@ -553,6 +554,44 @@ void exec_fread(int oid, int offset, char * format){
 //     }
 // }
 
+void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
+    int elem_dim = compute_size(elem_type);
+    int i;
+    printf("[");
+    for (i=0; i< elem_num; i++){
+        switch (elem_type->type) {
+            case SCCHAR:
+                printf("%c",*elem_addr);
+                break;
+            case SCINT:
+                printf("%d",*(int *)elem_addr);
+                break;
+            case SCREAL:
+                printf("%f",*(float *)elem_addr);
+                break;
+            case SCSTRING:
+                printf("%s",(char*)elem_addr);
+                break;
+            case SCBOOL:
+                printf("%s", (*(int *)elem_addr)? "true" : "false");
+                break;
+            case SCVECTOR:
+                print_vector(elem_addr, elem_type->size, elem_type->p1);
+                break;
+            case SCSTRUCT:
+                printf("(");
+                
+                printf(")");
+                break;
+            default:
+                break;
+        }
+        elem_addr += elem_dim;
+    }
+    
+    printf("]");
+}
+
 void exec_write(char* format){
     Pschema sch = parse_format(format);
     print_sch(sch);
@@ -574,9 +613,7 @@ void exec_write(char* format){
             printf("%s", pop_bool()? "true" : "false");
             break;
         case SCVECTOR:
-            printf("[");
-            
-            printf("]");
+            print_vector(top_ostack()->inst.sval, sche->size, sch->p1);
             break;
         case SCSTRUCT:
             printf("(");
@@ -587,6 +624,7 @@ void exec_write(char* format){
             break;
     }
 }
+
 
 void exec_fwrite(char* format){
     FILE * fp;
@@ -700,7 +738,7 @@ void exec_news(int size){
 // int write_vect(char * format, FILE* stream, char* addr){
 //     //printf(" ENTRO\n");
 //     int size = 0;
-//     int i = 0; 
+//     int i = 0;
 //     char str_format[strlen(format)]; // todo
 //     sscanf(format,"[%d,%s",&size, str_format);
 //     int element_size = (top_ostack()->size)/size;
