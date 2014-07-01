@@ -52,20 +52,21 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     //f_loc_env->aux->abs_addr = &(code->tail->address);
     //printf("%d %p<=================%s\n",code->tail->address, &(code->tail->address),id->value.sval);
     
-    
+    /*
     int decl_num_objects = 0;
     Code decl_code = makecode(S_NOOP);
 	int decl_list_opt_ok = sem_decl_list_opt(current, new_f_loc_env, &decl_code, &decl_num_objects);
-    *code = appcode(*code, decl_code);
+    *code = appcode(*code, decl_code);*/
 	current = current->brother;
-    Code sto_code = makecode(S_NOOP);
+    
+    /*Code sto_code = makecode(S_NOOP);
     
     Formal * current_formal = new_f_loc_env->aux->formal;
     while(current_formal){
         sto_code = appcode(makecode2(S_STO, 0, (current_formal->formal)->oid), sto_code);
         current_formal = current_formal->next;
     }
-    *code = appcode(*code, sto_code);
+    *code = appcode(*code, sto_code);*/
     
     Pschema domain_schema = new_schema_node(-1);
 	int domain_ok = sem_domain(current, new_f_loc_env, &domain_schema, code);
@@ -97,7 +98,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     cleanup_return(start, code_len, code); //sanitize
     *code = appcode(*code, function_list_code);
     
-    return decl_list_opt_ok && domain_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
+    return /*decl_list_opt_ok &&*/ domain_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
 }
 
 int sem_decl_list_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects){
