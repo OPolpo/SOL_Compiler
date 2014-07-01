@@ -10,7 +10,8 @@ SOL_compiler/*
 SOL_compilers/*
 compiler
 SOL_machine/*
-
+s_machine/formatted_parser.h
+s_machine/formatted_lexer.c
 
 *.out
 
