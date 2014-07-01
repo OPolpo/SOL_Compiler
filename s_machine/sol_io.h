@@ -45,3 +45,5 @@ void print_vector(FILE* stream, char * elem_addr, int elem_num, Pschema elem_typ
 void print_struct(FILE* stream, char * elem_addr, Pschema elem_type);
 
 void basic_wr(FILE* stream, char* format);
+
+void basic_rd(FILE* stream, char* format);

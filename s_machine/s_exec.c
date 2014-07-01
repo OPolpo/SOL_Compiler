@@ -426,7 +426,18 @@ void exec_lod(int env_offset, int oid){
 }
 
 void exec_read(int oid, int offset, char * format){
-    
+    Adescr * a_declaration = top_astack();
+    int i;
+    for (i=env_offset; i>0; i--) {
+        a_declaration = a_declaration->alink; // not sure TODO check
+    }
+    Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
+    char* addr;
+    if(o_to_lod->mode==STA)
+        addr=(o_to_lod->inst.sval);
+    else
+        addr=>&(o_to_lod->inst);
+    basic_rd(stdout, format);
 }
 
 void exec_fread(int oid, int offset, char * format){
@@ -449,7 +460,17 @@ void exec_rd(char* format){
 }
 
 void exec_frd(char* format){
-    
+    FILE * fp = NULL;
+    char* file_name = pop_string();
+    fp = fopen(file_name, "r");
+    if(!fp){
+        char* msg;
+        asprintf(&msg,"Can't read %s", file_name);
+        machine_error(msg);
+    }    
+
+    basic_rd(fp, format);
+    fclose (fp);
 }
 
 void exec_wr(char* format){
@@ -459,7 +480,6 @@ void exec_wr(char* format){
 void exec_fwr(char* format){
     FILE * fp = NULL;
     char* file_name = pop_string();
-    printf("--->%s\n--->ind: %p\n",file_name, file_name);
     fp = fopen(file_name, "a");
     if(!fp){
         char* msg;

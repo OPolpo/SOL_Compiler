@@ -4,6 +4,7 @@
 extern Pschema format_root;
 extern Pformat formatted_root;
 extern int parse_format();
+extern int parse_formatted();
 
 
 void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type){
@@ -108,3 +109,39 @@ void basic_wr(FILE* stream, char* format){
     }
     destroy_schema(format_root);    
 }
+
+void basic_rd(FILE* stream, char* format, char* dest_addr){
+    char* str_readed;
+    fscanf(stream, "%s", &str_readed);
+    parse_format(format);
+    parse_formatted(str_readed);
+    if(!are_compatible(format_root, formatted_root)){
+        char* msg;
+        asprintf(&msg,"Read error: schema must be compatible");
+        machine_error(msg);
+    }
+    switch (format_root->type) {
+        case SCCHAR:
+            
+            break;
+        case SCINT:
+            
+            break;
+        case SCREAL:
+            
+            break;
+        case SCSTRING:
+            
+            break;
+        case SCBOOL:
+            
+            break;
+        case SCVECTOR:
+            read_vector(formatted_root->child, top_ostack()->inst.sval, format_root->size, format_root->p1, dest_addr);
+            break;
+        case SCSTRUCT:
+            read_struct(formatted_root->child, top_ostack()->inst.sval, format_root->p1, dest_addr);
+            break;
+        default:
+            break;
+    }}
