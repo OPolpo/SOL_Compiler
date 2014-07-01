@@ -100,11 +100,12 @@ Code makecode1(Operator op, int arg);
 Code makecode2(Operator op, int arg1, int arg2);
 Code makecode_str(Operator op, char * s);
 Code makecode_xread(Operator op, int arg1, int arg2, char * arg3);
-Code make_push_pop(int size, int chain, int entry);
+Code make_push_pop(int param, int size, int chain, int entry);
 Code make_ldc(char c);
 Code make_ldi(int i);
 Code make_ldr(float r);
 Code make_lds(char *s);
+Code makecode_push(int arg1, int arg2, int arg3);
 void print_code(FILE * stream, Code * code);
 void print_stat(FILE * stream, Stat * stat);
 

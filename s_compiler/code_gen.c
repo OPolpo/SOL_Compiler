@@ -235,7 +235,6 @@ Code makecode_str(Operator op, char * s){
 }
 
 /*
- case S_PUSH:
  case S_STO:
  case S_LDA:
  case S_CAT:
@@ -260,8 +259,18 @@ Code makecode_xread(Operator op, int arg1, int arg2, char * arg3){
     return code;
 }
 
-Code make_push_pop(int size, int chain, int entry){
-    return concode(makecode2(S_PUSH, size, chain),
+// case S_PUSH
+Code makecode_push(int arg1, int arg2, int arg3){
+    Code code;
+    code = makecode(S_PUSH);
+    code.head->args[0].ival = arg1;
+    code.head->args[1].ival = arg2;
+    code.head->args[2].ival = arg3;
+    return code;
+}
+
+Code make_push_pop(int param, int size, int chain, int entry){
+    return concode(makecode_push(param, size, chain),
                    makecode1(S_FAKE_GOTO, entry),
                    makecode(S_POP),
                    endcode());
