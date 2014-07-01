@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "../s_shared/SOL_def.h"
 
 typedef enum{	
 	NPROGRAM,

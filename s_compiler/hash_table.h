@@ -5,7 +5,7 @@
 #define SHIFT 4
 #include <string.h>
 #include "def.h"
-#include "schema.h"
+#include "../s_shared/schema.h"
 
 typedef enum{
     CLTYPE,

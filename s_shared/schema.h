@@ -2,7 +2,7 @@
 #define SCHEMA
 
 #include <string.h>
-#include "def.h"
+#include "SOL_def.h"
 
 typedef enum{
     SCCHAR,
