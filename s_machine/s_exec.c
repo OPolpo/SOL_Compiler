@@ -429,69 +429,6 @@ void exec_lod(int env_offset, int oid){
     }
 }
 
-// int calc_size(char * f){
-//     int dim = 0;
-//     //char * f = format;
-//     //char subformat[strlen(format)];
-//     printf("%c\n", f[0]);
-//     switch (f[0]) {
-//         case 'c':
-//         case 'b':
-//             f++;
-//             return sizeof(char);
-//             break;
-//         case 'i':
-//             f++;
-//             return sizeof(int);
-//             f++;
-//             break;
-//         case 'r':
-//             f++;
-//             return sizeof(float);
-//             break;
-//         case 's':
-//             f++;
-//             return sizeof(char *);
-//             break;
-//         case '(':
-//             do{
-//                 do {
-//                     f++;
-//                 } while( f[0] != ':');
-//                 //printf("%c spero :\n", f[0]);
-//                 f++;
-//                 dim += calc_size(f);
-//                 f++;
-//             } while (f[0] == ',');
-//             //printf("%c spero ,\n", f[0]);
-//             return dim;
-//             break;
-//         case '[':
-//             f++;
-//             sscanf(f, "%d", &dim);
-//             do {
-//                 f++;
-//             } while( f[0] != ',');
-//             f++;
-//             return dim * calc_size(f);
-//         case ')':
-//             printf(")");
-//             break;
-//         case '\0':
-//             printf("the end");
-//             break;
-//         case ']':
-//             printf("]");
-
-//             break;
-//         case ',':
-//             printf("vaffanculo");
-//         default:
-//             break;
-//     }
-//     return 0;
-// }
-
 void exec_read(int oid, int offset, char * format){
     
 }
@@ -499,66 +436,6 @@ void exec_read(int oid, int offset, char * format){
 void exec_fread(int oid, int offset, char * format){
     
 }
-
-// int basic_write(char* format, FILE * stream, char * addr){
-//     if(addr != NULL){
-//     //vector
-//         if(format[0]=='['){
-//             //printf("vect\n");
-//             return write_vect(format, stream, top_ostack()->inst.sval);
-//         }
-//         //struct
-//         else if(format[0]=='('){
-//             //printf("struct\n");
-//             return write_struct(format, stream, top_ostack()->inst.sval);
-//         }
-//         //atomic
-//         else{
-//             //printf("atom\n");
-//             printf("nella tipologia atomica il formato è %s\n",format);
-//             if (format[0] == 'c'){
-//                 if(top_ostack()->mode==STA)
-//                     fprintf(stream, "====>%c<====", *addr);
-//                 else
-//                     fprintf(stream, "====>%c<====", ((Value *) addr)->cval);
-//                 return 1;
-//             }
-//             if (format[0] == 'i'){
-//                 if(top_ostack()->mode==STA)
-//                     fprintf(stream, "====>%d<====", *((int*)addr));
-//                 else
-//                     fprintf(stream, "====>\'%d\'<====", ((Value *) addr)->ival);
-//                 return 4;
-//             }
-//             if (format[0] == 'r'){
-//                 if(top_ostack()->mode==STA)
-//                     fprintf(stream, "====>%f<====", *(float*)addr);
-//                 else
-//                     fprintf(stream, "====>%f<====", ((Value *) addr)->rval);
-//                 return 4;
-//             }
-//             if (format[0] == 's'){
-//                 if(top_ostack()->mode==STA)
-//                     fprintf(stream, "====>\'%s\'<====",  (char**)addr);
-//                 else
-//                     fprintf(stream, "====>\'%s\'<====", ((Value *) addr)->sval);
-//                 return 8;
-//             }
-//             if (format[0] == 'b'){
-//                 if(top_ostack()->mode==STA)
-//                     fprintf(stream, "====>%s<====", ((char) *addr) =='0' ? "false" : "true");
-//                 else
-//                     fprintf(stream, "====>%s<====", ((Value *) addr)->cval=='0' ? "false" : "true");
-//                 return 1;
-//             }
-//             return 1;
-//         }
-//     }
-//     else{
-//         return basic_write(format, stream, &(top_ostack()->inst));
-//     }
-// }
-
 
 void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type){
     switch (elem_type->type) {
@@ -774,41 +651,3 @@ void exec_news(int size){
     po->size = size;
     po->inst.sval = push_istack(size);
 }
-
-// int write_vect(char * format, FILE* stream, char* addr){
-//     //printf(" ENTRO\n");
-//     int size = 0;
-//     int i = 0;
-//     char str_format[strlen(format)]; // todo
-//     sscanf(format,"[%d,%s",&size, str_format);
-//     int element_size = (top_ostack()->size)/size;
-//     for(i=0;i<size;i++){
-//         //printf("dimensione elemento %d\n", element_size);
-//         basic_write(str_format, stream, addr+element_size*i);
-//     }
-//     return top_ostack()->size;
-// }
-
-// int write_struct(char * format, FILE* stream, char* addr){
-//     int size = top_ostack()->size;
-//     int i = 0;
-//     while(!(format[i]==0 || format[i] == ':')){
-//         i++;
-//     }
-//     //printf("format %s\n",format+i);
-
-
-//     while(size > 0){
-//         //printf("%d",size);
-//         //printf("format in struct %s\n",format+i);
-//         i+=1;
-//         size -= basic_write(format+i, stream, addr + size);
-//         while(!(format[i]==0 || format[i] == ':')){
-//             i++;
-//         }
-//         //printf("\nsize residuo: %d\n",size);
-//         //getc(stdin);
-//     }
-//     //printf("%d",top_ostack()->size);
-//     return top_ostack()->size;
-// }
