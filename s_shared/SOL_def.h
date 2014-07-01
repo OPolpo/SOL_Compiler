@@ -1,6 +1,9 @@
 #ifndef SOL_def_h
 #define SOL_def_h
 
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef union{
 	char cval;
 	int ival;
