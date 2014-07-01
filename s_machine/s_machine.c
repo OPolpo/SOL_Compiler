@@ -163,6 +163,7 @@ void move_down_istack(int to_move, int this_much){
     if(ip - to_move - this_much < 0) machine_error("move_down_istack()");
     if (to_move<0 || this_much<0) machine_error("move_down_istack() parameters");
     memmove(&istack[ip-to_move-this_much], &istack[ip-to_move], to_move);
+    ip-=this_much;
 }
 
 int pop_int(){

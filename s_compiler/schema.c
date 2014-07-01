@@ -229,3 +229,11 @@ char * make_format(Pschema schema){
     sprintf(str, "\"%s\"", tmp_str);
     return str;
 }
+
+void destroy_schema(Pschema schema){
+    if(schema->p1 != NULL)
+        destroy_schema(schema->p1);
+    if(schema->p2 != NULL)
+        destroy_schema(schema-p2);
+    free(schema);
+}

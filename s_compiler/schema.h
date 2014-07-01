@@ -31,4 +31,6 @@ int compute_size(Pschema schema);
 char * schema2format(Pschema schema);
 char * make_format(Pschema schema);
 
+void destroy_schema(Pschema schema);
+
 #endif
