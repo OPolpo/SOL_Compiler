@@ -578,7 +578,7 @@ void print_atomic_istack(char * elem_addr, Pschema elem_type){
         default:
             break;
     }
-}//why it doesn't work using this??
+}
 
 void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
     int elem_dim = compute_size(elem_type);
@@ -587,21 +587,6 @@ void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
     for (i=0; i< elem_num; i++){
         if (i!=0) printf(", ");
         switch (elem_type->type) {
-            case SCCHAR:
-                printf("%c",*elem_addr);
-                break;
-            case SCINT:
-                printf("%d",*(int *)elem_addr);
-                break;
-            case SCREAL:
-                printf("%f",*(float *)elem_addr);
-                break;
-            case SCSTRING:
-                printf("%s",*(char**)elem_addr);
-                break;
-            case SCBOOL:
-                printf("%s", (*(int *)elem_addr)? "true" : "false");
-                break;
             case SCVECTOR:
                 print_vector(elem_addr, elem_type->size, elem_type->p1);
                 break;
@@ -609,6 +594,7 @@ void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
                 print_struct(elem_addr, elem_type->p1);
                 break;
             default:
+                print_atomic_istack(elem_addr, elem_type);
                 break;
         }
         elem_addr += (elem_dim);
@@ -627,28 +613,14 @@ void print_struct(char * elem_addr, Pschema elem_type){
             i=1;
         printf("%s:", temp->id);
         switch (temp->type) {
-            case SCCHAR:
-                printf("%c",*elem_addr);
-                break;
-            case SCINT:
-                printf("%d",*(int *)elem_addr);
-                break;
-            case SCREAL:
-                printf("%f",*(float *)elem_addr);
-                break;
-            case SCSTRING:
-                printf("%s",*(char**)elem_addr);
-                break;
-            case SCBOOL:
-                printf("%s", (*(int *)elem_addr)? "true" : "false");
-                break;
             case SCVECTOR:
-                print_vector(elem_addr, elem_type->size, elem_type->p1);
+                print_vector(elem_addr, temp->size, temp->p1);
                 break;
             case SCSTRUCT:
-                print_struct(elem_addr, elem_type->p1);
+                print_struct(elem_addr, temp->p1);
                 break;
             default:
+                print_atomic_istack(elem_addr, temp);
                 break;
         }
         elem_addr += compute_size(temp);
