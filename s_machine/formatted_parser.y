@@ -8,13 +8,6 @@
     
     #define YYSTYPE Pformatted
     
-    typedef struct sformatted{
-        Typeformatted type;
-        Value value;
-        char * id;
-        struct sformatted *child, *brother;
-    } Formatted, * Pformatted;
-    
     typedef enum{
         F_VECTOR,
         F_STRUCT,
@@ -25,6 +18,13 @@
         F_BOOLCONST,
         F_TEMP
     }Typeformatted;
+
+    typedef struct sformatted{
+        Typeformatted type;
+        Value value;
+        char * id;
+        struct sformatted *child, *brother;
+    } Formatted, * Pformatted;
     
     extern Value lexval;
     extern Str_c_node ** format_stringtable;
