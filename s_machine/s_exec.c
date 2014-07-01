@@ -547,3 +547,4 @@ void exec_news(int size){
     po->size = size;
     po->inst.sval = push_istack(size);
 }
+
