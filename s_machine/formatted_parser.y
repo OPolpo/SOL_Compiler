@@ -6,7 +6,7 @@
     #include "s_machine.h"
     #include "../s_compiler/schema.h"
     
-    #define YYSTYPE Pschema
+    #define YYSTYPE Pformatted
     
     typedef struct sformatted{
         Typeformatted type;
@@ -22,7 +22,8 @@
         F_INTCONST,
         F_REALCONST,
         F_STRUCT,
-        F_BOOLCONST
+        F_BOOLCONST,
+        F_TEMP
     }Typeformatted;
     
     extern Value lexval;
@@ -68,44 +69,42 @@
         return(p);
     }
     
-    Pformatted newnode(Typenode tnode){
+    Pformatted newnode(Typeformatted tnode){
         Pformatted p = malloc(sizeof(Node));
         p->type = tnode;
         p->child = p->brother = NULL;
-        p->row = line;
+        p->id = NULL;
         return(p);
     }
     
     
     %}
-%token FORMATTED_LEX_ID F_INTCONST F_REALCONST F_STRCONST F_BOOLCONST FORMATTED_LEX_ERROR
+%token FORMATTED_LEX_ID F_CHARCONST F_INTCONST F_REALCONST F_STRCONST F_BOOLCONST FORMATTED_LEX_ERROR
 %%
 
 formatted_string : formatted {root = $$; $$ = $1;}
 
 formatted   : atomic_formatted
-| struct_formatted
-| vector_formatted
+            | struct_formatted
+            | vector_formatted
 
 atomic_formatted    : F_CHARCONST {$$ = cconstnode();}
-| F_INTCONST  {$$ = iconstnode();}
-| F_REALCONST {$$ = rconstnode();}
-| F_STRCONST  {$$ = sconstnode();}
-| F_BOOLCONST {$$ = bconstnode();}
+                    | F_INTCONST  {$$ = iconstnode();}
+                    | F_REALCONST {$$ = rconstnode();}
+                    | F_STRCONST  {$$ = sconstnode();}
+                    | F_BOOLCONST {$$ = bconstnode();}
 
-struct_formatted :  '(' attr_list ')' {$$ = structnode(); $$->child = $2; $2->brother = $3;}
+struct_formatted :  '(' attr_list ')' {$$ = structnode(); $$->child = $2;}
 
 attr_list   : attr ',' attr_list {$$ = $1; $$->brother = $3;}
             | attr
 
-attr : FORMATTED_LEX_ID {} formatted {}
+attr : FORMATTED_LEX_ID {$$ = newnode(F_TEMP); $$->id = lexval.sval;} formatted {$$ = $3; $3->id = $2->id; free($2);}
 
-vector_formatted : '(' formatted_list ')' {}
+vector_formatted : '(' formatted_list ')' {$$ = vectornode(); $$->child = $2;}
 
-formatted_list   : formatted ',' formatted_list
-| formatted
-
-
+formatted_list  : formatted ',' formatted_list {$$ = $1; $1->brother = $3;}
+                | formatted
 
 
 %%
