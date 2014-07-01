@@ -1,5 +1,6 @@
 #include "s_exec.h"
 #include "format_parser.h"
+#include "formatted_parser.h"
 
 
 Scode *prog;
@@ -651,3 +652,4 @@ void exec_news(int size){
     po->size = size;
     po->inst.sval = push_istack(size);
 }
+

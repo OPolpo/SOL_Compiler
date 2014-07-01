@@ -114,11 +114,12 @@ int yyerror(){
     return -1;
 }
 
-int parse_formatted(char * format){
+int parse_formatted(char * formatted){
     int result;
-    format_scan_string(format,strlen(format));
-    if((result = formatparse()) == 0)
+    formatted_scan_string(formatted,strlen(formatted));
+    if((result = formattedparse()) == 0)
     //print_sch(formatted_root);
     
     return 0;
 }
+
