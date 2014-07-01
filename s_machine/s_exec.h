@@ -79,7 +79,7 @@ void exec_write(char* arg1);
 void exec_fwrite(char* arg1);
 void exec_rd(char* arg1);
 void exec_frd(char* arg1);
-void exec_wr(char* arg1);
+void exec_wr(FILE* stream, char* format);
 void exec_fwr(char* arg1);
 void exec_lds(char* arg1);
 
@@ -104,8 +104,8 @@ int format_string(char format, Value * inst);
 int write_vect(char * format, FILE* stream, char* addr);
 int write_struct(char * format, FILE* stream, char* addr);*/
 
-void print_struct(char * elem_addr, Pschema elem_type);
-void print_vector(char * elem_addr, int elem_num, Pschema elem_type);
-void print_atomic_istack(char * elem_addr, Pschema elem_type);
+void print_struct(FILE* stream, char * elem_addr, Pschema elem_type);
+void print_vector(FILE* stream, char * elem_addr, int elem_num, Pschema elem_type);
+void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type);
 
 #endif

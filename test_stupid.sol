@@ -20,7 +20,7 @@ func f2(): bool
 		write matrix;
 		
 		book = struct(struct("Carl Gustav", "Jung"), "Man and his symbols", struct("ETA", 1992));
-		write book;
+		write ["pippo.txt"] book;
 		--people = vector(struct("John", "Smith", 1983), 
 		--				struct("Rosy", "White", 1960),
 		--				struct("Louis", "Green", 1998), 
