@@ -11,7 +11,7 @@ M_PATH_F_LEX = s_machine
 M_PATH_F_PRSR = s_machine
 
 C_OBJ = $(C_PATH_LEX)/lex.o $(C_PATH_PRSR)/parser.o $(C_PATH)/tree.o $(C_PATH)/hash_table.o $(C_PATH)/symbol_table.o $(C_PATH)/semantic.o $(C_PATH)/code_gen.o $(C_PATH)/schema.o
-M_OBJ = $(M_PATH_LEX)/lex.o $(M_PATH_PRSR)/parser.o  $(M_PATH_F_LEX)/format_lexer.o $(M_PATH_F_PRSR)/format_parser.o $(M_PATH)/s_exec.o $(M_PATH)/s_machine.o $(C_PATH)/code_gen.o $(C_PATH)/schema.o
+M_OBJ = $(M_PATH_LEX)/lex.o $(M_PATH_PRSR)/parser.o  $(M_PATH_F_LEX)/format_lexer.o $(M_PATH_F_PRSR)/format_parser.o $(M_PATH_F_LEX)/formatted_lexer.o $(M_PATH_F_PRSR)/formatted_parser.o $(M_PATH)/s_exec.o $(M_PATH)/s_machine.o $(C_PATH)/code_gen.o $(C_PATH)/schema.o
 
 all: compiler machine
 
@@ -32,6 +32,12 @@ $(M_PATH_F_LEX)/format_lexer.c: $(M_PATH_F_LEX)/format_lexer.lex $(M_PATH_F_PRSR
 
 $(M_PATH_F_PRSR)/format_parser.h: $(M_PATH_F_PRSR)/format_parser.y
 	bison -d -o $(M_PATH_F_PRSR)/format_parser.c $(M_PATH_F_PRSR)/format_parser.y --name-prefix=format
+
+$(M_PATH_F_LEX)/formatted_lexer.c: $(M_PATH_F_LEX)/formatted_lexer.lex $(M_PATH_F_PRSR)/formatted_parser.h
+	flex -o $(M_PATH_F_LEX)/formatted_lexer.c -Pformatted $(M_PATH_F_LEX)/formatted_lexer.lex
+
+$(M_PATH_F_PRSR)/formatted_parser.h: $(M_PATH_F_PRSR)/formatted_parser.y
+	bison -d -o $(M_PATH_F_PRSR)/formatted_parser.c $(M_PATH_F_PRSR)/formatted_parser.y --name-prefix=formatted
 
 $(C_PATH_LEX)/lex.c: $(C_PATH_LEX)/lexer.lex $(C_PATH_PRSR)/parser.h
 	flex -o $(C_PATH_LEX)/lex.c $(C_PATH_LEX)/lexer.lex

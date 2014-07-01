@@ -440,7 +440,7 @@ void exec_fread(int oid, int offset, char * format){
 void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type){
     switch (elem_type->type) {
         case SCCHAR:
-            fprintf(stream, "%c",*elem_addr);
+            fprintf(stream, "\'%c\'",*elem_addr);
             break;
         case SCINT:
             fprintf(stream, "%d",*(int *)elem_addr);
@@ -449,7 +449,7 @@ void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type){
             fprintf(stream, "%f",*(float *)elem_addr);
             break;
         case SCSTRING:
-            fprintf(stream, "%s",*(char**)elem_addr);
+            fprintf(stream, "\"%s\"",*(char**)elem_addr);
             break;
         case SCBOOL:
             fprintf(stream, "%s", (*(int *)elem_addr)? "true" : "false");
@@ -532,7 +532,7 @@ void exec_wr(FILE* stream, char* format){
     parse_format(format);
     switch (root->type) {
         case SCCHAR:
-            fprintf(stream, "%c",pop_char());
+            fprintf(stream, "\'%c\'",pop_char());
             break;
         case SCINT:
             fprintf(stream, "%d",pop_int());
@@ -541,7 +541,7 @@ void exec_wr(FILE* stream, char* format){
             fprintf(stream, "%f",pop_real());
             break;
         case SCSTRING:
-            fprintf(stream, "%s", pop_string());
+            fprintf(stream, "\"%s\"", pop_string());
             break;
         case SCBOOL:
             fprintf(stream, "%s", pop_bool()? "true" : "false");
