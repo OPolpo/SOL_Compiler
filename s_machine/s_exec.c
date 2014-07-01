@@ -397,6 +397,9 @@ void exec_cat(int num, int size){
             memcpy(start-top_ostack()->size, top_ostack()->inst.sval, top_ostack()->size);
             //temp_size += top_ostack()->size;
             move_down_istack(size, top_ostack()->size); // not sure TODO check
+            start -= top_ostack()->size;
+            new_inst -= top_ostack()->size;
+            //FIND A WAY TO USE IT
         }
         start -= top_ostack()->size;
         pop_ostack();
@@ -555,12 +558,34 @@ void exec_fread(int oid, int offset, char * format){
 //         return basic_write(format, stream, &(top_ostack()->inst));
 //     }
 // }
+void print_atomic_istack(char * elem_addr, Pschema elem_type){
+    switch (elem_type->type) {
+        case SCCHAR:
+            printf("%c",*elem_addr);
+            break;
+        case SCINT:
+            printf("%d",*(int *)elem_addr);
+            break;
+        case SCREAL:
+            printf("%f",*(float *)elem_addr);
+            break;
+        case SCSTRING:
+            printf("%s",*(char**)elem_addr);
+            break;
+        case SCBOOL:
+            printf("%s", (*(int *)elem_addr)? "true" : "false");
+            break;
+        default:
+            break;
+    }
+}//why it doesn't work using this??
 
 void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
     int elem_dim = compute_size(elem_type);
     int i;
     printf("[");
     for (i=0; i< elem_num; i++){
+        if (i!=0) printf(", ");
         switch (elem_type->type) {
             case SCCHAR:
                 printf("%c",*elem_addr);
@@ -572,7 +597,7 @@ void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
                 printf("%f",*(float *)elem_addr);
                 break;
             case SCSTRING:
-                printf("%s",(char*)elem_addr);
+                printf("%s",*(char**)elem_addr);
                 break;
             case SCBOOL:
                 printf("%s", (*(int *)elem_addr)? "true" : "false");
@@ -581,23 +606,61 @@ void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
                 print_vector(elem_addr, elem_type->size, elem_type->p1);
                 break;
             case SCSTRUCT:
-                printf("(");
-                
-                printf(")");
+                print_struct(elem_addr, elem_type->p1);
                 break;
             default:
                 break;
         }
-        elem_addr += elem_dim;
+        elem_addr += (elem_dim);
     }
-    
     printf("]");
 }
 
+void print_struct(char * elem_addr, Pschema elem_type){
+    printf("(");
+    int i=0;
+    Pschema temp = elem_type;
+    while (temp) {
+        if (i!=0)
+            printf(", ");
+        else
+            i=1;
+        printf("%s:", temp->id);
+        switch (temp->type) {
+            case SCCHAR:
+                printf("%c",*elem_addr);
+                break;
+            case SCINT:
+                printf("%d",*(int *)elem_addr);
+                break;
+            case SCREAL:
+                printf("%f",*(float *)elem_addr);
+                break;
+            case SCSTRING:
+                printf("%s",*(char**)elem_addr);
+                break;
+            case SCBOOL:
+                printf("%s", (*(int *)elem_addr)? "true" : "false");
+                break;
+            case SCVECTOR:
+                print_vector(elem_addr, elem_type->size, elem_type->p1);
+                break;
+            case SCSTRUCT:
+                print_struct(elem_addr, elem_type->p1);
+                break;
+            default:
+                break;
+        }
+        elem_addr += compute_size(temp);
+        temp = temp->p2;
+    }
+    printf(")");
+}
+
+
 void exec_write(char* format){
-    Pschema sch = parse_format(format);
-    
-    switch (sch->type) {
+    parse_format(format);
+    switch (root->type) {
         case SCCHAR:
             printf("%c",pop_char());
             break;
@@ -614,16 +677,19 @@ void exec_write(char* format){
             printf("%s", pop_bool()? "true" : "false");
             break;
         case SCVECTOR:
-            print_vector(top_ostack()->inst.sval, sch->size, sch->p1);
+            print_vector(top_ostack()->inst.sval, root->size, root->p1);
+            pop_istack(top_ostack()->size);
             break;
         case SCSTRUCT:
-            printf("(");
-            
-            printf(")");
+            print_struct(top_ostack()->inst.sval, root->p1);
+            pop_istack(top_ostack()->size);
             break;
         default:
             break;
     }
+    printf("\n<-->\n");
+    
+    pop_ostack();
 }
 
 

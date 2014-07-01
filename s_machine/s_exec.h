@@ -99,9 +99,13 @@ void exec_ldi(int arg1);
 void exec_new(int arg1);
 void exec_news(int arg1);
 
-int basic_write(char* format, FILE * stream, char * addr);
+/*int basic_write(char* format, FILE * stream, char * addr);
 int format_string(char format, Value * inst);
 int write_vect(char * format, FILE* stream, char* addr);
-int write_struct(char * format, FILE* stream, char* addr);
+int write_struct(char * format, FILE* stream, char* addr);*/
+
+void print_struct(char * elem_addr, Pschema elem_type);
+void print_vector(char * elem_addr, int elem_num, Pschema elem_type);
+void print_atomic_istack(char * elem_addr, Pschema elem_type);
 
 #endif

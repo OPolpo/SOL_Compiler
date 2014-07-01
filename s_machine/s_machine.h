@@ -83,5 +83,6 @@ char * insert_str_c(char * s);
 char * get_str_c(char * s);
 int hash_str_c(char * s);
 void free_str_c_table();
+void print_str_c_table();
 
 #endif
