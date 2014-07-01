@@ -106,5 +106,6 @@ int write_struct(char * format, FILE* stream, char* addr);*/
 
 void print_struct(char * elem_addr, Pschema elem_type);
 void print_vector(char * elem_addr, int elem_num, Pschema elem_type);
+void print_atomic_istack(char * elem_addr, Pschema elem_type);
 
 #endif

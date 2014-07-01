@@ -557,10 +557,30 @@ void exec_fread(int oid, int offset, char * format){
 //         return basic_write(format, stream, &(top_ostack()->inst));
 //     }
 // }
+void print_atomic_istack(char * elem_addr, Pschema elem_type){
+    switch (elem_type->type) {
+        case SCCHAR:
+            printf("%c",*elem_addr);
+            break;
+        case SCINT:
+            printf("%d",*(int *)elem_addr);
+            break;
+        case SCREAL:
+            printf("%f",*(float *)elem_addr);
+            break;
+        case SCSTRING:
+            printf("%s",*(char**)elem_addr);
+            break;
+        case SCBOOL:
+            printf("%s", (*(int *)elem_addr)? "true" : "false");
+            break;
+        default:
+            break;
+    }
+}//why it doesn't work using this??
 
 void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
     int elem_dim = compute_size(elem_type);
-    printf("%d dim\n",elem_dim);
     int i;
     printf("[");
     for (i=0; i< elem_num; i++){
@@ -600,10 +620,10 @@ void print_struct(char * elem_addr, Pschema elem_type){
     int i=0;
     Pschema temp = elem_type;
     while (temp) {
-        if (i!=0) {
+        if (i!=0)
             printf(", ");
+        else
             i=1;
-        }
         printf("%s:", temp->id);
         switch (temp->type) {
             case SCCHAR:
@@ -633,13 +653,11 @@ void print_struct(char * elem_addr, Pschema elem_type){
         elem_addr += compute_size(temp);
         temp = temp->p2;
     }
-    
     printf(")");
 }
 
 
 void exec_write(char* format){
-    //printf("   ->%d\n",top_ostack()->size);
     parse_format(format);
     switch (root->type) {
         case SCCHAR:
