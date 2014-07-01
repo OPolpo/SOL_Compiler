@@ -78,7 +78,7 @@
     
     
     %}
-%token FORMATTED_LEX_ID INTCONST REALCONST STRCONST BOOLCONST FORMATTED_LEX_ERROR
+%token FORMATTED_LEX_ID F_INTCONST F_REALCONST F_STRCONST F_BOOLCONST FORMATTED_LEX_ERROR
 %%
 
 formatted_string : formatted {root = $$; $$ = $1;}
@@ -87,23 +87,23 @@ formatted   : atomic_formatted
 | struct_formatted
 | vector_formatted
 
-atomic_formatted    : CHARCONST {$$ = cconstnode();}
-| INTCONST  {$$ = iconstnode();}
-| REALCONST {$$ = rconstnode();}
-| STRCONST  {$$ = sconstnode();}
-| BOOLCONST {$$ = bconstnode();}
+atomic_formatted    : F_CHARCONST {$$ = cconstnode();}
+| F_INTCONST  {$$ = iconstnode();}
+| F_REALCONST {$$ = rconstnode();}
+| F_STRCONST  {$$ = sconstnode();}
+| F_BOOLCONST {$$ = bconstnode();}
 
-struct_formatted :  '(' attr attr_list ')' {}
+struct_formatted :  '(' attr_list ')' {$$ = structnode(); $$->child = $2; $2->brother = $3;}
 
-attr_list   : ',' attr attr_list {$$ = $1; $$->brother = $3;}
-|
+attr_list   : attr ',' attr_list {$$ = $1; $$->brother = $3;}
+            | attr
 
 attr : FORMATTED_LEX_ID {} formatted {}
 
-vector_formatted : '(' formatted formatted_list ')' {}
+vector_formatted : '(' formatted_list ')' {}
 
-formatted_list   : ',' formatted formatted_list
-|
+formatted_list   : formatted ',' formatted_list
+| formatted
 
 
 
