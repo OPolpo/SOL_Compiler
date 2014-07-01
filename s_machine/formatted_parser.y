@@ -3,26 +3,9 @@
     #include <stdio.h>
     #include <string.h>
     #include "s_machine.h"
+    #include "sol_io.h"
     
     #define YYSTYPE Pformatted
-    
-    typedef enum{
-        F_VECTOR,
-        F_STRUCT,
-        F_CHARCONST,
-        F_INTCONST,
-        F_REALCONST,
-        F_STRCONST,
-        F_BOOLCONST,
-        F_TEMP
-    }Typeformatted;
-
-    typedef struct sformatted{
-        Typeformatted type;
-        Value value;
-        char * id;
-        struct sformatted *child, *brother;
-    } Formatted, * Pformatted;
     
     extern Value lexval;
     extern Str_c_node ** format_stringtable;

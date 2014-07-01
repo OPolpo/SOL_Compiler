@@ -4,28 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "s_machine.h"
-#include "../s_shared/schema.h"
-
-typedef enum{
-    T_CHAR,
-    T_INT, 
-    T_REAL,
-    T_STRING,
-    T_BOOL,
-    T_STRUCT,
-    T_VECTOR,
-    T_ATTR
-} Type;
-
-
-typedef struct sformat{
-    Type type;
-    char *id;
-    int size;
-    struct sformat *child;
-    struct sformat *brother;
-}Format, *Pformat;
-
+//#include "../s_shared/schema.h"
 
 void exec(Scode *stat);
 
@@ -79,7 +58,7 @@ void exec_write(char* arg1);
 void exec_fwrite(char* arg1);
 void exec_rd(char* arg1);
 void exec_frd(char* arg1);
-void exec_wr(FILE* stream, char* format);
+void exec_wr(char* format);
 void exec_fwr(char* arg1);
 void exec_lds(char* arg1);
 
@@ -104,8 +83,5 @@ int format_string(char format, Value * inst);
 int write_vect(char * format, FILE* stream, char* addr);
 int write_struct(char * format, FILE* stream, char* addr);*/
 
-void print_struct(FILE* stream, char * elem_addr, Pschema elem_type);
-void print_vector(FILE* stream, char * elem_addr, int elem_num, Pschema elem_type);
-void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type);
 
 #endif

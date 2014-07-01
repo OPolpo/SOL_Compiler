@@ -13,7 +13,7 @@ M_PATH_F_PRSR = s_machine
 SHARED_PATH = s_shared
 
 C_OBJ = $(C_PATH_LEX)/lex.o $(C_PATH_PRSR)/parser.o $(C_PATH)/tree.o $(C_PATH)/hash_table.o $(C_PATH)/symbol_table.o $(C_PATH)/semantic.o $(C_PATH)/code_gen.o $(SHARED_PATH)/schema.o
-M_OBJ = $(M_PATH_LEX)/lex.o $(M_PATH_PRSR)/parser.o  $(M_PATH_F_LEX)/format_lexer.o $(M_PATH_F_PRSR)/format_parser.o $(M_PATH_F_LEX)/formatted_lexer.o $(M_PATH_F_PRSR)/formatted_parser.o $(M_PATH)/s_exec.o $(M_PATH)/s_machine.o $(C_PATH)/code_gen.o $(SHARED_PATH)/schema.o
+M_OBJ = $(M_PATH_LEX)/lex.o $(M_PATH_PRSR)/parser.o  $(M_PATH_F_LEX)/format_lexer.o $(M_PATH_F_PRSR)/format_parser.o $(M_PATH_F_LEX)/formatted_lexer.o $(M_PATH_F_PRSR)/formatted_parser.o $(M_PATH)/s_exec.o $(M_PATH)/s_machine.o $(C_PATH)/code_gen.o $(SHARED_PATH)/schema.o $(M_PATH)/sol_io.o
 
 all: compiler machine
 
@@ -48,4 +48,4 @@ $(C_PATH_PRSR)/parser.h: $(C_PATH_PRSR)/parser.y
 	bison -d -o $(C_PATH_PRSR)/parser.c $(C_PATH_PRSR)/parser.y
 
 clean: 
-	rm -f $(C_PATH)/lex.c $(C_PATH)/*.o $(C_PATH)/parser.h $(M_PATH)/lex.c $(M_PATH)/*.o $(M_PATH_F_PRSR)/format_parser.h $(M_PATH_F_PRSR)/format_lexer.c machine compiler
+	rm -f $(C_PATH)/lex.c $(C_PATH)/*.o $(C_PATH)/parser.h $(M_PATH)/lex.c $(M_PATH)/*.o $(M_PATH_F_PRSR)/format_parser.h $(M_PATH_F_PRSR)/formatted_parser.h $(M_PATH_F_PRSR)/format_lexer.c machine compiler
