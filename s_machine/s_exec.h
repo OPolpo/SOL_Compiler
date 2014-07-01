@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "s_machine.h"
-
+#include "../s_shared/schema.h"
 
 typedef enum{
     T_CHAR,

@@ -10,13 +10,13 @@
 
 extern Value lexval;
 extern Str_c_node ** format_stringtable;
-Pschema root = NULL;
+Pschema format_root = NULL;
 
 %}
 %token FORMAT_LEX_ID FORMAT_LEX_INT FORMAT_LEX_ERROR
 %%
 
-format_string : format {root = $$; $$ = $1;}
+format_string : format {format_root = $$; $$ = $1;}
 
 format : atomic_format
         | struct_format
@@ -51,7 +51,7 @@ int parse_format(char * format){
     int result;
     format_scan_string(format,strlen(format));
     if((result = formatparse()) == 0)
-        print_sch(root);
+        print_sch(format_root);
     
     return 0;
 }

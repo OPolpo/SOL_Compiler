@@ -4,7 +4,6 @@
 #include "s_machine.h"
 
 Value lexval;
-unsigned int line = 1;
 %}
 %option	noyywrap
 

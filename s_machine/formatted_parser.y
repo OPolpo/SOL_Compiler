@@ -12,7 +12,7 @@
         F_CHARCONST,
         F_INTCONST,
         F_REALCONST,
-        F_STRUCT,
+        F_STRCONST,
         F_BOOLCONST,
         F_TEMP
     }Typeformatted;
@@ -26,7 +26,15 @@
     
     extern Value lexval;
     extern Str_c_node ** format_stringtable;
-    Pformatted root = NULL;
+    Pformatted formatted_root = NULL;
+    
+    Pformatted newnode(Typeformatted tnode){
+        Pformatted p = malloc(sizeof(Formatted));
+        p->type = tnode;
+        p->child = p->brother = NULL;
+        p->id = NULL;
+        return(p);
+    }
     
     Pformatted vectornode(){
         Pformatted p = newnode(F_VECTOR);
@@ -67,20 +75,14 @@
         return(p);
     }
     
-    Pformatted newnode(Typeformatted tnode){
-        Pformatted p = malloc(sizeof(Node));
-        p->type = tnode;
-        p->child = p->brother = NULL;
-        p->id = NULL;
-        return(p);
-    }
+
     
     
     %}
 %token FORMATTED_LEX_ID CHARCONST INTCONST REALCONST STRCONST BOOLCONST FORMATTED_LEX_ERROR
 %%
 
-formatted_string : formatted {root = $$; $$ = $1;}
+formatted_string : formatted {formatted_root = $$; $$ = $1;}
 
 formatted   : atomic_formatted
             | struct_formatted
@@ -112,11 +114,11 @@ int yyerror(){
     return -1;
 }
 
-int parse_format(char * format){
+int parse_formatted(char * format){
     int result;
     format_scan_string(format,strlen(format));
     if((result = formatparse()) == 0)
-    print_sch(root);
+    //print_sch(formatted_root);
     
     return 0;
 }

@@ -6,7 +6,7 @@ void load_scode(FILE * input);
 
 int next();
 
-void print_loaded_code(Scode * prog);
-void print_code_instruction();
+//void print_loaded_code(Scode * prog);
+//void print_code_instruction();
 
 #endif

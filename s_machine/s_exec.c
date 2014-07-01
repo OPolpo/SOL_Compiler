@@ -1,10 +1,11 @@
 #include "s_exec.h"
 #include "format_parser.h"
-#include "../s_shared/schema.h"
+
 
 Scode *prog;
 int pc;
-extern Pschema root;
+extern Pschema format_root;
+extern Pformat formatted_root;
 extern int parse_format();
 
 void exec(Scode *stat) {
@@ -529,7 +530,7 @@ void exec_frd(char* format){
 
 void exec_wr(FILE* stream, char* format){
     parse_format(format);
-    switch (root->type) {
+    switch (format_root->type) {
         case SCCHAR:
             fprintf(stream, "\'%c\'",pop_char());
             break;
@@ -546,17 +547,17 @@ void exec_wr(FILE* stream, char* format){
             fprintf(stream, "%s", pop_bool()? "true" : "false");
             break;
         case SCVECTOR:
-            print_vector(stream, top_ostack()->inst.sval, root->size, root->p1);
+            print_vector(stream, top_ostack()->inst.sval, format_root->size, format_root->p1);
             pop_istack(top_ostack()->size);
             break;
         case SCSTRUCT:
-            print_struct(stream, top_ostack()->inst.sval, root->p1);
+            print_struct(stream, top_ostack()->inst.sval, format_root->p1);
             pop_istack(top_ostack()->size);
             break;
         default:
             break;
     }
-    destroy_schema(root);    
+    destroy_schema(format_root);    
 }
 
 void exec_fwr(char* format){

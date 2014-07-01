@@ -140,9 +140,9 @@ void load_scode(FILE * input){
             break;
         pc++;
     }
-    printf("%d inizio stampa\n", pc);
-    print_loaded_code(prog);
-    printf("fine stampa\n");
+    //printf("%d inizio stampa\n", pc);
+    //print_loaded_code(prog);
+    //printf("fine stampa\n");
 
 }
 
@@ -150,14 +150,16 @@ int next(){
     return yylex();
 }
 
+/*
 void print_loaded_code(Scode * prog){
     int i = 0;
     for(i=0;i<pc;i++){
         print_code_instruction(&prog[i]);
     }
-}
+}*/
 
+/*
 void print_code_instruction(Scode * line){
     Stat to_print = {pc,line->op,{line->args[0],line->args[1],line->args[2]},0};
     print_stat(stdout, &to_print);
-}
+}*/
