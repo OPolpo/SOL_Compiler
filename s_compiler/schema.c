@@ -241,6 +241,6 @@ void destroy_schema(Pschema schema){
     if(schema->p1 != NULL)
         destroy_schema(schema->p1);
     if(schema->p2 != NULL)
-        destroy_schema(schema-p2);
+        destroy_schema(schema->p2);
     free(schema);
 }
