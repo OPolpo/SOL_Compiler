@@ -425,19 +425,8 @@ void exec_lod(int env_offset, int oid){
     }
 }
 
-void exec_read(int oid, int offset, char * format){
-    Adescr * a_declaration = top_astack();
-    int i;
-    for (i=env_offset; i>0; i--) {
-        a_declaration = a_declaration->alink; // not sure TODO check
-    }
-    Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
-    char* addr;
-    if(o_to_lod->mode==STA)
-        addr=(o_to_lod->inst.sval);
-    else
-        addr=>&(o_to_lod->inst);
-    basic_rd(stdout, format);
+void exec_read(int offset, int oid, char * format){
+    basic_read(stdin, offset, oid, format);
 }
 
 void exec_fread(int oid, int offset, char * format){
@@ -469,7 +458,7 @@ void exec_frd(char* format){
         machine_error(msg);
     }    
 
-    basic_rd(fp, format);
+    //basic_read(fp, format);
     fclose (fp);
 }
 

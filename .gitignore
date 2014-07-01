@@ -26,3 +26,5 @@ s_machine/format_lexer.c
 pippo.txt
 
 pippo.ff
+
+s_machine/formatted_parser.c

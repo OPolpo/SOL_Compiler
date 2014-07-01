@@ -2,7 +2,7 @@
 #include "s_machine.h"
 
 extern Pschema format_root;
-extern Pformat formatted_root;
+extern Pformatted formatted_root;
 extern int parse_format();
 extern int parse_formatted();
 
@@ -82,16 +82,16 @@ void basic_wr(FILE* stream, char* format){
     parse_format(format);
     switch (format_root->type) {
         case SCCHAR:
-            fprintf(stream, "\'%c\'",pop_char());
+            fprintf(stream, "\'%c\'", top_ostack()->inst.cval);
             break;
         case SCINT:
-            fprintf(stream, "%d",pop_int());
+            fprintf(stream, "%d", top_ostack()->inst.ival);
             break;
         case SCREAL:
-            fprintf(stream, "%f",pop_real());
+            fprintf(stream, "%f", top_ostack()->inst.rval);
             break;
         case SCSTRING:
-            fprintf(stream, "\"%s\"", pop_string());
+            fprintf(stream, "\"%s\"", top_ostack()->inst.sval);
             break;
         case SCBOOL:
             fprintf(stream, "%s", pop_bool()? "true" : "false");
@@ -110,42 +110,88 @@ void basic_wr(FILE* stream, char* format){
     destroy_schema(format_root);    
 }
 
-void basic_rd(FILE* stream, char* format, char* dest_addr){
-    char* str_readed;
-    fscanf(stream, "%s", &str_readed);
+void read_atomic_istack(Pformatted elem, char * elem_addr, Pschema elem_type){
+    switch (elem_type->type) {
+        case SCCHAR:
+        case SCBOOL:
+            memcpy(elem_addr, &elem->value, sizeof(char));
+            break;
+        case SCINT:
+            memcpy(elem_addr, &elem->value, sizeof(int));
+            break;
+        case SCREAL:
+            memcpy(elem_addr, &elem->value, sizeof(float));
+            break;
+        case SCSTRING:
+            memcpy(elem_addr, &elem->value, sizeof(char*));
+            break;
+        default:
+            break;
+    }
+}
+
+void basic_read(FILE* stream, int env_offset, int oid, char* format){
+    Adescr * a_declaration = top_astack();
+    int i;
+    for (i=env_offset; i>0; i--) {
+        a_declaration = a_declaration->alink; // not sure TODO check
+    }
+    Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
+    char* str_readed = NULL;
+    fscanf(stream, "%s", str_readed);
     parse_format(format);
     parse_formatted(str_readed);
-    if(!are_compatible(format_root, formatted_root)){
+    if(!are_compatible(format_root, formatted2schema(formatted_root,NULL))){
         char* msg;
         asprintf(&msg,"Read error: schema must be compatible");
         machine_error(msg);
     }
     switch (format_root->type) {
         case SCCHAR:
-            
+        case SCBOOL:
+            o_to_lod->inst.cval = formatted_root->value.cval;
             break;
         case SCINT:
-            
+            o_to_lod->inst.ival = formatted_root->value.ival;
             break;
         case SCREAL:
-            
+            o_to_lod->inst.rval = formatted_root->value.rval;
             break;
         case SCSTRING:
-            
-            break;
-        case SCBOOL:
-            
+            o_to_lod->inst.sval = formatted_root->value.sval;
             break;
         case SCVECTOR:
-            read_vector(formatted_root->child, top_ostack()->inst.sval, format_root->size, format_root->p1, dest_addr);
+            read_vector(formatted_root->child, o_to_lod->inst.sval, format_root->size, format_root->p1);
             break;
         case SCSTRUCT:
-            read_struct(formatted_root->child, top_ostack()->inst.sval, format_root->p1, dest_addr);
+            read_struct(formatted_root->child, o_to_lod->inst.sval, format_root->p1);
             break;
         default:
             break;
-    }}
+    }
 }
+
+void read_vector(Pformatted elem, char * elem_addr, int elem_num, Pschema elem_type){
+    int elem_dim = compute_size(elem_type);
+    int i;
+    for (i=0; i< elem_num; i++){
+        switch (elem_type->type) {
+            case SCVECTOR:
+                read_vector(elem->child, elem_addr, elem_type->size, elem_type->p1);
+                break;
+            case SCSTRUCT:
+                read_struct(elem->child, elem_addr, elem_type->p1);
+                break;
+            default:
+                read_atomic_istack(elem->child, elem_addr, elem_type);
+                break;
+        }
+        elem = elem->brother;
+        elem_addr += (elem_dim);
+    }
+}
+
+void read_struct(Pformatted elem, char * elem_addr, Pschema elem_type){}
 
 Pschema formatted2schema(Pformatted root, char * id){
     Pschema node = NULL;
