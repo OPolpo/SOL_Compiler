@@ -79,6 +79,7 @@ void load_scode(FILE * input){
                 prog[pc].args[1].ival=atoi(yytext);
                 next();
                 prog[pc].args[2].ival=atoi(yytext);
+                break;
                 
             case S_STO:
             case S_LDA:

@@ -585,9 +585,9 @@ void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type){
 void print_vector(FILE* stream, char * elem_addr, int elem_num, Pschema elem_type){
     int elem_dim = compute_size(elem_type);
     int i;
-    printf("[");
+    fprintf(stream, "[");
     for (i=0; i< elem_num; i++){
-        if (i!=0) printf(", ");
+        if (i!=0) fprintf(stream, ", ");
         switch (elem_type->type) {
             case SCVECTOR:
                 print_vector(stream, elem_addr, elem_type->size, elem_type->p1);
@@ -601,11 +601,11 @@ void print_vector(FILE* stream, char * elem_addr, int elem_num, Pschema elem_typ
         }
         elem_addr += (elem_dim);
     }
-    printf("]");
+    fprintf(stream, "]");
 }
 
 void print_struct(FILE* stream, char * elem_addr, Pschema elem_type){
-    printf("(");
+    fprintf(stream, "(");
     int i=0;
     Pschema temp = elem_type;
     while (temp) {
@@ -613,7 +613,7 @@ void print_struct(FILE* stream, char * elem_addr, Pschema elem_type){
             fprintf(stream,", ");
         else
             i=1;
-        printf("%s:", temp->id);
+        fprintf(stream,"%s:", temp->id);
         switch (temp->type) {
             case SCVECTOR:
                 print_vector(stream, elem_addr, temp->size, temp->p1);
@@ -628,7 +628,7 @@ void print_struct(FILE* stream, char * elem_addr, Pschema elem_type){
         elem_addr += compute_size(temp);
         temp = temp->p2;
     }
-    printf(")");
+    fprintf(stream, ")");
 }
 
 
@@ -670,11 +670,11 @@ void exec_wr(FILE* stream, char* format){
             fprintf(stream, "%s", pop_bool()? "true" : "false");
             break;
         case SCVECTOR:
-            print_vector(stdout, top_ostack()->inst.sval, root->size, root->p1);
+            print_vector(stream, top_ostack()->inst.sval, root->size, root->p1);
             pop_istack(top_ostack()->size);
             break;
         case SCSTRUCT:
-            print_struct(stdout, top_ostack()->inst.sval, root->p1);
+            print_struct(stream, top_ostack()->inst.sval, root->p1);
             pop_istack(top_ostack()->size);
             break;
         default:
@@ -684,10 +684,10 @@ void exec_wr(FILE* stream, char* format){
 }
 
 void exec_fwr(char* format){
-    FILE * fp;
+    FILE * fp = NULL;
     char* file_name = pop_string();
-    printf("--->%s\n--->ind: %p",file_name, file_name);
-    //fp = fopen(file_name, "w");
+    printf("--->%s\n--->ind: %p\n",file_name, file_name);
+    fp = fopen(file_name, "a");
     if(!fp){
         char* msg;
         asprintf(&msg,"Can't write %s", file_name);
