@@ -11,8 +11,6 @@
 extern Value lexval;
 extern Str_c_node ** format_stringtable;
 Pschema root = NULL;
-char * temp_s;
-int temp_i;
 
 %}
 %token FORMAT_LEX_ID FORMAT_LEX_INT FORMAT_LEX_ERROR

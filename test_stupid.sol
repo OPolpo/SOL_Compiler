@@ -21,6 +21,7 @@ func f2(): bool
 		
 		book = struct(struct("Carl Gustav", "Jung"), "Man and his symbols", struct("ETA", 1992));
 		write ["pippo.txt"] book;
+		read ["pippo.txt"] book;
 		--people = vector(struct("John", "Smith", 1983), 
 		--				struct("Rosy", "White", 1960),
 		--				struct("Louis", "Green", 1998), 
