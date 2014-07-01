@@ -6,7 +6,7 @@
     #include "s_machine.h"
     #include "../s_compiler/schema.h"
     
-    #define YYSTYPE Pschema
+    #define YYSTYPE Pformatted
     
     typedef struct sformatted{
         Typeformatted type;
@@ -78,7 +78,7 @@
     
     
     %}
-%token FORMATTED_LEX_ID F_INTCONST F_REALCONST F_STRCONST F_BOOLCONST FORMATTED_LEX_ERROR
+%token FORMATTED_LEX_ID F_CHARCONST F_INTCONST F_REALCONST F_STRCONST F_BOOLCONST FORMATTED_LEX_ERROR
 %%
 
 formatted_string : formatted {root = $$; $$ = $1;}
