@@ -20,7 +20,7 @@ int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
     
     //print_code(stderr, &func_decl_code);
     *code = concode(makecode1(S_SCODE, func_decl_code.size+4),
-                    make_push_pop(f_loc_env->aux->num_obj, -1, f_loc_env->oid),
+                    make_push_pop(f_loc_env->aux->formals_num,f_loc_env->aux->num_obj, -1, f_loc_env->oid),
                     makecode(S_HALT),
                     func_decl_code,
                     endcode());
@@ -936,7 +936,8 @@ int sem_read_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Pnode spec = root->child;
     Pnode id_node = spec->brother;
     int is_null;
-    int ok = sem_specifier_opt(spec, f_loc_env, code, &is_null);
+    Code spec_code = makecode(S_NOOP);
+    int ok = sem_specifier_opt(spec, f_loc_env, &spec_code, &is_null);
     int offset;
     Phash_node id_hash_node = find_visible_node(id_node->value.sval, f_loc_env, &offset);
     if (id_hash_node == NULL) {
@@ -953,6 +954,7 @@ int sem_read_stat(Pnode root, Phash_node f_loc_env, Code * code){
     if (is_null) {
         *code = appcode(*code, makecode_xread(S_READ, offset, id_hash_node->oid,make_format(id_hash_node->schema)));
     }else{
+        *code = appcode(*code, spec_code);
         *code = appcode(*code,makecode_xread(S_FREAD, offset, id_hash_node->oid, make_format(id_hash_node->schema)));
     }
     
@@ -985,13 +987,15 @@ int sem_write_stat(Pnode root, Phash_node f_loc_env, Code * code){
 #endif
     Pnode spec = root->child;
     int is_null;
-    int ok = sem_specifier_opt(spec, f_loc_env, code, &is_null);
+    Code spec_code = makecode(S_NOOP);
+    int ok = sem_specifier_opt(spec, f_loc_env, &spec_code, &is_null);
     
     Pschema expr_schema = new_schema_node(-1);
     ok = ok && sem_expr(spec->brother, f_loc_env, &expr_schema, code, 0);
     if (is_null) {
         *code = appcode(*code, makecode_str(S_WRITE, make_format(expr_schema)));
     }else{
+        *code = appcode(*code, spec_code);
         *code = appcode(*code,makecode_str(S_FWRITE, make_format(expr_schema)));
     }
     return ok;
@@ -1286,7 +1290,8 @@ int sem_wr_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
     printf("@@ in sem_wr_expr\n");
 #endif
     int is_null;
-    int ok = sem_specifier_opt(root->child, f_loc_env, code, &is_null);
+    Code spec_code = makecode(S_NOOP);
+    int ok = sem_specifier_opt(root->child, f_loc_env, &spec_code, &is_null);
     int expr_ok = 1;
     if (ok) {
         expr_ok = sem_expr(root->child->brother, f_loc_env, stype, code, 0);
@@ -1294,6 +1299,7 @@ int sem_wr_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
     if (is_null) {
         *code = appcode(*code, makecode_str(S_WR, make_format(*stype)));
     }else{
+        *code = appcode(*code, spec_code);
         *code = appcode(*code,makecode_str(S_FWR, make_format(*stype)));
     }
     
@@ -1305,7 +1311,8 @@ int sem_rd_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
     printf("@@ in sem_rd_expr\n");
 #endif
     int is_null;
-    int ok = sem_specifier_opt(root->child, f_loc_env, code, &is_null);
+    Code spec_code = makecode(S_NOOP);
+    int ok = sem_specifier_opt(root->child, f_loc_env, &spec_code, &is_null);
     printf("\n## dopo specifier_opt\n");
     int dom_ok = 1;
     if (ok) {
@@ -1315,6 +1322,7 @@ int sem_rd_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
     if (is_null) {
         *code = appcode(*code, makecode_str(S_RD, make_format(*stype)));
     }else{
+        *code = appcode(*code, spec_code);
         *code = appcode(*code,makecode_str(S_FRD, make_format(*stype)));
     }
     return ok && dom_ok;
@@ -1422,7 +1430,7 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     
     //printf("%p<=================\n", h_id_node->aux->abs_addr);
     *code = concode(*code,
-                    make_push_pop(h_id_node->aux->num_obj, offset , h_id_node->oid),
+                    make_push_pop(h_id_node->aux->formals_num, h_id_node->aux->num_obj, offset , h_id_node->oid),
                     endcode());
     return id_ok && expr_ok && param_ok;
 }

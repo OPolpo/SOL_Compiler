@@ -17,7 +17,7 @@ func f2(): bool
 		matrix = vector(vector(1,2,3,4,5), 
 				vector(2,4,6,8,10),
 				vector(3,6,9,12,15));
-		write matrix;
+		write ["pippo.ff"] matrix;
 		
 		book = struct(struct("Carl Gustav", "Jung"), "Man and his symbols", struct("ETA", 1992));
 		write ["pippo.txt"] book;

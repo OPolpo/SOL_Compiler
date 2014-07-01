@@ -14,7 +14,7 @@ void exec(Scode *stat) {
     
     printf("[%3d] exec %d", pc, stat->op);
     switch (stat->op) {
-        case S_PUSH: exec_push(stat->args[0].ival, stat->args[1].ival, pc+1); break;
+        case S_PUSH: exec_push(stat->args[0].ival, stat->args[1].ival, stat->args[2].ival, pc+1); break;
         case S_GOTO: exec_goto(stat->args[0].ival); break;
         case S_POP: exec_pop(); break;
         case S_NEW: exec_new(stat->args[0].ival); break;
@@ -345,14 +345,14 @@ void exec_return(){
     pc = top_astack()->raddr;
 }
 
-void exec_push(int size, int chain, int raddr){
+void exec_push(int param, int size, int chain, int raddr){
     printf("push %d %d\n", size, chain);
     Adescr * actual_ar = NULL;
     if(chain >= 0)
         actual_ar = top_astack();
     Adescr * new_ar = push_astack();
     new_ar->numobj = size;
-    new_ar->pos_objects = get_next_op();
+    new_ar->pos_objects = get_next_op()-param;
     new_ar->raddr = raddr;
     int i;
     new_ar->alink = actual_ar;

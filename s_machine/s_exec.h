@@ -29,7 +29,7 @@ typedef struct sformat{
 
 void exec(Scode *stat);
 
-void exec_push(int arg1, int arg2, int pc);
+void exec_push(int arg1, int arg2, int arg3, int pc);
 
 void exec_toint();
 void exec_toreal();
