@@ -1,6 +1,6 @@
 --test :P
-func tester(w:int;):int
-var i, j, k: int;
+func tester():int
+var i, j, k, w: int;
  a, b, c: bool;
 begin tester
 	w = if a or b then 
