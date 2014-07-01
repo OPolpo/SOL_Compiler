@@ -2,9 +2,7 @@
     #include <stdlib.h>
     #include <stdio.h>
     #include <string.h>
-    #include "s_exec.h"
     #include "s_machine.h"
-    #include "../s_compiler/schema.h"
     
     #define YYSTYPE Pformatted
     

@@ -1,8 +1,6 @@
 %{
 #include <stdlib.h>
-//#include "def.h"
-//#include "parser.h"
-#include "../s_compiler/code_gen.h"
+#include "../s_shared/SOL_def.h"
 
 Value lexval;
 unsigned int line = 1;

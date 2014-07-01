@@ -1,7 +1,6 @@
 #include "s_exec.h"
-//#include "parser.h"
 #include "format_parser.h"
-#include "../s_compiler/schema.h"
+#include "../s_shared/schema.h"
 
 Scode *prog;
 int pc;

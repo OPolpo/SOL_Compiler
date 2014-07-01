@@ -58,13 +58,6 @@ typedef enum{
 	T_NONTERMINAL
 } Typenode;
 
-typedef union{
-	char cval;
-	int ival;
-	float rval;
-	char * sval;
-} Value;
-
 typedef struct snode{
 	Typenode type;
 	Value value;
