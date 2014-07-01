@@ -563,17 +563,8 @@ void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
     printf("%d dim\n",elem_dim);
     int i;
     printf("[");
-    //if(top_ostack()->size==40)
-    //    for(i=0;i<10;i++)
-    //        printf("%d",*((int *)elem_addr+i));
-    //else
-    //    printf("non è 40\n");
-            
     for (i=0; i< elem_num; i++){
-        
-        if (i!=0) {
-            printf(", ");
-        }
+        if (i!=0) printf(", ");
         switch (elem_type->type) {
             case SCCHAR:
                 printf("%c",*elem_addr);
@@ -594,9 +585,7 @@ void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
                 print_vector(elem_addr, elem_type->size, elem_type->p1);
                 break;
             case SCSTRUCT:
-                printf("(");
-                
-                printf(")");
+                print_struct(elem_addr, elem_type->p1);
                 break;
             default:
                 break;
@@ -605,6 +594,49 @@ void print_vector(char * elem_addr, int elem_num, Pschema elem_type){
     }
     printf("]");
 }
+
+void print_struct(char * elem_addr, Pschema elem_type){
+    printf("(");
+    int i=0;
+    Pschema temp = elem_type;
+    while (temp) {
+        if (i!=0) {
+            printf(", ");
+            i=1;
+        }
+        printf("%s:", temp->id);
+        switch (temp->type) {
+            case SCCHAR:
+                printf("%c",*elem_addr);
+                break;
+            case SCINT:
+                printf("%d",*(int *)elem_addr);
+                break;
+            case SCREAL:
+                printf("%f",*(float *)elem_addr);
+                break;
+            case SCSTRING:
+                printf("%s",*(char**)elem_addr);
+                break;
+            case SCBOOL:
+                printf("%s", (*(int *)elem_addr)? "true" : "false");
+                break;
+            case SCVECTOR:
+                print_vector(elem_addr, elem_type->size, elem_type->p1);
+                break;
+            case SCSTRUCT:
+                print_struct(elem_addr, elem_type->p1);
+                break;
+            default:
+                break;
+        }
+        elem_addr += compute_size(temp);
+        temp = temp->p2;
+    }
+    
+    printf(")");
+}
+
 
 void exec_write(char* format){
     //printf("   ->%d\n",top_ostack()->size);
@@ -630,9 +662,7 @@ void exec_write(char* format){
             pop_istack(top_ostack()->size);
             break;
         case SCSTRUCT:
-            printf("(");
-            
-            printf(")");
+            print_struct(top_ostack()->inst.sval, root->p1);
             pop_istack(top_ostack()->size);
             break;
         default:

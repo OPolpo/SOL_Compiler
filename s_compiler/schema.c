@@ -194,14 +194,15 @@ char * schema2format(Pschema schema){
         case SCSTRUCT:
             tmp_schema = schema->p1;
             tmp_str = schema2format(tmp_schema);
-            str = calloc((strlen(tmp_schema->id)+strlen(tmp_str)+5),sizeof(char));
-            sprintf(str, "(%s:%s", tmp_schema->id, tmp_str);
+            //str = calloc((strlen(tmp_schema->id)+strlen(tmp_str)+5),sizeof(char));
+            //sprintf(str, "(%s:%s", tmp_schema->id, tmp_str);
+            asprintf(&str, "(%s:%s", tmp_schema->id, tmp_str);
             
             tmp_schema = tmp_schema->p2;
             while (tmp_schema) {
                 tmp_str = schema2format(tmp_schema);
                 //printf("--->%s\n", tmp_str);
-                
+                /*
                 tmp2_str = calloc((strlen(str)+strlen(tmp_str)+1+2),sizeof(char));
                 strcpy(tmp2_str, str);
                 str = tmp2_str;
@@ -209,10 +210,16 @@ char * schema2format(Pschema schema){
                 strcat(str, (tmp_schema->id? tmp_schema->id: ""));
                 strcat(str, ":");
                 strcat(str, tmp_str);//
+                */
+                
+                asprintf(&tmp2_str, "%s,%s:%s", str, (tmp_schema->id? tmp_schema->id: ""), tmp_str);
                 ///sprintf(str, ",%s:%s", tmp_schema->id, tmp_str);
+                str = tmp2_str;
                 tmp_schema = tmp_schema->p2;
             }
-            strcat(str, ")");
+            asprintf(&tmp2_str, "%s)", str);
+            str = tmp2_str;
+            //strcat(str, ")");
             //sprintf(str, ")");
             break;
         default:

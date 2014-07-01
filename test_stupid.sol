@@ -1,33 +1,29 @@
 --test :P
-func tester():int
-var a,b,c:int;
-	str:string;
-	boo:bool;
-	fgh:char;
-	vect : vector [4] of int;
-	sw : vector [2] of string;
-	MAT: vector [2] of vector [5] of int;
-const sss:string="2";
-	pippo:char='a';
-begin tester
-sw  = vector("abc","def");
+func f2(c:bool;): bool 
+	var person: struct(name, surname: string; birth: int;);
+		book: struct(author: struct(name, surname: string;); title: string; edition: struct(editor: string; year: int;););
+		numbers: vector [10] of int;
+		matrix: vector [3] of vector [5] of int;
+		people: vector [4] of struct(name, surname: string; birth: int;);
 
-	--vect = vector(3,6,4,7);
-	--MAT = vector(vector(1,2,3,4,5), vector(2,4,6,8,10));
-	write "stringa";
-	write "aloha";
-	write vector("abc","def");
-	write sw;
-	--write vect;
-	--write MAT;
-	str="";
-	write (pippo);
-	
-	--write (sss);
-	
-	return a;
-end tester
-
---(char *) $29 = 0x0000000100200010 "abc"
---(char *) $36 = 0x0000000100103a10 "def"
---$63 = 0x0000000100400058 "\x10"
+		ok:bool; 
+	begin f2
+		person = struct("John", "Smith", 1987);
+		write person;
+		book = struct(struct("Carl Gustav", "Jung"), "Man and his symbols", struct("ETA", 1992));
+		write book;
+		numbers= vector (1,2,3,4,5,6,7,8,9,0);
+		write numbers;
+		matrix = vector(vector(1,2,3,4,5), 
+				vector(2,4,6,8,10),
+				vector(3,6,9,12,15));
+		write matrix;
+		people = vector(struct("John", "Smith", 1983), 
+						struct("Rosy", "White", 1960),
+						struct("Louis", "Green", 1998), 
+						struct("Ann", "Black", 2001));
+		write people;
+		ok = person.name == "John";
+		write ok;
+		return ok;
+	end f2
