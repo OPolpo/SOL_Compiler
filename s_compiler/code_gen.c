@@ -355,6 +355,9 @@ void print_stat(FILE * stream, Stat * stat){
             break;
             
         case S_PUSH:
+            fprintf(stream, "%d %d %d", stat->args[0].ival, stat->args[1].ival, stat->args[2].ival);
+            break;
+            
         case S_STO:
         case S_LDA:
         case S_CAT:
