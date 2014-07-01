@@ -108,3 +108,61 @@ void basic_wr(FILE* stream, char* format){
     }
     destroy_schema(format_root);    
 }
+
+Pschema formatted2schema(Pformatted root, char * id){
+    Pschema node = NULL;
+    Pformatted current_node;
+    Pschema current_schema;
+    node->id = id;
+    int count=0;
+    switch (root->type) {
+        case F_CHARCONST:
+            node = new_schema_node(SCCHAR);
+            break;
+        case F_INTCONST:
+            node = new_schema_node(SCINT);
+            break;
+        case F_REALCONST:
+            node = new_schema_node(SCREAL);
+            break;
+        case F_STRCONST:
+            node = new_schema_node(SCSTRING);
+            break;
+        case F_BOOLCONST:
+            node = new_schema_node(SCBOOL);
+            break;
+        case F_STRUCT:
+            node = new_schema_node(SCSTRUCT);
+            current_node = root->child;
+            current_schema = formatted2schema(current_node, current_node->id);
+            node->p1 = current_schema;
+            current_node = current_node->brother;
+            while (current_node) {
+                current_schema->p2 = formatted2schema(current_node, current_node->id);
+                current_schema = current_schema->p2;
+                current_node = current_node->brother;
+            }
+            break;
+        case F_VECTOR:
+            node = new_schema_node(SCVECTOR);
+            current_node = root->child;
+            current_schema = formatted2schema(current_node, current_node->id);
+            current_node = current_node->brother;
+            count++;
+            while (current_node) {
+                Pschema next = formatted2schema(current_node, current_node->id);
+                if (!are_compatible(next, current_schema)) {
+                    machine_error("Vector elements must be of the same type\n");
+                }
+                current_node = current_node->brother;
+                count++;
+            }
+            node->size = count;
+            node->p1 = current_schema;
+            break;
+        default:
+            break;
+    }
+    return node;
+}
+
