@@ -170,6 +170,7 @@ void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema){
             break;
     }
     destroy_schema(formatted_schema);
+    destroy_formatted(formatted_root);
 }
 
 void read_vector(Pformatted elem, char * elem_addr, int elem_num, Pschema elem_type){
@@ -276,3 +277,10 @@ Pschema formatted2schema(Pformatted root, char * id){
     return node;
 }
 
+void destroy_formatted(Pformatted formatted){
+    if(formatted->child != NULL)
+        destroy_formatted(formatted->child);
+    if(formatted->brother != NULL)
+        destroy_formatted(formatted->brother);
+    free(formatted);
+}

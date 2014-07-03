@@ -48,6 +48,7 @@ void print_struct(FILE* stream, char * elem_addr, Pschema elem_type);
 void basic_wr(FILE* stream, char* format);
 
 Pschema formatted2schema(Pformatted root, char * id);
+void destroy_formatted(Pformatted formatted);
 
 void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema);
 void read_vector(Pformatted elem, char * elem_addr, int elem_num, Pschema elem_type);
