@@ -140,13 +140,15 @@ void basic_read(FILE* stream, int env_offset, int oid, char* format){
     char* str_readed = newmem(1000);
     fscanf(stream, "%s", str_readed);
     parse_format(format);
-    print_sch(format_root);
-    
     
     parse_formatted(str_readed);
     freemem(str_readed, 1000);
     //return 1;
-    if(!are_compatible(format_root, formatted2schema(formatted_root,NULL))){
+    Pschema formatted_schema = formatted2schema(formatted_root,NULL);
+    
+    print_sch(format_root);
+    print_sch(formatted_schema);
+    if(!are_compatible(format_root, formatted_schema)){
         char* msg;
         asprintf(&msg,"Read error: schema must be compatible");
         machine_error(msg);
@@ -174,6 +176,8 @@ void basic_read(FILE* stream, int env_offset, int oid, char* format){
         default:
             break;
     }
+    destroy_schema(formatted_schema);
+    destroy_schema(format_root);
 }
 
 void read_vector(Pformatted elem, char * elem_addr, int elem_num, Pschema elem_type){
@@ -188,7 +192,7 @@ void read_vector(Pformatted elem, char * elem_addr, int elem_num, Pschema elem_t
                 read_struct(elem->child, elem_addr, elem_type->p1);
                 break;
             default:
-                read_atomic_istack(elem->child, elem_addr, elem_type);
+                read_atomic_istack(elem, elem_addr, elem_type);
                 break;
         }
         elem = elem->brother;

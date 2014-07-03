@@ -84,7 +84,7 @@ attr_list   : attr ',' attr_list {$$ = $1; $$->brother = $3;}
 
 attr : FORMATTED_LEX_ID {$$ = newnode(F_TEMP); $$->id = lexval.sval;} formatted {$$ = $3; $3->id = $2->id; free($2);}
 
-vector_formatted : '(' formatted_list ')' {$$ = vectornode(); $$->child = $2;}
+vector_formatted : '[' formatted_list ']' {$$ = vectornode(); $$->child = $2;}
 
 formatted_list  : formatted ',' formatted_list {$$ = $1; $1->brother = $3;}
                 | formatted
@@ -93,7 +93,7 @@ formatted_list  : formatted ',' formatted_list {$$ = $1; $1->brother = $3;}
 %%
 
 int yyerror(){
-    fprintf(stderr, "Error while parsing the format.\n");
+    fprintf(stderr, "Error while parsing the formatted values.\n");
     return -1;
 }
 
