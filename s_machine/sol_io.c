@@ -107,7 +107,7 @@ void basic_wr(FILE* stream, char* format){
         default:
             break;
     }
-    destroy_schema(format_root);    
+    destroy_schema(format_root);
 }
 
 void read_atomic_istack(Pformatted elem, char * elem_addr, Pschema elem_type){
@@ -130,30 +130,23 @@ void read_atomic_istack(Pformatted elem, char * elem_addr, Pschema elem_type){
     }
 }
 
-void basic_read(FILE* stream, int env_offset, int oid, char* format){
-    Adescr * a_declaration = top_astack();
-    int i;
-    for (i=env_offset; i>0; i--) {
-        a_declaration = a_declaration->alink; // not sure TODO check
-    }
-    Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
+void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema){
     char* str_readed = newmem(1000);
     fscanf(stream, "%s", str_readed);
-    parse_format(format);
     
     parse_formatted(str_readed);
     freemem(str_readed, 1000);
     //return 1;
     Pschema formatted_schema = formatted2schema(formatted_root,NULL);
     
-    print_sch(format_root);
-    print_sch(formatted_schema);
-    if(!are_compatible(format_root, formatted_schema)){
+    //print_sch(format_root);
+    //print_sch(formatted_schema);
+    if(!are_compatible(schema, formatted_schema)){
         char* msg;
         asprintf(&msg,"Read error: schema must be compatible");
         machine_error(msg);
     }
-    switch (format_root->type) {
+    switch (schema->type) {
         case SCCHAR:
         case SCBOOL:
             o_to_lod->inst.cval = formatted_root->value.cval;
@@ -168,16 +161,15 @@ void basic_read(FILE* stream, int env_offset, int oid, char* format){
             o_to_lod->inst.sval = formatted_root->value.sval;
             break;
         case SCVECTOR:
-            read_vector(formatted_root->child, o_to_lod->inst.sval, format_root->size, format_root->p1);
+            read_vector(formatted_root->child, o_to_lod->inst.sval, format_root->size, schema->p1);
             break;
         case SCSTRUCT:
-            read_struct(formatted_root->child, o_to_lod->inst.sval, format_root->p1);
+            read_struct(formatted_root->child, o_to_lod->inst.sval, schema->p1);
             break;
         default:
             break;
     }
     destroy_schema(formatted_schema);
-    destroy_schema(format_root);
 }
 
 void read_vector(Pformatted elem, char * elem_addr, int elem_num, Pschema elem_type){

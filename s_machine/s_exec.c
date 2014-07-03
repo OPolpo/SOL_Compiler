@@ -4,6 +4,9 @@
 Scode *prog;
 int pc;
 
+extern Pschema format_root;
+extern int parse_format();
+
 void exec(Scode *stat) {
     //print_code_instruction(stat);
     //printf("pc %d, ap %d, op %d, ip %d\n",pc,ap,op,ip);
@@ -426,11 +429,38 @@ void exec_lod(int env_offset, int oid){
 }
 
 void exec_read(int offset, int oid, char * format){
-    basic_read(stdin, offset, oid, format);
+    parse_format(format);
+
+    Adescr * a_declaration = top_astack();
+    int i;
+    for (i=offset; i>0; i--) {
+        a_declaration = a_declaration->alink; // not sure TODO check
+    }
+    Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
+    basic_read(stdin, o_to_lod, format_root);
+    destroy_schema(format_root);
+    
 }
 
-void exec_fread(int oid, int offset, char * format){
-    
+void exec_fread(int offset, int oid, char * format){
+    parse_format(format);
+    FILE * fp = NULL;
+    char* file_name = pop_string();
+    fp = fopen(file_name, "r");
+    if(!fp){
+        char* msg;
+        asprintf(&msg,"Can't read %s", file_name);
+        machine_error(msg);
+    }
+    Adescr * a_declaration = top_astack();
+    int i;
+    for (i=offset; i>0; i--) {
+        a_declaration = a_declaration->alink; // not sure TODO check
+    }
+    Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
+    basic_read(fp, o_to_lod, format_root);
+    destroy_schema(format_root);
+    fclose (fp);
 }
 
 void exec_write(char* format){
@@ -445,7 +475,14 @@ void exec_fwrite(char* format){
 }
 
 void exec_rd(char* format){
-    
+    parse_format(format);
+    if (format_root->type == SCVECTOR || format_root->type == SCSTRUCT) {
+        exec_news(compute_size(format_root));
+    }else{
+        exec_new(compute_size(format_root));
+    }
+    basic_read(stdin, top_ostack(), format_root);
+    destroy_schema(format_root);
 }
 
 void exec_frd(char* format){
@@ -456,9 +493,15 @@ void exec_frd(char* format){
         char* msg;
         asprintf(&msg,"Can't read %s", file_name);
         machine_error(msg);
-    }    
-
-    //basic_read(fp, format);
+    }
+    parse_format(format);
+    if (format_root->type == SCVECTOR || format_root->type == SCSTRUCT) {
+        exec_news(compute_size(format_root));
+    }else{
+        exec_new(compute_size(format_root));
+    }
+    basic_read(stdin, top_ostack(), format_root);
+    destroy_schema(format_root);
     fclose (fp);
 }
 

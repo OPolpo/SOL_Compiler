@@ -2,6 +2,7 @@
 #define SOL_IO
 
 #include "format_parser.h"
+#include "s_machine.h"
 #include "../s_shared/schema.h"
 
 typedef enum{
@@ -42,17 +43,13 @@ typedef struct sformat{
 }Format, *Pformat;
 
 void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type);
-
 void print_vector(FILE* stream, char * elem_addr, int elem_num, Pschema elem_type);
-
 void print_struct(FILE* stream, char * elem_addr, Pschema elem_type);
-
 void basic_wr(FILE* stream, char* format);
-
-void basic_read(FILE* stream, int offset, int oid, char* format);
 
 Pschema formatted2schema(Pformatted root, char * id);
 
+void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema);
 void read_vector(Pformatted elem, char * elem_addr, int elem_num, Pschema elem_type);
 void read_atomic_istack(Pformatted elem, char * elem_addr, Pschema elem_type);
 void read_struct(Pformatted elem, char * elem_addr, Pschema elem_type);

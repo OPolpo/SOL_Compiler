@@ -39,7 +39,8 @@ func f2(): bool
 	----				struct("Ann", "Black", 2001));
 	----write people;
 	----ok = person.name == "John";
-	----write ok;
+	read ok;
+	write ok;
 	ok=true;
 		return ok;
 	end f2
