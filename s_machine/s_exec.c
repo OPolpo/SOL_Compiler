@@ -512,7 +512,7 @@ void exec_wr(char* format){
 void exec_fwr(char* format){
     FILE * fp = NULL;
     char* file_name = pop_string();
-    fp = fopen(file_name, "a");
+    fp = fopen(file_name, "w");
     if(!fp){
         char* msg;
         asprintf(&msg,"Can't write %s", file_name);
