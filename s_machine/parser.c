@@ -6,18 +6,18 @@ extern int yylex();
 extern char * yytext;
 extern Scode * prog;
 extern int pc;
+extern int code_size;
 
 void load_scode(FILE * input){
     yyin = input;
     int a;
-    int total_instruction = 0;
     while(1){
         a = next();
         switch(a){
             case S_SCODE:
                 next();
-                total_instruction = atoi(yytext);
-                prog = (Scode *)newmem(total_instruction * sizeof(Scode));
+                code_size = atoi(yytext);
+                prog = (Scode *)newmem(code_size * sizeof(Scode));
                 pc--;
                 break;
                 
@@ -136,7 +136,7 @@ void load_scode(FILE * input){
         }
         
         
-        if (pc==total_instruction-1)
+        if (pc==code_size-1)
             break;
         pc++;
     }

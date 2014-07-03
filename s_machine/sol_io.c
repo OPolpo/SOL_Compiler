@@ -215,9 +215,9 @@ void read_struct(Pformatted elem, char * elem_addr, Pschema elem_type){
                 read_atomic_istack(elem_temp, elem_addr, elem_type_temp);
                 break;
         }
+        elem_addr += compute_size(elem_type_temp);
         elem_temp = elem_temp->brother;
         elem_type_temp = elem_type_temp->p2;
-        elem_addr += compute_size(elem_type_temp);
     }
 }
 

@@ -25,19 +25,24 @@ int main(int argc, char* argv[]){
 }
 
 void start_machine(char * input) {
+    printf("string table\n");
     str_const_table = (Str_c_node **)newmem(sizeof(Str_c_node*)*STR_CONST_DIM);
     FILE *input_file = fopen(input, "r");
     if (!input_file){
         machine_error("ERRORE nel caricamento del file");
     }
+    printf("code\n");
     load_scode(input_file);
     fclose (input_file);
     
     pc = ap = op = ip = 0;
+    printf("astack\n");
     astack = (Adescr**)newmem(sizeof(Adescr*)*ASTACK_UNIT);
     asize = ASTACK_UNIT;
+    printf("ostack\n");
     ostack = (Odescr**)newmem(sizeof(Odescr*)*OSTACK_UNIT);
     osize = OSTACK_UNIT;
+    printf("istack\n");
     istack = (char*)newmem(ISTACK_UNIT);
     isize = ISTACK_UNIT;
 }
@@ -47,10 +52,15 @@ void end_machine() {
     //printf("%d: %d %f %c %s\n",under_top_ostack()->size,under_top_ostack()->inst.ival,under_top_ostack()->inst.rval,under_top_ostack()->inst.cval,under_top_ostack()->inst.sval);
     //pop_ostack();
     //pop_ostack();
+    printf("code\n");
     freemem((char*)prog, sizeof(Scode)*code_size);
+    printf("astack\n");
     freemem((char*)astack, sizeof(Adescr*)*asize);
+    printf("ostack\n");
     freemem((char*)ostack, sizeof(Odescr*)*osize);
+    printf("istack\n");
     freemem(istack, isize);
+    printf("strign table\n");
     free_str_c_table();
     
     printf("Program executed without errors\n");
@@ -63,11 +73,15 @@ void * newmem(int size) {
     void *p;
     if((p = calloc(1,size)) == NULL) machine_error("Failure in memory allocation");
     size_allocated += size;
+    
+    printf("Allocating %d<---\n", size);
     return p;
 }
 
 void freemem(char *p, int size) {
     free(p);
+    
+    printf("Deallocating %d<---\n", size);
     size_deallocated += size;
 }
 
