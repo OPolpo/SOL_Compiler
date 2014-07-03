@@ -137,10 +137,15 @@ void basic_read(FILE* stream, int env_offset, int oid, char* format){
         a_declaration = a_declaration->alink; // not sure TODO check
     }
     Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
-    char* str_readed = NULL;
+    char* str_readed = newmem(1000);
     fscanf(stream, "%s", str_readed);
     parse_format(format);
+    print_sch(format_root);
+    
+    
     parse_formatted(str_readed);
+    freemem(str_readed, 1000);
+    //return 1;
     if(!are_compatible(format_root, formatted2schema(formatted_root,NULL))){
         char* msg;
         asprintf(&msg,"Read error: schema must be compatible");
@@ -191,32 +196,56 @@ void read_vector(Pformatted elem, char * elem_addr, int elem_num, Pschema elem_t
     }
 }
 
-void read_struct(Pformatted elem, char * elem_addr, Pschema elem_type){}
+void read_struct(Pformatted elem, char * elem_addr, Pschema elem_type){
+    Pformatted elem_temp = elem;
+    Pschema elem_type_temp = elem_type;
+    while (elem_type_temp){
+        switch (elem_type_temp->type) {
+            case SCVECTOR:
+                read_vector(elem_temp, elem_addr, elem_type_temp->size, elem_type_temp->p1);
+                break;
+            case SCSTRUCT:
+                read_struct(elem_temp, elem_addr, elem_type_temp->p1);
+                break;
+            default:
+                read_atomic_istack(elem_temp, elem_addr, elem_type_temp);
+                break;
+        }
+        elem_temp = elem_temp->brother;
+        elem_type_temp = elem_type_temp->p2;
+        elem_addr += compute_size(elem_type_temp);
+    }
+}
 
 Pschema formatted2schema(Pformatted root, char * id){
     Pschema node = NULL;
     Pformatted current_node;
     Pschema current_schema;
-    node->id = id;
     int count=0;
     switch (root->type) {
         case F_CHARCONST:
             node = new_schema_node(SCCHAR);
+            node->id = id;
             break;
         case F_INTCONST:
             node = new_schema_node(SCINT);
+            node->id = id;
             break;
         case F_REALCONST:
             node = new_schema_node(SCREAL);
+            node->id = id;
             break;
         case F_STRCONST:
             node = new_schema_node(SCSTRING);
+            node->id = id;
             break;
         case F_BOOLCONST:
             node = new_schema_node(SCBOOL);
+            node->id = id;
             break;
         case F_STRUCT:
             node = new_schema_node(SCSTRUCT);
+            node->id = id;
             current_node = root->child;
             current_schema = formatted2schema(current_node, current_node->id);
             node->p1 = current_schema;
@@ -229,6 +258,7 @@ Pschema formatted2schema(Pformatted root, char * id){
             break;
         case F_VECTOR:
             node = new_schema_node(SCVECTOR);
+            node->id = id;
             current_node = root->child;
             current_schema = formatted2schema(current_node, current_node->id);
             current_node = current_node->brother;
