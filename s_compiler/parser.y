@@ -346,7 +346,7 @@ int main(int argc, char * argv[]){
         
         printf("## START\n");
         Code code = makecode(S_NOOP);
-        sem_program(root, symtab, 0, &code);
+        sem_program(root, symtab, &code);
         printf("## END\n");
 	
         FILE *fp = fopen(ovalue, "w");

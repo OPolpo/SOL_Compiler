@@ -9,21 +9,37 @@ char convert_bool[] = {'0','1'};
 
 
 
-int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code){
+int sem_program(Pnode root, Phash_node f_loc_env, Code * code){
     Poid2address * func_table = new_o2a_table();
     
 #if VERBOSE
     printf("@@ in sem_program\n");
 #endif
+    int not_first = 0;
     Code func_decl_code = makecode(S_NOOP);
     int ok = sem_func_decl(root->child, f_loc_env, not_first, &func_decl_code, func_table);
     
+    Code param_code = makecode(S_NOOP);
+    Formal * current_formal = f_loc_env->aux->formal;
+    while(current_formal){
+        param_code = appcode(makecode_str(S_RD, make_format(current_formal->formal->schema)), param_code);
+        current_formal = current_formal->next;
+    }
+    *code = appcode(*code, param_code);
+    
+    Code write_return = makecode_str(S_WRITE, make_format(f_loc_env->schema));
+    
     //print_code(stderr, &func_decl_code);
-    *code = concode(makecode1(S_SCODE, func_decl_code.size+4),
-                    make_push_pop(f_loc_env->aux->formals_num,f_loc_env->aux->num_obj, -1, f_loc_env->oid),
+    *code = concode(makecode1(S_SCODE, func_decl_code.size+5+f_loc_env->aux->formals_num),
+                    param_code,
+                    make_push_pop(f_loc_env->aux->formals_num,f_loc_env->aux->formals_num, -1, f_loc_env->oid),
+                    write_return,
                     makecode(S_HALT),
                     func_decl_code,
                     endcode());
+    
+
+
     
     cleanup_goto(code, func_table);
     destroy_o2a(func_table);
@@ -49,6 +65,7 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     *code = appcode(*code, makecode1(S_FUNC, new_f_loc_env->oid));
     
     insert_o2a(new_o2a(new_f_loc_env->oid, &(code->tail->address)),func_table);
+    
     //f_loc_env->aux->abs_addr = &(code->tail->address);
     //printf("%d %p<=================%s\n",code->tail->address, &(code->tail->address),id->value.sval);
     
@@ -58,7 +75,6 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
 	int decl_list_opt_ok = sem_decl_list_opt(current, new_f_loc_env, &decl_code, &decl_num_objects);
     *code = appcode(*code, decl_code);*/
 	current = current->brother;
-    
     /*Code sto_code = makecode(S_NOOP);
     
     Formal * current_formal = new_f_loc_env->aux->formal;

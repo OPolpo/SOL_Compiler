@@ -29,7 +29,7 @@
 // };
 
 
-int sem_program(Pnode root, Phash_node f_loc_env, int not_first, Code * code);
+int sem_program(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, Poid2address * func_table);
 int sem_decl_list_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects);
 int sem_decl(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int * num_objects);
