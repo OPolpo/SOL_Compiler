@@ -767,7 +767,7 @@ case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
 #line 25 "s_machine/formatted_lexer.lex"
-;
+return -1;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP

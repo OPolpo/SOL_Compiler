@@ -22,7 +22,7 @@ boolconst	(true|false)
 stringconst \"([^\"])*\"
 
 %%
-{eol}			;
+{eol}			return -1;
 {boolconst}		{lexval.cval = (yytext[0] == 'f' ? '0' : '1'); return(BOOLCONST);}
 {intconst}		{lexval.ival = atoi(yytext); return(INTCONST);}
 {realconst}		{lexval.rval = atof(yytext); return(REALCONST);}

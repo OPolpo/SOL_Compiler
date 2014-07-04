@@ -8,7 +8,7 @@ func f2(): bool
 		num:int;
 		ok:bool; 
 	begin f2
-	read ["readin.txt"] num;
+	read num;
 	write num;
 
 	----read ok;
