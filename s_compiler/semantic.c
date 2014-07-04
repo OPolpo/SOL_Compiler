@@ -823,7 +823,7 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
                     makecode2(S_LOD,offset,id_hash_node->oid),
                     makecode1(S_LDI,1),
                     makecode(S_IPLUS),
-                    makecode2(S_LOD,offset,id_hash_node->oid),
+                    makecode2(S_STO,offset,id_hash_node->oid),
                     makecode1(S_JMP, -(stat_list_code.size+8)),
                     endcode()
                     );

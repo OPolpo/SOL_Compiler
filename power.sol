@@ -9,7 +9,7 @@ func call():real
 		if (exponent == 0) then
 			return 1.0;
 		elsif(exponent < 0) then
-			base = -base;
+			exponent = -exponent;
 			rational = true;
 		endif;
 		for i = 0 to exponent do 
