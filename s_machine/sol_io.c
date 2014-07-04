@@ -223,6 +223,10 @@ Pschema formatted2schema(Pformatted root, char * id){
     Pformatted current_node;
     Pschema current_schema;
     int count=0;
+    if (root == NULL) {
+        return new_schema_node(-1);
+    }
+    
     switch (root->type) {
         case F_CHARCONST:
             node = new_schema_node(SCCHAR);
