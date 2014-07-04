@@ -5,14 +5,15 @@ func call():real
 			i:int;
 			rational:bool;
 	begin pow
-		res=base;
+		res=1.0;
+		rational = false;
 		if (exponent == 0) then
 			return 1.0;
 		elsif(exponent < 0) then
 			exponent = -exponent;
 			rational = true;
 		endif;
-		for i = 0 to exponent do 
+		for i = 1 to exponent do 
 			res = res * base;
 		endfor;
 		if (rational) then
@@ -22,7 +23,7 @@ func call():real
 		endif;
 	end pow
 begin call
-	write pow(2.0,10);
+	write pow(2.0,1);
 	return 1.0;
 end call
 	

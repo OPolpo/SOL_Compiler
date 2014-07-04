@@ -230,9 +230,6 @@ void push_char(char c){
 
 int pop_bool(){
     int i = (top_ostack()->inst.cval != '0');
-    if (i && top_ostack()->inst.cval != '1') {
-        machine_error("pop_bool()");
-    }
     pop_ostack();
     return i;
 }
