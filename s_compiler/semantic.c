@@ -75,15 +75,16 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
 	current = current->brother;// with this we skip type_sec_op cause there are not control or code action to do
     
     int var_num_objects = 0;
-    Code var_code = makecode(S_NOOP);
-	int var_sect_opt_ok = sem_var_sect_opt(current, new_f_loc_env, &var_code, &var_num_objects);
+    Code var_const_code = makecode(S_NOOP);
+	int var_sect_opt_ok = sem_var_sect_opt(current, new_f_loc_env, &var_const_code, &var_num_objects);
     
-    *code = appcode(*code, var_code);
+    //*code = appcode(*code, var_code);
     current = current->brother;
     
     int const_num_objects = 0;
-    int const_sect_opt_ok = sem_const_sect_opt(current, new_f_loc_env, code, &const_num_objects);
+    int const_sect_opt_ok = sem_const_sect_opt(current, new_f_loc_env, &var_const_code, &const_num_objects);
 	current = current->brother;
+    
     
     Code function_list_code = makecode(S_NOOP);
 	int func_list_opt_ok = sem_func_list_opt(current, new_f_loc_env, &function_list_code, func_table);
@@ -91,8 +92,16 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     
     Stat * start = code->tail; //we save the pointer to first stat of the code to sanitize // this is for optimixe sanitization process of return
     int code_len = code->size; //we save the size of the code at the start point // this is for optimixe sanitization process of return
+    int prec_num_obj = new_f_loc_env->aux->num_obj;
     Code func_body_code = makecode(S_NOOP);
 	int func_body_ok = sem_func_body(current, new_f_loc_env, &func_body_code);
+    
+    *code = appcode(*code, var_const_code);
+    int diff = new_f_loc_env->aux->num_obj - prec_num_obj;
+    int i;
+    for (i=0; i<diff; i++) {
+        *code = appcode(*code, makecode1(S_NEW, sizeof(int)));
+    }
     *code = appcode(*code, func_body_code);
 
     cleanup_return(start, code_len, code); //sanitize
