@@ -16,13 +16,13 @@ id			{letter}({letter}|{digit})*:
 num 		{digit}+
 sugar 		[\(\)\[\]\{\}".":,;]
 charconst 	\'.\'
-intconst 	{num}
-realconst	{num}?"."{num}
+intconst 	-?{num}
+realconst	-?{num}?"."{num}
 boolconst	(true|false)
 stringconst \"([^\"])*\"
 
 %%
-
+{eol}			;
 {boolconst}		{lexval.cval = (yytext[0] == 'f' ? '0' : '1'); return(BOOLCONST);}
 {intconst}		{lexval.ival = atoi(yytext); return(INTCONST);}
 {realconst}		{lexval.rval = atof(yytext); return(REALCONST);}

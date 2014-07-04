@@ -7,6 +7,7 @@
     
     #define YYSTYPE Pformatted
     
+    extern FILE *formattedin;
     extern Value lexval;
     extern Str_c_node ** format_stringtable;
     Pformatted formatted_root = NULL;
@@ -97,12 +98,12 @@ int yyerror(){
     return -1;
 }
 
-int parse_formatted(char * formatted){
-    int result;
-    formatted_scan_string(formatted,strlen(formatted));
-    if((result = formattedparse()) == 0)
+void parse_formatted(FILE* stream){
+    //int result;
+    //formatted_scan_string(formatted,strlen(formatted));
+    //if((result = formattedparse()) == 0)
     //print_sch(formatted_root);
-    
-    return 0;
+    formattedin=stream;
+    yyparse();
 }
 

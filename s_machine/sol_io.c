@@ -131,16 +131,20 @@ void read_atomic_istack(Pformatted elem, char * elem_addr, Pschema elem_type){
 }
 
 void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema){
-    char* str_readed = newmem(1000);
-    fscanf(stream, "%s", str_readed);
+    //char* str_readed = newmem(1000);
+    //fscanf(stream, "%s", str_readed);
     
-    parse_formatted(str_readed);
-    freemem(str_readed, 1000);
+    parse_formatted(stream);
+
+    //freemem(str_readed, 1000);
     //return 1;
     Pschema formatted_schema = formatted2schema(formatted_root,NULL);
     
     //print_sch(format_root);
-    //print_sch(formatted_schema);
+    printf("schema letto\n");
+    print_sch(formatted_schema);
+    printf("\nfine schema letto\n");
+
     if(!are_compatible(schema, formatted_schema)){
         char* msg;
         asprintf(&msg,"Read error: schema must be compatible");

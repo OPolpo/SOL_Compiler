@@ -443,6 +443,7 @@ void exec_read(int offset, int oid, char * format){
 }
 
 void exec_fread(int offset, int oid, char * format){
+    printf("\napro connessione al file\n");
     parse_format(format);
     FILE * fp = NULL;
     char* file_name = pop_string();
@@ -458,7 +459,10 @@ void exec_fread(int offset, int oid, char * format){
         a_declaration = a_declaration->alink; // not sure TODO check
     }
     Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
+    printf("ainizio la lettura\n");
     basic_read(fp, o_to_lod, format_root);
+    printf("lettura conclusa\n");
+
     destroy_schema(format_root);
     fclose (fp);
 }

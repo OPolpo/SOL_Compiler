@@ -5,11 +5,11 @@ func f2(): bool
 		--numbers: vector [10] of int;
 		matrix: vector [3] of vector [5] of int;
 		--people: vector [4] of struct(name, surname: string; birth: int;);
-		--num:int;
+		num:int;
 		ok:bool; 
 	begin f2
-	----read num;
-	----write num;
+	read ["readin.txt"] num;
+	write num;
 
 	----read ok;
 	----write ok;
@@ -27,8 +27,8 @@ func f2(): bool
 	matrix = vector(vector(1,2,3,4,5), 
 			vector(2,4,6,8,10),
 			vector(3,6,9,12,15));
-	write ["pippo.txt"] matrix;
-	read  ["pippo.txt"] matrix;
+	--write ["pippo.txt"] matrix;
+	--read  ["pippo.txt"] matrix;
 	write matrix;
 	--write matrix;
 	--
@@ -41,8 +41,8 @@ func f2(): bool
 	----				struct("Ann", "Black", 2001));
 	----write people;
 	----ok = person.name == "John";
-	read ok;
-	write ok;
+	--read ok;
+	--write ok;
 	ok=true;
 		return ok;
 	end f2
