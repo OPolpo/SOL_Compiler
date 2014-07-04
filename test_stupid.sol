@@ -2,14 +2,14 @@
 func f2(): bool 
 	var --person: struct(name, surname: string; birth: int;);
 		--book: struct(author: struct(name, surname: string;); title: string; edition: struct(editor: string; year: int;););
-		--numbers: vector [10] of int;
+		numbers, numbers2: vector [10] of int;
 		matrix: vector [3] of vector [5] of int;
 		--people: vector [4] of struct(name, surname: string; birth: int;);
-		num:int;
+		--num:int;
 		ok:bool; 
 	begin f2
-	read num;
-	write num;
+	--read ["readin.txt"] num;
+	--write num;
 
 	----read ok;
 	----write ok;
@@ -19,17 +19,18 @@ func f2(): bool
 	--write person.name;
 	--write person.surname;
 	--write person.birth;
-	--numbers= vector (1,2,3,4,5,6,7,8,9,0);
-	----read numbers;
-	--write numbers;
-	--
+	numbers= vector (1,2,3,4,5,6,7,8,9,0);
+	--read numbers;
+	write ["numbers.txt"] numbers;
+	read ["numbers.txt"] numbers2;
+	write ["numbers2.txt"] numbers2;
 	--
 	matrix = vector(vector(1,2,3,4,5), 
 			vector(2,4,6,8,10),
 			vector(3,6,9,12,15));
 	--write ["pippo.txt"] matrix;
 	--read  ["pippo.txt"] matrix;
-	write matrix;
+	--write matrix;
 	--write matrix;
 	--
 	--book = struct(struct("Carl Gustav", "Jung"), "Man and his symbols", struct("ETA", 1992));
