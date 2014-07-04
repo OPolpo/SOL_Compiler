@@ -45,5 +45,6 @@ func f2(): bool
 	--read ok;
 	--write ok;
 	ok=true;
+	return true;
 		return ok;
 	end f2

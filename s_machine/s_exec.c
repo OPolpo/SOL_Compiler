@@ -91,6 +91,11 @@ void exec_toreal(){
 }
 
 void exec_pop(){
+    Odescr * temp = *(get_p2objects(top_astack()->pos_objects));
+   
+    *(get_p2objects(top_astack()->pos_objects))=top_ostack();
+    *(top_ostack_addr()) = temp;
+    
     int i,n = top_astack()->numobj;
     for (i=0; i<n; i++) {
         if (top_ostack()->mode == STA) {
@@ -119,7 +124,7 @@ void exec_equ(){
             n = (top_ostack()->inst).sval;
             m = (under_top_ostack()->inst).sval;
         }
-        res = memcmp(n, m, top_ostack()->size);
+        res = memcmp(n, m, top_ostack()->size) == 0;
     }
     pop_ostack();
     pop_ostack();
@@ -136,7 +141,7 @@ void exec_neq(){
         n = (top_ostack()->inst).sval;
         m = (under_top_ostack()->inst).sval;
     }
-    int res = !memcmp(n, m, top_ostack()->size);
+    int res = !memcmp(n, m, top_ostack()->size) != 0;
     pop_ostack();
     pop_ostack();
     push_bool(res);

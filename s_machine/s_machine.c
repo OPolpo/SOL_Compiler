@@ -113,6 +113,14 @@ void pop_astack() {
 Odescr ** get_p2objects(int i){
     return &ostack[i];
 }
+
+Odescr ** top_ostack_addr(){
+    if (op==0) {
+        machine_error("top_ostack");
+    }
+    return &ostack[op-1];
+}
+
 int get_next_op(){
     return op;
 }
