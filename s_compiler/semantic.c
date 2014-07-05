@@ -32,7 +32,7 @@ int sem_program(Pnode root, Phash_node f_loc_env, Code * code){
     //print_code(stderr, &func_decl_code);
     *code = concode(makecode1(S_SCODE, func_decl_code.size+5+f_loc_env->aux->formals_num),
                     param_code,
-                    make_push_pop(f_loc_env->aux->formals_num,f_loc_env->aux->formals_num, -1, f_loc_env->oid),
+                    make_push_pop(f_loc_env->aux->formals_num,f_loc_env->aux->num_obj, -1, f_loc_env->oid),
                     write_return,
                     makecode(S_HALT),
                     func_decl_code,
@@ -108,16 +108,17 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     
     Stat * start = code->tail; //we save the pointer to first stat of the code to sanitize // this is for optimixe sanitization process of return
     int code_len = code->size; //we save the size of the code at the start point // this is for optimixe sanitization process of return
-    int prec_num_obj = new_f_loc_env->aux->num_obj;
+    //int prec_num_obj = new_f_loc_env->aux->num_obj;
     Code func_body_code = makecode(S_NOOP);
 	int func_body_ok = sem_func_body(current, new_f_loc_env, &func_body_code);
     
     *code = appcode(*code, var_const_code);
+    /*
     int diff = new_f_loc_env->aux->num_obj - prec_num_obj;
     int i;
     for (i=0; i<diff; i++) {
         *code = appcode(*code, makecode1(S_NEW, sizeof(int)));
-    }
+    }*/
     *code = appcode(*code, func_body_code);
 
     cleanup_return(start, code_len, code); //sanitize
@@ -836,6 +837,7 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     insert(end_condition_expr_value, f_loc_env->aux->locenv);
     
     *code = concode(*code,
+                    makecode1(S_NEW, sizeof(int)),
                     expr1_code,
                     makecode2(S_STO,offset,id_hash_node->oid),
                     expr2_code,
@@ -898,13 +900,15 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     asprintf(&id_aux_1, "0_AUX_%d", f_loc_env->aux->last_oid);
     Phash_node expr_value = new_id_node(id_aux_1, CLCONST, f_loc_env->aux->last_oid);//todo
     f_loc_env->aux->last_oid++;
-    expr_value->schema = new_schema_node(SCINT);
+    f_loc_env->aux->num_obj++;
+    expr_value->schema = expr_schema;
     insert(expr_value, f_loc_env->aux->locenv);
     
     char * id_aux_2;
     asprintf(&id_aux_2, "0_AUX_%d", f_loc_env->aux->last_oid);
     Phash_node index = new_id_node(id_aux_2, CLCONST, f_loc_env->aux->last_oid);//todo
     f_loc_env->aux->last_oid++;
+    f_loc_env->aux->num_obj++;
     index->schema = new_schema_node(SCINT);
     insert(index, f_loc_env->aux->locenv);
     
@@ -915,6 +919,8 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
         e_s_il_code = makecode1(S_EIL, compute_size(expr_schema->p1));
     
     *code = concode(*code,
+                    makecode1(S_NEWS, compute_size(expr_schema)),
+                    makecode1(S_NEW, sizeof(int)),
                     makecode1(S_LDI,0),
                     makecode2(S_STO,0,index->oid),
                     expr_code,

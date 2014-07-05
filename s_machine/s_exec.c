@@ -91,19 +91,23 @@ void exec_toreal(){
 }
 
 void exec_pop(){
+     printf("\nprima-->%d\n", top_ostack()->inst.ival);
     Odescr * temp = *(get_p2objects(top_astack()->pos_objects));
    
     *(get_p2objects(top_astack()->pos_objects))=top_ostack();
     *(top_ostack_addr()) = temp;
     
     int i,n = top_astack()->numobj;
+    printf("numobj=%d", n);
     for (i=0; i<n; i++) {
         if (top_ostack()->mode == STA) {
             pop_istack(top_ostack()->size);
         }
         pop_ostack();
+        printf("\npop_ostack");
     }
     pop_astack();
+     printf("\n dopo-->%d\n", top_ostack()->inst.ival);
 }
 
 void exec_ist(){
@@ -347,6 +351,7 @@ void exec_neg(){
 
 void exec_return(){
     pc = top_astack()->raddr;
+     printf("-->%d\n", top_ostack()->inst.ival);
 }
 
 void exec_push(int param, int size, int chain, int raddr){

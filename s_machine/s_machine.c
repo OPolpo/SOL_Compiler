@@ -48,6 +48,7 @@ void start_machine(char * input) {
 }
 
 void end_machine() {
+    printf("\n%d %d %d\n", ap, op, ip);
     //printf("%d: %d %f %c %s\n",top_ostack()->size,top_ostack()->inst.ival,top_ostack()->inst.rval,top_ostack()->inst.cval,top_ostack()->inst.sval);
     //printf("%d: %d %f %c %s\n",under_top_ostack()->size,under_top_ostack()->inst.ival,under_top_ostack()->inst.rval,under_top_ostack()->inst.cval,under_top_ostack()->inst.sval);
     //pop_ostack();
@@ -307,10 +308,13 @@ void free_str_c_table(){
         if (str_const_table[i]!=NULL) {
             Str_c_node * newhead = str_const_table[i]->next;
             while (newhead) {
+                freemem(str_const_table[i]->string, (int)strlen(str_const_table[i]->string)+1);
                 freemem((char *)str_const_table[i], sizeof(Str_c_node));
                 str_const_table[i] = newhead;
                 newhead = newhead->next;
             }
+            freemem(str_const_table[i]->string, (int)strlen(str_const_table[i]->string)+1);
+            freemem((char *)str_const_table[i], sizeof(Str_c_node));
         }
     }
     freemem((char*)str_const_table, sizeof(Str_c_node*)*STR_CONST_DIM);

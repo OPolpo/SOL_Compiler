@@ -9,9 +9,12 @@ begin f
 end f
 
 func a(po:int;):string
+var index, ll:int;
 begin a
-
-return a(10000000);
+	for index=0 to po do
+		ll=0;
+	endfor;
+	return a(10000000);
 end a
 
 begin alpha
