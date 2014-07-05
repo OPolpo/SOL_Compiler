@@ -50,8 +50,9 @@ int yyerror(){
 int parse_format(char * format){
     int result;
     format_scan_string(format,strlen(format));
-    if((result = formatparse()) == 0)
-        print_sch(format_root);
+    if((result = formatparse()) == 0){
+        //print_sch(format_root);
+    }
     
     return 0;
 }

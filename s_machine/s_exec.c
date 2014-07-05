@@ -11,7 +11,7 @@ void exec(Scode *stat) {
     //print_code_instruction(stat);
     //printf("pc %d, ap %d, op %d, ip %d\n",pc,ap,op,ip);
     
-    printf("[%3d] exec %d", pc, stat->op);
+    //printf("[%3d] exec %d", pc, stat->op);
     switch (stat->op) {
         case S_PUSH: exec_push(stat->args[0].ival, stat->args[1].ival, stat->args[2].ival, pc+1); break;
         case S_GOTO: exec_goto(stat->args[0].ival); break;
@@ -77,7 +77,7 @@ void exec(Scode *stat) {
         case S_RETURN: exec_return(); break;
         default: machine_error("Unknown operator"); break;
     }
-    printf("pc %d, op %d\n",pc,get_next_op());
+    //printf("pc %d, op %d\n",pc,get_next_op());
 }
 
 void exec_toint(){
@@ -91,23 +91,19 @@ void exec_toreal(){
 }
 
 void exec_pop(){
-     printf("\nprima-->%d\n", top_ostack()->inst.ival);
     Odescr * temp = *(get_p2objects(top_astack()->pos_objects));
    
     *(get_p2objects(top_astack()->pos_objects))=top_ostack();
     *(top_ostack_addr()) = temp;
     
     int i,n = top_astack()->numobj;
-    printf("numobj=%d", n);
     for (i=0; i<n; i++) {
         if (top_ostack()->mode == STA) {
             pop_istack(top_ostack()->size);
         }
         pop_ostack();
-        printf("\npop_ostack");
     }
     pop_astack();
-     printf("\n dopo-->%d\n", top_ostack()->inst.ival);
 }
 
 void exec_ist(){
@@ -351,11 +347,9 @@ void exec_neg(){
 
 void exec_return(){
     pc = top_astack()->raddr;
-     printf("-->%d\n", top_ostack()->inst.ival);
 }
 
 void exec_push(int param, int size, int chain, int raddr){
-    printf("push %d %d\n", size, chain);
     Adescr * actual_ar = NULL;
     if(chain >= 0)
         actual_ar = top_astack();
@@ -371,11 +365,9 @@ void exec_push(int param, int size, int chain, int raddr){
 }
 
 void exec_sto(int env_offset, int oid){
-    printf("STO %d %d\n", env_offset, oid);
     Adescr * a_declaration = top_astack();
     int i;
     for (i=env_offset; i>0; i--) {
-        printf("NOOOO\n");
         a_declaration = a_declaration->alink; // not sure TODO check
     }
     Odescr * o_to_store = *(get_p2objects(a_declaration->pos_objects) + oid-1);
@@ -429,7 +421,7 @@ void exec_lod(int env_offset, int oid){
     Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
     push_ostack();
     memcpy(top_ostack(), o_to_lod, sizeof(Odescr));
-    printf("-->%d\n", top_ostack()->inst.ival);
+    //printf("-->%d\n", top_ostack()->inst.ival);
     
     if (top_ostack()->mode == STA) {
         char * i_address = push_istack(top_ostack()->size);
@@ -453,7 +445,6 @@ void exec_read(int offset, int oid, char * format){
 }
 
 void exec_fread(int offset, int oid, char * format){
-    printf("\napro connessione al file\n");
     parse_format(format);
     FILE * fp = NULL;
     char* file_name = pop_string();
@@ -469,9 +460,7 @@ void exec_fread(int offset, int oid, char * format){
         a_declaration = a_declaration->alink; // not sure TODO check
     }
     Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
-    printf("ainizio la lettura\n");
     basic_read(fp, o_to_lod, format_root);
-    printf("lettura conclusa\n");
 
     destroy_schema(format_root);
     fclose (fp);

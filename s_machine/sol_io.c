@@ -141,9 +141,9 @@ void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema){
     Pschema formatted_schema = formatted2schema(formatted_root,NULL);
     
     //print_sch(format_root);
-    printf("schema letto\n");
-    print_sch(formatted_schema);
-    printf("\nfine schema letto\n");
+    //printf("schema letto\n");
+    //print_sch(formatted_schema);
+    //printf("\nfine schema letto\n");
 
     if(!are_compatible(schema, formatted_schema)){
         char* msg;

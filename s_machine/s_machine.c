@@ -16,54 +16,44 @@ Str_c_node ** str_const_table;
 int main(int argc, char* argv[]){
 	Scode * stat;
 	start_machine(argv[1]);
-    print_str_c_table();
+    //print_str_c_table();
 	while((stat = &prog[pc++])->op != S_HALT)
         exec(stat);
+    
+    
+    printf("\n");
     print_str_c_table();
     end_machine();
     return 0;
 }
 
 void start_machine(char * input) {
-    printf("string table\n");
     str_const_table = (Str_c_node **)newmem(sizeof(Str_c_node*)*STR_CONST_DIM);
     FILE *input_file = fopen(input, "r");
     if (!input_file){
         machine_error("ERRORE nel caricamento del file");
     }
-    printf("code\n");
     load_scode(input_file);
     fclose (input_file);
     
     pc = ap = op = ip = 0;
-    printf("astack\n");
     astack = (Adescr**)newmem(sizeof(Adescr*)*ASTACK_UNIT);
     asize = ASTACK_UNIT;
-    printf("ostack\n");
     ostack = (Odescr**)newmem(sizeof(Odescr*)*OSTACK_UNIT);
     osize = OSTACK_UNIT;
-    printf("istack\n");
     istack = (char*)newmem(ISTACK_UNIT);
     isize = ISTACK_UNIT;
 }
 
 void end_machine() {
-    printf("\n%d %d %d\n", ap, op, ip);
-    //printf("%d: %d %f %c %s\n",top_ostack()->size,top_ostack()->inst.ival,top_ostack()->inst.rval,top_ostack()->inst.cval,top_ostack()->inst.sval);
-    //printf("%d: %d %f %c %s\n",under_top_ostack()->size,under_top_ostack()->inst.ival,under_top_ostack()->inst.rval,under_top_ostack()->inst.cval,under_top_ostack()->inst.sval);
-    //pop_ostack();
-    //pop_ostack();
-    printf("code\n");
+    //printf("\n%d %d %d\n", ap, op, ip);
+
     freemem((char*)prog, sizeof(Scode)*code_size);
-    printf("astack\n");
     freemem((char*)astack, sizeof(Adescr*)*asize);
-    printf("ostack\n");
     freemem((char*)ostack, sizeof(Odescr*)*osize);
-    printf("istack\n");
     freemem(istack, isize);
-    printf("strign table\n");
     free_str_c_table();
-    
+
     printf("Program executed without errors\n");
     printf("Allocation: %ld bytes\n", size_allocated);
     printf("Deallocation: %ld bytes\n", size_deallocated);
@@ -74,15 +64,11 @@ void * newmem(int size) {
     void *p;
     if((p = calloc(1,size)) == NULL) machine_error("Failure in memory allocation");
     size_allocated += size;
-    
-    printf("Allocating %d<---\n", size);
     return p;
 }
 
 void freemem(char *p, int size) {
     free(p);
-    
-    printf("Deallocating %d<---\n", size);
     size_deallocated += size;
 }
 
@@ -183,7 +169,6 @@ void pop_istack(int size) {
 
 void move_down_istack(int to_move, int this_much){
     
-    printf("\n calles move_down_istack %d %d \n", to_move, this_much);
     if(ip - to_move - this_much < 0) machine_error("move_down_istack()");
     if (to_move<0 || this_much<0) machine_error("move_down_istack() parameters");
     memmove(&istack[ip-to_move-this_much], &istack[ip-to_move], to_move);
