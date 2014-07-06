@@ -7,8 +7,6 @@
 char error_msg[100];
 char convert_bool[] = {'0','1'};
 
-
-
 int sem_program(Pnode root, Phash_node f_loc_env, Code * code){
     Poid2address * func_table = new_o2a_table();
     
@@ -29,7 +27,6 @@ int sem_program(Pnode root, Phash_node f_loc_env, Code * code){
     
     Code write_return = makecode_str(S_WRITE, make_format(f_loc_env->schema));
     
-    //print_code(stderr, &func_decl_code);
     *code = concode(makecode1(S_SCODE, func_decl_code.size+5+f_loc_env->aux->formals_num),
                     param_code,
                     make_push_pop(f_loc_env->aux->formals_num,f_loc_env->aux->num_obj, -1, f_loc_env->oid),
@@ -37,9 +34,6 @@ int sem_program(Pnode root, Phash_node f_loc_env, Code * code){
                     makecode(S_HALT),
                     func_decl_code,
                     endcode());
-    
-
-
     
     cleanup_goto(code, func_table);
     destroy_o2a(func_table);
@@ -54,35 +48,13 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
 	Pnode current = id->brother;
     
     Phash_node new_f_loc_env;
-    
     if (not_first)
         new_f_loc_env = getNode(id->value.sval, f_loc_env->aux->locenv);
     else
         new_f_loc_env = f_loc_env;
-    
-    
-    
     *code = appcode(*code, makecode1(S_FUNC, new_f_loc_env->oid));
-    
     insert_o2a(new_o2a(new_f_loc_env->oid, &(code->tail->address)),func_table);
-    
-    //f_loc_env->aux->abs_addr = &(code->tail->address);
-    //printf("%d %p<=================%s\n",code->tail->address, &(code->tail->address),id->value.sval);
-    
-    /*
-    int decl_num_objects = 0;
-    Code decl_code = makecode(S_NOOP);
-	int decl_list_opt_ok = sem_decl_list_opt(current, new_f_loc_env, &decl_code, &decl_num_objects);
-    *code = appcode(*code, decl_code);*/
 	current = current->brother;
-    /*Code sto_code = makecode(S_NOOP);
-    
-    Formal * current_formal = new_f_loc_env->aux->formal;
-    while(current_formal){
-        sto_code = appcode(makecode2(S_STO, 0, (current_formal->formal)->oid), sto_code);
-        current_formal = current_formal->next;
-    }
-    *code = appcode(*code, sto_code);*/
     
     Pschema domain_schema = new_schema_node(-1);
 	int domain_ok = sem_domain(current, new_f_loc_env, &domain_schema, code);
@@ -93,8 +65,6 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     int var_num_objects = 0;
     Code var_const_code = makecode(S_NOOP);
 	int var_sect_opt_ok = sem_var_sect_opt(current, new_f_loc_env, &var_const_code, &var_num_objects);
-    
-    //*code = appcode(*code, var_code);
     current = current->brother;
     
     int const_num_objects = 0;
@@ -108,19 +78,12 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     
     Stat * start = code->tail; //we save the pointer to first stat of the code to sanitize // this is for optimixe sanitization process of return
     int code_len = code->size; //we save the size of the code at the start point // this is for optimixe sanitization process of return
-    //int prec_num_obj = new_f_loc_env->aux->num_obj;
     Code func_body_code = makecode(S_NOOP);
 	int func_body_ok = sem_func_body(current, new_f_loc_env, &func_body_code);
     
     *code = appcode(*code, var_const_code);
-    /*
-    int diff = new_f_loc_env->aux->num_obj - prec_num_obj;
-    int i;
-    for (i=0; i<diff; i++) {
-        *code = appcode(*code, makecode1(S_NEW, sizeof(int)));
-    }*/
     *code = appcode(*code, func_body_code);
-
+    
     cleanup_return(start, code_len, code); //sanitize
     *code = appcode(*code, function_list_code);
     
@@ -242,9 +205,6 @@ int sem_struct_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
     int ok =1;
     Pnode decl = root->child;
     (*stype)->type = SCSTRUCT;
-    //(*stype)->p1 = new_schema_node(-1);
-    
-    
     Pschema last = (*stype)->p1;
     
     while (decl != NULL) { //DECL
@@ -284,7 +244,6 @@ int sem_var_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_ob
 #if VERBOSE
     printf("@@ in sem_var_sect_opt\n");
 #endif
-    
     Pnode current = root->child;
     int var_sect_opt_ok = 1;
     while(current != NULL){
@@ -322,7 +281,6 @@ int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_
                 expr_code = appcode(expr_code, makecode2(S_STO, 0, id_h_node->oid));
                 id_node = id_node->brother;
             }
-            
             ok = ok && are_compatible(domain_schema, expr_schema);
             if(!ok){
                 sem_error(decl_node, "Type error, in CONST initialization domain and expression must be compatible\n");
@@ -360,7 +318,6 @@ int sem_func_body(Pnode root, Phash_node f_loc_env, Code * code){
     int ok = 1;
     int return_ok = 0;
     
-    
     ok = (strcmp(f_loc_env->name, id1->value.sval) == 0);
     if (!ok) {
         sem_error(id1, "Function ID different from ID in function body BEGIN\n");
@@ -369,7 +326,6 @@ int sem_func_body(Pnode root, Phash_node f_loc_env, Code * code){
     
     ok = ok && (strcmp(id1->value.sval, id2->value.sval) == 0);
     if (!ok) {
-        printf("##%s %s\n\n",id1->value.sval, id2->value.sval);
         sem_error(id2, "Function ID different from ID in function body END\n");
     }
     
@@ -493,7 +449,6 @@ int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class 
     
     switch (child->type) {
         case T_ID:{
-            //printf("\n##id %s\n", child->value.sval);
             int offset;
             h_node = find_visible_node(child->value.sval, f_loc_env, &offset);
             if (h_node == NULL) {
@@ -506,8 +461,7 @@ int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class 
                 sem_error(child, "An lhs cannot be a function or a type name\n");
             }
             *lhs_class = h_node->class_node;
-            
-            *stype = h_node->schema; //TODO check about malloc...
+            *stype = h_node->schema;
             
             if (*is_s) {
                 *code = appcode(*code, makecode2(S_LDA,offset,h_node->oid));
@@ -523,11 +477,9 @@ int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * stype, Class 
             switch (child->value.ival) {
                 case NFIELDING:
                     lhs_ok = sem_fielding(child, f_loc_env, stype, lhs_class, code, is_addr, is_s);
-                    
                     break;
                 case NINDEXING:
                     lhs_ok = sem_indexing(child, f_loc_env, stype, lhs_class, code, is_addr, is_s);
-                    
                     break;
                 default:
                     sem_error(child, "Some weird nonterminal node in lhs\n");
@@ -551,12 +503,10 @@ int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     
     int ok_field;
     Pnode lhs_node = root->child;
-    // Pschema lhs_type = new_schema_node(-1);
     Pschema lhs_type = *stype;
     
     ok_field = sem_left_hand_side(lhs_node, f_loc_env, &lhs_type, lhs_class, code, is_addr, is_s);
     
-    //printf("\n## lhs_type\n");
     printSchema(lhs_type, " ");
     
     ok_field = ok_field && (lhs_type->type == SCSTRUCT);
@@ -567,8 +517,6 @@ int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     Pnode id_node = lhs_node->brother;
     //lhs.id must exist... so check lhs children
     Pschema lhs_attr = lhs_type->p1;
-    //printSchema(lhs_attr, " ");
-    
     Code end_code;
     int found = 0;
     int field_offset = 0;
@@ -612,7 +560,6 @@ int sem_indexing(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     Pnode index_node = lhs_node->brother;
     
     Pschema lhs_type = *stype;
-    //printf("\n##1 %d \n",(lhs_type));
     
     ok_index = sem_left_hand_side(lhs_node, f_loc_env, &lhs_type, lhs_class, code, is_addr, is_s);
     
@@ -702,7 +649,7 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
     
 	Pnode main_expr_node = root->child;
     Pnode stat_list_node;
-	int stat_list_ok, main_expr_ok;
+	int stat_list_ok=0, main_expr_ok=0;
     
     Stack_node_code * top = NULL;
     Code * ptemp_code;
@@ -819,8 +766,6 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     if (!ok) {
         sem_error(expr2_node, "Type error: expected INT in FOR-STAT\n");
     }
-    //TODO: check that id is not assigned in stat-list
-    
     Class id_class = id_hash_node->class_node;
     id_hash_node->class_node = CLCOUNT;
     
@@ -830,7 +775,7 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     
     char * id_aux;
     asprintf(&id_aux, "0_AUX_%d", f_loc_env->aux->last_oid);
-    Phash_node end_condition_expr_value = new_id_node(id_aux, CLCONST, f_loc_env->aux->last_oid); //todo
+    Phash_node end_condition_expr_value = new_id_node(id_aux, CLCONST, f_loc_env->aux->last_oid);
     f_loc_env->aux->last_oid++;
     f_loc_env->aux->num_obj++;
     end_condition_expr_value->schema = new_schema_node(SCINT);
@@ -898,7 +843,7 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     
     char * id_aux_1;
     asprintf(&id_aux_1, "0_AUX_%d", f_loc_env->aux->last_oid);
-    Phash_node expr_value = new_id_node(id_aux_1, CLCONST, f_loc_env->aux->last_oid);//todo
+    Phash_node expr_value = new_id_node(id_aux_1, CLCONST, f_loc_env->aux->last_oid);
     f_loc_env->aux->last_oid++;
     f_loc_env->aux->num_obj++;
     expr_value->schema = expr_schema;
@@ -906,7 +851,7 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     
     char * id_aux_2;
     asprintf(&id_aux_2, "0_AUX_%d", f_loc_env->aux->last_oid);
-    Phash_node index = new_id_node(id_aux_2, CLCONST, f_loc_env->aux->last_oid);//todo
+    Phash_node index = new_id_node(id_aux_2, CLCONST, f_loc_env->aux->last_oid);
     f_loc_env->aux->last_oid++;
     f_loc_env->aux->num_obj++;
     index->schema = new_schema_node(SCINT);
@@ -1044,19 +989,11 @@ int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 	
 	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, code, 0);
 	if(expr1_type->type != SCINT && expr1_type->type != SCREAL){
-        
-        printf("\n## expr1 math_expr\n");
-        printSchema(expr1_type," ");
-        
-		//sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", tabsem_types[expr1_type]);
 		sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", "to_do");
 		sem_error(expr1, error_msg);
 	}
 	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, code, 0);
 	if(expr2_type->type != expr1_type->type){
-        printf("\n## expr2 math_expr\n");
-        printSchema(expr2_type," ");
-		//sprintf(error_msg,"Type mismatch, expected %s instead %s\n", tabsem_types[expr1_type],tabsem_types[expr2_type]);
 		sprintf(error_msg,"Type mismatch, expected %s instead %s\n", "to_do", "to_do");
 		sem_error(expr2, error_msg);
 	}
@@ -1141,8 +1078,6 @@ int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * cod
                         expr2_code,
                         endcode());
     }
-    
-    
 	return expr1_ok && expr2_ok;
 }
 
@@ -1291,7 +1226,6 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 		case '-':
             print_sch(expr_type);
 			if(expr_type->type != SCINT && expr_type->type != SCREAL){
-				//sprintf(error_msg,"Type error, expected INT | REAL instead of %s \n", tabsem_types[expr_type]);//
 				sprintf(error_msg,"Type error, expected INT | REAL\n");
 				sem_error(root->child, error_msg);
 			}
@@ -1305,7 +1239,6 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
             break;
 		case NOT:
 			if(expr_type->type != SCBOOL){
-				//sprintf(error_msg,"Type error, expected BOOL instead of %s \n", tabsem_types[expr_type]);//
 				sprintf(error_msg,"Type error, expected BOOL in NEG-EXPR\n");
 				sem_error(root->child, error_msg);
 			}
@@ -1442,7 +1375,6 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     while (param_node != NULL && current_formal != NULL) {
         current_schema = new_schema_node(-1);
         
-        printf("\n## PARAMETRO\n");
         expr_ok = expr_ok && sem_expr(param_node, f_loc_env, &current_schema, code, 0);
         
         print_sch(current_schema);
@@ -1460,7 +1392,6 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     }
     (*stype) = h_id_node->schema;
     
-    //printf("%p<=================\n", h_id_node->aux->abs_addr);
     *code = concode(*code,
                     make_push_pop(h_id_node->aux->formals_num, h_id_node->aux->num_obj, offset , h_id_node->oid),
                     endcode());
@@ -1477,7 +1408,7 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 	Pnode elsif_expr_node = first_expr_node->brother;
 	Pnode else_expr_node = elsif_expr_node->brother;
     
-	//check contraint on conditional clause
+	//check constraint on conditional clause
 	Pschema main_expr_type = new_schema_node(-1);
 	int main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, code, 0);
     
@@ -1499,7 +1430,7 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 	}
     
     int offset_to_exit = else_expr_code.size+1;
-	//check contraint on elsif part
+	//check constraint on elsif part
 	Pschema elsif_expr_type = new_schema_node(-1);
     Code elsif_expr_code = makecode(S_NOOP);
 	int elsif_expr_ok = sem_elsif_expr_list_opt(elsif_expr_node, f_loc_env, &elsif_expr_type, &elsif_expr_code, &offset_to_exit);
@@ -1535,11 +1466,9 @@ int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype, C
     
 	Pnode main_expr_node = root->child;
     Pnode expr_node;
-    Pschema * expr_type;
-    int main_expr_ok, expr_ok;
+    Pschema * expr_type = NULL;
+    int main_expr_ok = 0, expr_ok = 0;
     
-    //Stack_code * code_stack;
-    //StackInit(&code_stack);
     Stack_node_code * top = NULL;
     
     Code * ptemp_code;
