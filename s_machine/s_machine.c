@@ -245,13 +245,21 @@ void push_string(char * s){ //assuming is "mallocated" and is in the hash table
 char * insert_str_c(char * s){
     char *without = s;
     
+    char * format_position = strstr(without, "\\n");
+    while (format_position) {
+        *format_position = '\n';
+        ++format_position;
+        memmove(format_position, format_position+1, strlen(format_position+1)+1);
+        format_position = strstr(without, "\\n");
+
+    }
+    
     char * p_on_table = get_str_c(without);
     if (!p_on_table){
         int pos = hash_str_c(without);
         Str_c_node * new_node = (Str_c_node *)newmem(sizeof(Str_c_node));
         new_node->string = (char*)newmem(((int)strlen(without)+1) * sizeof(char));
         
-        //new_node->string = calloc(strlen(s)+1, sizeof(char));
         strcpy(new_node->string, without);
         p_on_table = new_node->string;
         new_node->next = str_const_table[pos];
