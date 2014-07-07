@@ -1,5 +1,5 @@
 CC = cc -g $(CFLAGS)
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -D_GNU_SOURCE
 C_PATH = s_compiler
 C_PATH_LEX = s_compiler
 C_PATH_PRSR = s_compiler
