@@ -1,4 +1,6 @@
-func call():real
+func call():int
+	var readedNumb:real;
+	const msgReqNumb:string = "Please, insert a real number\n";
 	--power
 	func pow(base: real; exponent:int;): real
 		var res:real;
@@ -23,7 +25,13 @@ func call():real
 		endif;
 	end pow
 begin call
-	write pow(2.0,1);
-	return 1.0;
+	write msgReqNumb;
+	read readedNumb;
+	write "the power of ";
+	write readedNumb;
+	write " is: ";
+	write pow(readedNumb,2);
+	write "\n";
+	return 0;
 end call
 	
