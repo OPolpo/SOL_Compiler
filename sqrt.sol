@@ -22,10 +22,10 @@ begin sqrt
         --write vector(toreal(step),val,low,high,mid,midsqr);
         if (mid * mid > val) then
             high = mid;
-            --write ("- too high\n");
+            write ("- too high\n");
         else
             low = mid;
-            --write ("- too low\n");
+            write ("- too low\n");
         endif;
     endwhile;
 

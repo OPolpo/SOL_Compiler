@@ -91,6 +91,8 @@ void basic_wr(FILE* stream, char* format){
             fprintf(stream, "%f", top_ostack()->inst.rval);
             break;
         case SCSTRING:
+            printf("%s",strchr(top_ostack()->inst.sval, '\n'));
+            
             fprintf(stream, "\"%s\"", top_ostack()->inst.sval);
             break;
         case SCBOOL:
