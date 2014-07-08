@@ -9,7 +9,8 @@ Odescr **ostack;
 char *istack;
 int asize, osize, isize, code_size;
 int ap, op, ip; // point to he first free elements of their stack
-long size_allocated = 0, size_deallocated = 0;
+extern long size_allocated;
+extern long size_deallocated;
 
 Str_c_node ** str_const_table;
 
@@ -60,17 +61,17 @@ void end_machine() {
     printf("Residue: %ld bytes\n", size_allocated - size_deallocated);
 }
 
-void * newmem(int size) {
-    void *p;
-    if((p = calloc(1,size)) == NULL) machine_error("Failure in memory allocation");
-    size_allocated += size;
-    return p;
-}
+// void * newmem(int size) {
+//     void *p;
+//     if((p = calloc(1,size)) == NULL) machine_error("Failure in memory allocation");
+//     size_allocated += size;
+//     return p;
+// }
 
-void freemem(char *p, int size) {
-    free(p);
-    size_deallocated += size;
-}
+// void freemem(char *p, int size) {
+//     free(p);
+//     size_deallocated += size;
+// }
 
 Adescr * top_astack(){
     if (ap==0) {

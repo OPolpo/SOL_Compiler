@@ -42,10 +42,10 @@ typedef struct sformat{
     struct sformat *brother;
 }Format, *Pformat;
 
-void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type);
-void print_vector(FILE* stream, char * elem_addr, int elem_num, Pschema elem_type);
-void print_struct(FILE* stream, char * elem_addr, Pschema elem_type);
-void basic_wr(FILE* stream, char* format);
+void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type, int on_file);
+void print_vector(FILE* stream, char * elem_addr, int elem_num, Pschema elem_type, int on_file);
+void print_struct(FILE* stream, char * elem_addr, Pschema elem_type, int on_file);
+void basic_wr(FILE* stream, char* format, int on_file);
 
 Pschema formatted2schema(Pformatted root, char * id);
 void destroy_formatted(Pformatted formatted);

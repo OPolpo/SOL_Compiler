@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../s_shared/SOL_def.h"
+#include "../s_shared/mem_utils.h"
+
 
 #define MAXARGS 3
 #define STR_CONST_DIM 401
@@ -43,8 +45,8 @@ typedef struct str_c_node{
 
 void start_machine();
 void end_machine();
-void *newmem(int size);
-void freemem(char *p, int size);
+// void *newmem(int size);
+// void freemem(char *p, int size);
 
 Adescr * top_astack();
 Adescr * push_astack();

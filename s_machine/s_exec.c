@@ -467,7 +467,7 @@ void exec_fread(int offset, int oid, char * format){
 }
 
 void exec_write(char* format){
-    basic_wr(stdout, format);
+    basic_wr(stdout, format, 0);
     pop_ostack();
 }
 
@@ -509,7 +509,7 @@ void exec_frd(char* format){
 }
 
 void exec_wr(char* format){
-    basic_wr(stdout, format);
+    basic_wr(stdout, format, 0);
 }
 
 void exec_fwr(char* format){
@@ -521,7 +521,7 @@ void exec_fwr(char* format){
         asprintf(&msg,"Can't write %s", file_name);
         machine_error(msg);
     }
-    basic_wr(fp, format);
+    basic_wr(fp, format, 1);
     fclose (fp);
 }
 

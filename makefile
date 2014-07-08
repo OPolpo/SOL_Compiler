@@ -12,8 +12,9 @@ M_PATH_F_PRSR = s_machine
 
 SHARED_PATH = s_shared
 
-C_OBJ = $(C_PATH_LEX)/lex.o $(C_PATH_PRSR)/parser.o $(C_PATH)/tree.o $(C_PATH)/hash_table.o $(C_PATH)/symbol_table.o $(C_PATH)/semantic.o $(C_PATH)/code_gen.o $(SHARED_PATH)/schema.o
-M_OBJ = $(M_PATH_LEX)/lex.o $(M_PATH_PRSR)/parser.o  $(M_PATH_F_LEX)/format_lexer.o $(M_PATH_F_PRSR)/format_parser.o $(M_PATH_F_LEX)/formatted_lexer.o $(M_PATH_F_PRSR)/formatted_parser.o $(M_PATH)/s_exec.o $(M_PATH)/s_machine.o $(C_PATH)/code_gen.o $(SHARED_PATH)/schema.o $(M_PATH)/sol_io.o
+C_OBJ = $(C_PATH_LEX)/lex.o $(C_PATH)/tree.o $(C_PATH)/hash_table.o $(C_PATH)/symbol_table.o $(C_PATH)/semantic.o $(C_PATH)/code_gen.o $(SHARED_PATH)/schema.o $(SHARED_PATH)/mem_utils.o $(C_PATH_PRSR)/parser.o
+
+M_OBJ = $(M_PATH_LEX)/lex.o $(M_PATH_PRSR)/parser.o  $(M_PATH_F_LEX)/format_lexer.o $(M_PATH_F_PRSR)/format_parser.o $(M_PATH_F_LEX)/formatted_lexer.o $(M_PATH_F_PRSR)/formatted_parser.o $(M_PATH)/s_exec.o $(SHARED_PATH)/schema.o $(SHARED_PATH)/mem_utils.o $(C_PATH)/code_gen.o $(M_PATH)/sol_io.o $(M_PATH)/s_machine.o 
 
 all: compiler machine
 

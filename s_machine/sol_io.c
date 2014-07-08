@@ -7,7 +7,7 @@ extern int parse_format();
 extern int parse_formatted();
 
 
-void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type){
+void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type, int on_file){
     switch (elem_type->type) {
         case SCCHAR:
             fprintf(stream, "\'%c\'",*elem_addr);
@@ -19,7 +19,10 @@ void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type){
             fprintf(stream, "%f",*(float *)elem_addr);
             break;
         case SCSTRING:
-            fprintf(stream, "\"%s\"",*(char**)elem_addr);
+            if(on_file)
+                fprintf(stream, "\"%s\"",*(char**)elem_addr);
+            else
+                fprintf(stream, "%s",*(char**)elem_addr);
             break;
         case SCBOOL:
             fprintf(stream, "%s", (*(int *)elem_addr)? "true" : "false");
@@ -29,7 +32,7 @@ void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type){
     }
 }
 
-void print_vector(FILE* stream, char * elem_addr, int elem_num, Pschema elem_type){
+void print_vector(FILE* stream, char * elem_addr, int elem_num, Pschema elem_type, int on_file){
     int elem_dim = compute_size(elem_type);
     int i;
     fprintf(stream, "[");
@@ -37,13 +40,13 @@ void print_vector(FILE* stream, char * elem_addr, int elem_num, Pschema elem_typ
         if (i!=0) fprintf(stream, ", ");
         switch (elem_type->type) {
             case SCVECTOR:
-                print_vector(stream, elem_addr, elem_type->size, elem_type->p1);
+                print_vector(stream, elem_addr, elem_type->size, elem_type->p1, on_file);
                 break;
             case SCSTRUCT:
-                print_struct(stream, elem_addr, elem_type->p1);
+                print_struct(stream, elem_addr, elem_type->p1, on_file);
                 break;
             default:
-                print_atomic_istack(stream, elem_addr, elem_type);
+                print_atomic_istack(stream, elem_addr, elem_type, on_file);
                 break;
         }
         elem_addr += (elem_dim);
@@ -51,7 +54,7 @@ void print_vector(FILE* stream, char * elem_addr, int elem_num, Pschema elem_typ
     fprintf(stream, "]");
 }
 
-void print_struct(FILE* stream, char * elem_addr, Pschema elem_type){
+void print_struct(FILE* stream, char * elem_addr, Pschema elem_type, int on_file){
     fprintf(stream, "(");
     int i=0;
     Pschema temp = elem_type;
@@ -63,13 +66,13 @@ void print_struct(FILE* stream, char * elem_addr, Pschema elem_type){
         fprintf(stream,"%s:", temp->id);
         switch (temp->type) {
             case SCVECTOR:
-                print_vector(stream, elem_addr, temp->size, temp->p1);
+                print_vector(stream, elem_addr, temp->size, temp->p1, on_file);
                 break;
             case SCSTRUCT:
-                print_struct(stream, elem_addr, temp->p1);
+                print_struct(stream, elem_addr, temp->p1, on_file);
                 break;
             default:
-                print_atomic_istack(stream, elem_addr, temp);
+                print_atomic_istack(stream, elem_addr, temp, on_file);
                 break;
         }
         elem_addr += compute_size(temp);
@@ -78,7 +81,7 @@ void print_struct(FILE* stream, char * elem_addr, Pschema elem_type){
     fprintf(stream, ")");
 }
 
-void basic_wr(FILE* stream, char* format){
+void basic_wr(FILE* stream, char* format, int on_file){
     parse_format(format);
     switch (format_root->type) {
         case SCCHAR:
@@ -91,19 +94,20 @@ void basic_wr(FILE* stream, char* format){
             fprintf(stream, "%f", top_ostack()->inst.rval);
             break;
         case SCSTRING:
-            printf("%s",strchr(top_ostack()->inst.sval, '\n'));
-            
-            fprintf(stream, "\"%s\"", top_ostack()->inst.sval);
+            if(on_file)
+                fprintf(stream, "\"%s\"", top_ostack()->inst.sval);
+            else
+                fprintf(stream, "%s", top_ostack()->inst.sval);
             break;
         case SCBOOL:
             fprintf(stream, "%s", pop_bool()? "true" : "false");
             break;
         case SCVECTOR:
-            print_vector(stream, top_ostack()->inst.sval, format_root->size, format_root->p1);
+            print_vector(stream, top_ostack()->inst.sval, format_root->size, format_root->p1, on_file);
             pop_istack(top_ostack()->size);
             break;
         case SCSTRUCT:
-            print_struct(stream, top_ostack()->inst.sval, format_root->p1);
+            print_struct(stream, top_ostack()->inst.sval, format_root->p1, on_file);
             pop_istack(top_ostack()->size);
             break;
         default:
