@@ -81,7 +81,7 @@ void exec(Scode *stat) {
 }
 
 void exec_toint(){
-    int n = (float)pop_int();
+    float n = (float)pop_int();
     push_real(n);
 }
 

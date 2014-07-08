@@ -979,7 +979,7 @@ int sem_write_stat(Pnode root, Phash_node f_loc_env, Code * code){
     return ok;
 }
 
-int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
+int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, Const_val * cv){
 #if VERBOSE
     printf("@@ in sem_math_expr\n");
 #endif
@@ -987,31 +987,51 @@ int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 	Pnode expr2 = root->child->brother;
 	Pschema expr1_type = new_schema_node(-1);
 	Pschema expr2_type = new_schema_node(-1);
+
+    Const_val * cv_n1 = new_const_val();
+    Const_val * cv_n2 = new_const_val();
 	
-	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, code, 0);
+
+
+	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, code, 0, cv_n1);
 	if(expr1_type->type != SCINT && expr1_type->type != SCREAL){
 		sprintf(error_msg,"Type error, expected INT | REAL instead %s \n", "to_do");
 		sem_error(expr1, error_msg);
 	}
-	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, code, 0);
+	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, code, 0, cv_n2);
 	if(expr2_type->type != expr1_type->type){
 		sprintf(error_msg,"Type mismatch, expected %s instead %s\n", "to_do", "to_do");
 		sem_error(expr2, error_msg);
 	}
 	(*stype)->type = expr1_type->type;
+
+    cv->is_const = (cv_n1->is_const && cv_n2->is_const);
+
     
     if (expr1_type->type == SCINT) {
         switch (root->qualifier) {
             case '+':
+                if (cv->is_const) {
+                    cv->value.ival = cv_n1->value.ival + cv_n2->value.ival;
+                }
                 *code = appcode(*code, makecode(S_IPLUS));
                 break;
             case '-':
+                if (cv->is_const) {
+                    cv->value.ival = cv_n1->value.ival - cv_n2->value.ival;
+                }
                 *code = appcode(*code, makecode(S_IMINUS));
                 break;
             case '*':
+                if (cv->is_const) {
+                    cv->value.ival = cv_n1->value.ival * cv_n2->value.ival;
+                }
                 *code = appcode(*code, makecode(S_ITIMES));
                 break;
             case '/':
+                if (cv->is_const) {
+                    cv->value.ival = cv_n1->value.ival / cv_n2->value.ival;
+                }
                 *code = appcode(*code, makecode(S_IDIV));
                 break;
             default:
@@ -1021,15 +1041,27 @@ int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     else{ //expr1_type->type == REAL
         switch (root->qualifier) {
             case '+':
+                if (cv->is_const) {
+                    cv->value.rval = cv_n1->value.rval + cv_n2->value.rval;
+                }
                 *code = appcode(*code, makecode(S_RPLUS));
                 break;
             case '-':
+                if (cv->is_const) {
+                    cv->value.rval = cv_n1->value.rval - cv_n2->value.rval;
+                }
                 *code = appcode(*code, makecode(S_RMINUS));
                 break;
             case '*':
+                if (cv->is_const) {
+                    cv->value.rval = cv_n1->value.rval * cv_n2->value.rval;
+                }
                 *code = appcode(*code, makecode(S_RTIMES));
                 break;
             case '/':
+                if (cv->is_const) {
+                    cv->value.rval = cv_n1->value.rval / cv_n2->value.rval;
+                }
                 *code = appcode(*code, makecode(S_RDIV));
                 break;
             default:
@@ -1037,6 +1069,8 @@ int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
         }
         
     }
+    free(cv_n1);
+    free(cv_n2);
     
 	return expr1_ok && expr2_ok;
 }
