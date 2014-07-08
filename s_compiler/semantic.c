@@ -1113,8 +1113,7 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
                 sem_error(root, "Type mismatch in relational expression\n");//to_do
 			break;
 		case IN:
-            type_ok = expr2_type->type == SCVECTOR;
-            if (type_ok) {
+            if (expr2_type->type == SCVECTOR) {
                 type_ok = are_compatible(expr1_type, expr2_type->p1 );
             }
             if(!type_ok)

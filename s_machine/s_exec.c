@@ -11,7 +11,7 @@ void exec(Scode *stat) {
     //print_code_instruction(stat);
     //printf("pc %d, ap %d, op %d, ip %d\n",pc,ap,op,ip);
     
-    printf("[%3d] exec %d", pc, stat->op);
+    //printf("[%3d] exec %d", pc, stat->op);
     switch (stat->op) {
         case S_PUSH: exec_push(stat->args[0].ival, stat->args[1].ival, stat->args[2].ival, pc+1); break;
         case S_GOTO: exec_goto(stat->args[0].ival); break;
@@ -77,7 +77,7 @@ void exec(Scode *stat) {
         case S_RETURN: exec_return(); break;
         default: machine_error("Unknown operator"); break;
     }
-    printf("pc %d, op %d\n",pc,get_next_op());
+    //printf("pc %d, op %d\n",pc,get_next_op());
 }
 
 void exec_toint(){
@@ -263,13 +263,11 @@ void exec_sle(){
 void exec_in(){
     int found=0, i, n = top_ostack()->size / under_top_ostack()->size;
     char * to_find = (under_top_ostack()->mode == EMB) ? (char *)&(under_top_ostack()->inst) : under_top_ostack()->inst.sval;
-    char * temp = top_ostack()->inst.sval;
     for (i=0; i<n; i++) {
-        if (memcmp(temp, to_find, under_top_ostack()->size)==0) {
+        if (memcmp(top_ostack()->inst.sval, to_find, under_top_ostack()->size)==0) {
             found = 1;
             break;
         }
-        temp += under_top_ostack()->size;
     }
     pop_ostack();
     pop_ostack();
