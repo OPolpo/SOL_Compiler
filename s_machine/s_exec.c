@@ -81,12 +81,14 @@ void exec(Scode *stat) {
 }
 
 void exec_toint(){
-    int n = (float)pop_int();
+    float n = (float)pop_int();
+    printf("%f<-\n", n);
     push_real(n);
 }
 
 void exec_toreal(){
     int n = (int)pop_real();
+    printf("%d<-\n", n);
     push_int(n);
 }
 
