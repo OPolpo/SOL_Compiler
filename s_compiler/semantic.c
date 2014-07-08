@@ -1041,7 +1041,7 @@ int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
 	return expr1_ok && expr2_ok;
 }
 
-int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
+int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, Const_val * cv){
 #if VERBOSE
     printf("@@ in sem_logic_expr\n");
 #endif
@@ -1060,11 +1060,14 @@ int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * cod
 	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, &expr2_code, 0, cv_n1);
 	if(expr2_type->type != SCBOOL)
 		sem_error(expr2, "Type error, expected BOOL in LOGIC-EXPR\n");
-	
+    
+	cv->is_const = (cv_n1->is_const && cv_n2->is_const);
     (*stype)->type = SCBOOL;
     
     if (root->qualifier == AND) {
-        
+        if (cv->is_const) {
+            cv->value.ival = cv_n1->value.ival && cv_n2->value.ival;
+        }
         *code = concode(*code,
                         expr1_code,
                         makecode1(S_JMF, expr2_code.size+2),
@@ -1073,6 +1076,9 @@ int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * cod
                         make_ldc('0'),
                         endcode());
     }else{//root->qualifier == OR
+        if (cv->is_const) {
+            cv->value.ival = cv_n1->value.ival || cv_n2->value.ival;
+        }
         *code = concode(*code,
                         expr1_code,
                         makecode1(S_JMF, 3),
@@ -1081,6 +1087,8 @@ int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * cod
                         expr2_code,
                         endcode());
     }
+    free(cv_n1);
+    free(cv_n2);
 	return expr1_ok && expr2_ok;
 }
 
@@ -1537,12 +1545,14 @@ int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     
 	//check constraint on conditional clause
 	Pschema main_expr_type = new_schema_node(-1);
-	int main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, code, 0);
-    
+    Const_val * cv_n = new_const_val();
+	int main_expr_ok = sem_expr(main_expr_node, f_loc_env, &main_expr_type, code, 0, cv_n);
 	if (main_expr_type->type!=SCBOOL){
 		sem_error(main_expr_node, "Type Error, expected BOOL in conditional clause\n");
 	}
-    
+    if (cv_n->is_const) {
+        <#statements#>
+    }
 	//check constraint on first and last alternative
 	Pschema * first_expr_type = stype;
     Code first_expr_code = makecode(S_NOOP);
