@@ -1,12 +1,12 @@
 --test :P
 func f2(): int 
-	var --person: struct(name, surname: string; birth: int;);
+	--var --person: struct(name, surname: string; birth: int;);
 		--book: struct(author: struct(name, surname: string;); title: string; --edition: struct(editor: string; year: int;););
 		--numbers: vector [10] of int;
-		matrix: vector [3] of vector [5] of int;
+		--matrix: vector [3] of vector [5] of int;
 		--people: vector [4] of struct(name, surname: string; birth: int;);
-		num:int;
-		ok:bool; 
+		--num:int;
+		--ok:bool; 
 	begin f2
 	--read num;
 	--write num;
@@ -26,10 +26,10 @@ func f2(): int
 
 	--
 	--
-	matrix = vector(vector(1,2,3,4,5), 
-			vector(2,4,6,8,10),
-			vector(3,6,9,12,15));
-		num= matrix[1][2];
+--	matrix = vector(vector(1,2,3,4,5), 
+--			vector(2,4,6,8,10),
+--			vector(3,6,9,12,15));
+--		num= matrix[1][2];
 	--write ["pippo.txt"] matrix;
 	--read  ["pippo.txt"] matrix;
 	--write matrix;
@@ -49,5 +49,6 @@ func f2(): int
 	--ok=true;
 	--return true;
 		--return ok;
-		return num;
+		--return num;
+		return 0;
 	end f2

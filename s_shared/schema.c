@@ -213,5 +213,5 @@ void destroy_schema(Pschema schema){
         destroy_schema(schema->p1);
     if(schema->p2 != NULL)
         destroy_schema(schema->p2);
-    freemem(schema, sizeof(Schema));
+    freemem((void*)schema, sizeof(Schema));
 }

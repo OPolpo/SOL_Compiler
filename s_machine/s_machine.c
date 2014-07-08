@@ -178,6 +178,7 @@ void move_down_istack(int to_move, int this_much){
 
 int pop_int(){
     int i = top_ostack()->inst.ival;
+    printf("--%d-- \n", i);
     pop_ostack();
     return i;
 }
