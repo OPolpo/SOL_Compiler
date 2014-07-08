@@ -7,7 +7,6 @@
 char error_msg[100];
 char convert_bool[] = {'0','1'};
 
-
 int sem_program(Pnode root, Phash_node f_loc_env, Code * code){
     Poid2address * func_table = new_o2a_table();
     
@@ -1049,22 +1048,20 @@ int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * cod
 	Pnode expr2 = root->child->brother;
 	Pschema expr1_type = new_schema_node(-1);
 	Pschema expr2_type = new_schema_node(-1);
-    Const_val * cv_n1 = new_const_val();
-    Const_val * cv_n2 = new_const_val();
+    
     Code expr1_code = makecode(S_NOOP);
     Code expr2_code = makecode(S_NOOP);
-	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, &expr1_code, 0, cv_n1);
+	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, &expr1_code, 0);
 	if(expr1_type->type != SCBOOL)
 		sem_error(expr1, "Type error, expected BOOL in LOGIC-EXPR\n");
     
-	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, &expr2_code, 0, cv_n1);
+	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, &expr2_code, 0);
 	if(expr2_type->type != SCBOOL)
 		sem_error(expr2, "Type error, expected BOOL in LOGIC-EXPR\n");
 	
     (*stype)->type = SCBOOL;
     
     if (root->qualifier == AND) {
-        
         *code = concode(*code,
                         expr1_code,
                         makecode1(S_JMF, expr2_code.size+2),
@@ -1072,7 +1069,7 @@ int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * cod
                         makecode1(S_JMP, 2),
                         make_ldc('0'),
                         endcode());
-    }else{//root->qualifier == OR
+    }else{//root->qualifier == AND
         *code = concode(*code,
                         expr1_code,
                         makecode1(S_JMF, 3),
@@ -1084,7 +1081,7 @@ int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * cod
 	return expr1_ok && expr2_ok;
 }
 
-int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, Const_val * cv){
+int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 #if VERBOSE
     printf("@@ in sem_rel_expr\n");
 #endif
@@ -1092,12 +1089,8 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code,
 	Pnode expr2 = root->child->brother;
 	Pschema expr1_type = new_schema_node(-1);
 	Pschema expr2_type = new_schema_node(-1);
-    Const_val * cv_n1 = new_const_val();
-    Const_val * cv_n2 = new_const_val();
-	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, code, 0, cv_n1);
-	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, code, 0, cv_n2);
-    
-    cv->is_const = (cv_n1->is_const && cv_n2->is_const);
+	int expr1_ok = sem_expr(expr1, f_loc_env, &expr1_type, code, 0);
+	int expr2_ok = sem_expr(expr2, f_loc_env, &expr2_type, code, 0);
     
 	int type_ok = 1;
 	switch(root->qualifier){
@@ -1113,7 +1106,7 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code,
 		case LE:
             type_ok = (expr1_type->type == SCINT || expr1_type->type == SCCHAR || expr1_type->type == SCREAL || expr1_type->type == SCSTRING);
             if (!type_ok) {
-                sem_error(root, "Type error in relational expression, expected INT, CHAR, REAL or STRING\n");
+                sem_error(root, "Type error in relational expression, expected INT, CHAR, REAL or STRING\n");//to_do
             }
             type_ok = type_ok && (expr1_type->type == expr2_type->type);
             if(!type_ok)
@@ -1136,89 +1129,26 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code,
     
     switch (root->qualifier) {
         case EQ:
-            switch(expr1_type->type){
-                case SCCHAR:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.cval == cv_n2->value.cval;
-                    }
-                    break;
-                case SCINT:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.ival == cv_n2->value.ival;
-                    }
-                    break;
-                case SCREAL:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.rval == cv_n2->value.rval;
-                    }
-                    break;
-                case SCSTRING:
-                    if (cv->is_const) {
-                        cv->value.ival = strcmp(cv_n1->value.sval, cv_n2->value.sval) == 0;
-                    }
-                    break;
-                default:
-                    sem_error(root, "Some weird qualification in NE expression\n");
-            }
-            
             *code = appcode(*code, makecode(S_EQU));
             break;
         case NE:
-            switch(expr1_type->type){
-                case SCCHAR:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.cval != cv_n2->value.cval;
-                    }
-                    break;
-                case SCINT:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.ival != cv_n2->value.ival;
-                    }
-                    break;
-                case SCREAL:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.rval != cv_n2->value.rval;
-                    }
-                    break;
-                case SCSTRING:
-                    if (cv->is_const) {
-                        cv->value.ival = strcmp(cv_n1->value.sval, cv_n2->value.sval) != 0;
-                    }
-                    break;
-                default:
-                    sem_error(root, "Some weird qualification in NE expression\n");
-            }
-
             *code = appcode(*code, makecode(S_NEQ));
             break;
         case IN:
-            cv->is_const = 0; //check is too expensive
             *code = appcode(*code, makecode(S_IN));
             break;
         case '<':
             switch(expr1_type->type){
                 case SCCHAR:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.cval < cv_n2->value.cval;
-                    }
                     *code = appcode(*code, makecode(S_CLT));
                     break;
                 case SCINT:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.ival < cv_n2->value.ival;
-                    }
                     *code = appcode(*code, makecode(S_ILT));
                     break;
                 case SCREAL:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.rval < cv_n2->value.rval;
-                    }
                     *code = appcode(*code, makecode(S_RLT));
                     break;
                 case SCSTRING:
-                    if (cv->is_const) {
-                        cv->value.ival = strcmp(cv_n1->value.sval, cv_n2->value.sval) < 0;
-                    }
                     *code = appcode(*code, makecode(S_SLT));
                     break;
                 default:
@@ -1228,27 +1158,15 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code,
         case '>':
             switch(expr1_type->type){
                 case SCCHAR:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.cval > cv_n2->value.cval;
-                    }
                     *code = appcode(*code, makecode(S_CGT));
                     break;
                 case SCINT:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.ival > cv_n2->value.ival;
-                    }
                     *code = appcode(*code, makecode(S_IGT));
                     break;
                 case SCREAL:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.rval > cv_n2->value.rval;
-                    }
                     *code = appcode(*code, makecode(S_RGT));
                     break;
                 case SCSTRING:
-                    if (cv->is_const) {
-                        cv->value.ival = strcmp(cv_n1->value.sval, cv_n2->value.sval) > 0;
-                    }
                     *code = appcode(*code, makecode(S_SGT));
                     break;
                 default:
@@ -1258,27 +1176,15 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code,
         case LE:
             switch(expr1_type->type){
                 case SCCHAR:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.cval <= cv_n2->value.cval;
-                    }
                     *code = appcode(*code, makecode(S_CLE));
                     break;
                 case SCINT:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.ival <= cv_n2->value.ival;
-                    }
                     *code = appcode(*code, makecode(S_ILE));
                     break;
                 case SCREAL:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.rval <= cv_n2->value.rval;
-                    }
                     *code = appcode(*code, makecode(S_RLE));
                     break;
                 case SCSTRING:
-                    if (cv->is_const) {
-                        cv->value.ival = strcmp(cv_n1->value.sval, cv_n2->value.sval) <= 0;
-                    }
                     *code = appcode(*code, makecode(S_SLE));
                     break;
                 default:
@@ -1290,27 +1196,15 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code,
         case GE:
             switch(expr1_type->type){
                 case SCCHAR:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.cval >= cv_n2->value.cval;
-                    }
                     *code = appcode(*code, makecode(S_CGE));
                     break;
                 case SCINT:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.ival >= cv_n2->value.ival;
-                    }
                     *code = appcode(*code, makecode(S_IGE));
                     break;
                 case SCREAL:
-                    if (cv->is_const) {
-                        cv->value.ival = cv_n1->value.rval >= cv_n2->value.rval;
-                    }
                     *code = appcode(*code, makecode(S_RGE));
                     break;
                 case SCSTRING:
-                    if (cv->is_const) {
-                        cv->value.ival = strcmp(cv_n1->value.sval, cv_n2->value.sval) >= 0;
-                    }
                     *code = appcode(*code, makecode(S_SGE));
                     break;
                 default:
@@ -1320,18 +1214,15 @@ int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code,
         default:
             break;
     }
-    free(cv_n1);
-    free(cv_n2);
 	return expr1_ok && expr2_ok && type_ok;
 }
 
-int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, Const_val * cv){
+int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 #if VERBOSE
     printf("@@ in sem_neg_expr\n");
 #endif
 	Pschema expr_type = new_schema_node(-1);
-    Const_val * cv_n = new_const_val();
-	int expr_ok = sem_expr(root->child, f_loc_env, &expr_type, code, 0, cv_n);
+	int expr_ok = sem_expr(root->child, f_loc_env, &expr_type, code, 0);
 	switch(root->qualifier){
 		case '-':
             print_sch(expr_type);
@@ -1342,14 +1233,8 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code,
 			(*stype)->type = expr_type->type;
             
             if (expr_type->type == SCINT) {
-                if (cv_n->is_const) {
-                    cv->value.ival = -cv_n->value.ival;
-                }
                 *code = appcode(*code, makecode(S_IUMI));
             }else{ //expr_type->type == REAL
-                if (cv_n->is_const) {
-                    cv->value.rval = -cv_n->value.rval;
-                }
                 *code = appcode(*code, makecode(S_RUMI));
             }
             break;
@@ -1359,17 +1244,14 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code,
 				sem_error(root->child, error_msg);
 			}
 			(*stype)->type = SCBOOL;
-            if (cv_n->is_const) {
-                cv->value.ival = !cv_n->value.ival;
-            }
+            
             *code = appcode(*code, makecode(S_NEG));
             break;
 	}
-    free(cv_n);
 	return expr_ok;
 }
 
-int sem_wr_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, Const_val * cv){
+int sem_wr_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 #if VERBOSE
     printf("@@ in sem_wr_expr\n");
 #endif
@@ -1377,23 +1259,15 @@ int sem_wr_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, 
     Code spec_code = makecode(S_NOOP);
     int ok = sem_specifier_opt(root->child, f_loc_env, &spec_code, &is_null);
     int expr_ok = 1;
-    
-    Const_val * cv_n = new_const_val();
-
     if (ok) {
         expr_ok = sem_expr(root->child->brother, f_loc_env, stype, code, 0);
-        if (cv_n->is_const) {
-            memcpy(&cv->value, &cv_n->value, sizeof(Value));
-        }
     }
-    
     if (is_null) {
         *code = appcode(*code, makecode_str(S_WR, make_format(*stype)));
     }else{
         *code = appcode(*code, spec_code);
         *code = appcode(*code,makecode_str(S_FWR, make_format(*stype)));
     }
-    free(cv_n);
     
     return ok && expr_ok;
 }
@@ -1658,23 +1532,18 @@ int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype, C
 	return main_expr_ok && expr_ok;
 }
 
-int sem_built_in_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, Const_val * cv){
+int sem_built_in_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 #if VERBOSE
     printf("@@ in sem_built_in_call\n");
 #endif
 	Pschema built_in_call_type = new_schema_node(-1);
-    Const_val * cv_n = new_const_val();
-    
-	int built_in_call_ok = sem_expr(root->child, f_loc_env, &built_in_call_type, code, 0, cv_n);
+	int built_in_call_ok = sem_expr(root->child, f_loc_env, &built_in_call_type, code, 0);
     
 	switch(root->qualifier){
 		case TOINT:
 			if(built_in_call_type->type != SCREAL){
 				sem_error(root->child, "Type error, expected REAL\n");
 			}
-            if (cv_n->is_const) {
-                cv->value.ival = cv_n->value.rval;
-            }
 			(*stype)->type = SCINT;
             *code = appcode(*code, makecode(S_TOINT));
             break;
@@ -1682,18 +1551,14 @@ int sem_built_in_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
 			if(built_in_call_type->type != SCINT){
 				sem_error(root->child, "Type error, expected INT\n");
 			}
-            if (cv_n->is_const) {
-                cv->value.rval = cv_n->value.ival;
-            }
 			(*stype)->type = SCREAL;
             *code = appcode(*code, makecode(S_TOREAL));
             break;
 	}
-    free(cv_n);
 	return built_in_call_ok;
 }
 
-int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int is_addr, Const_val * cv){
+int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int is_addr){
 #if VERBOSE
     printf("@@ in sem_expr\n");
     treeprint(root, " ");
@@ -1705,54 +1570,46 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int
     
 	switch(root->type){
 		case T_CHARCONST:
-            cv->is_const = 1;
-            cv->value.cval = root->value.cval;
+            printf("expr is char\n");
 			(*stype)->type = SCCHAR;
             *code = appcode(*code, make_ldc(root->value.cval));
 			break;
 		case T_INTCONST:
-            cv->is_const = 1;
-            cv->value.ival = root->value.ival;
 			(*stype)->type = SCINT;
             *code =appcode(*code, make_ldi(root->value.ival));
 			break;
 		case T_REALCONST:
-            cv->is_const = 1;
-            cv->value.rval = root->value.rval;
 			(*stype)->type = SCREAL;
             *code =appcode(*code, make_ldr(root->value.rval));
 			break;
 		case T_STRCONST:
-            cv->is_const = 1;
-            cv->value.sval = root->value.sval;
 			(*stype)->type = SCSTRING;
             *code =appcode(*code, make_lds(root->value.sval));
 			break;
 		case T_BOOLCONST:
-            cv->is_const = 1;
-            cv->value.ival = root->value.cval == '1';
+            printf("expr is bool\n");
 			(*stype)->type = SCBOOL;
             *code = appcode(*code, make_ldc(root->value.cval));
 			break;
 		case T_NONTERMINAL:
             switch(root->value.ival){
                 case NLEFT_HAND_SIDE:
-                    expr_ok = sem_left_hand_side(root, f_loc_env, stype, &not_used, code, is_addr, &is_s, cv);
+                    expr_ok = sem_left_hand_side(root, f_loc_env, stype, &not_used, code, is_addr, &is_s);
                     break;
                 case NMATH_EXPR:
-                    expr_ok = sem_math_expr(root, f_loc_env, stype, code, cv);
+                    expr_ok = sem_math_expr(root, f_loc_env, stype, code);
                     break;
                 case NLOGIC_EXPR:
-                    expr_ok = sem_logic_expr(root, f_loc_env, stype, code, cv);
+                    expr_ok = sem_logic_expr(root, f_loc_env, stype, code);
                     break;
                 case NREL_EXPR:
-                    expr_ok = sem_rel_expr(root, f_loc_env, stype, code, cv);
+                    expr_ok = sem_rel_expr(root, f_loc_env, stype, code);
                     break;
                 case NNEG_EXPR:
-                    expr_ok = sem_neg_expr(root, f_loc_env, stype, code, cv);
+                    expr_ok = sem_neg_expr(root, f_loc_env, stype, code);
                     break;
                 case NWR_EXPR:
-                    expr_ok = sem_wr_expr(root, f_loc_env, stype, code, cv);
+                    expr_ok = sem_wr_expr(root, f_loc_env, stype, code);
                     break;
                 case NRD_EXPR:
                     expr_ok = sem_rd_expr(root, f_loc_env, stype, code);
@@ -1764,10 +1621,10 @@ int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int
                     expr_ok = sem_func_call(root, f_loc_env, stype, code);
                     break;
                 case NCOND_EXPR:
-                    expr_ok = sem_cond_expr(root, f_loc_env, stype, code, cv);
+                    expr_ok = sem_cond_expr(root, f_loc_env, stype, code);
                     break;
                 case NBUILT_IN_CALL:
-                    expr_ok = sem_built_in_call(root, f_loc_env, stype, code, cv);
+                    expr_ok = sem_built_in_call(root, f_loc_env, stype, code);
                     break;
                 default:
                     sem_error(root, "Some weird nonterminal node in expr\n");
@@ -1820,8 +1677,4 @@ void cleanup_goto(Code * code, Poid2address * func_table){
         stat = stat->next;
     }
     
-}
-
-Const_val * new_const_val(){
-    return calloc(1, sizeof(Const_val));
 }
