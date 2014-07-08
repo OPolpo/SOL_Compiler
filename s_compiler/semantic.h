@@ -28,6 +28,11 @@
 // 	"SEM_STRUCT"
 // };
 
+typedef struct c_v{
+    int is_const;
+    Value value;
+} Const_val;
+Const_val * new_const_val();
 
 int sem_program(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, Poid2address * func_table);
@@ -56,21 +61,22 @@ int sem_return_stat(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_read_stat(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_specifier_opt(Pnode specifier_opt, Phash_node f_loc_env, Code * code, int * is_null);
 int sem_write_stat(Pnode root, Phash_node f_loc_env, Code * code);
-int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
-int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
-int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
-int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
-int sem_wr_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
+
+int sem_math_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, Const_val * cv, Const_val * cv);
+int sem_logic_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, Const_val * cv);
+int sem_rel_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, Const_val * cv);
+int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, Const_val * cv);
+int sem_wr_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, Const_val * cv);
 int sem_rd_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
 int sem_instance_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
 int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
-int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
+int sem_cond_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, Const_val * cv);
 int sem_elsif_expr_list_opt(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int * offset_to_exit);
-int sem_built_in_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code);
+int sem_built_in_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, Const_val * cv);
 void cleanup_return(Stat * start, int code_len, Code * code);
 void cleanup_goto(Code * code, Poid2address * func_table);
 
-int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int is_addr);
+int sem_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code, int is_addr, Const_val * cv);
 void sem_error(Pnode node, char * msg);
 
 #endif

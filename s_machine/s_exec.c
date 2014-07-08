@@ -263,11 +263,13 @@ void exec_sle(){
 void exec_in(){
     int found=0, i, n = top_ostack()->size / under_top_ostack()->size;
     char * to_find = (under_top_ostack()->mode == EMB) ? (char *)&(under_top_ostack()->inst) : under_top_ostack()->inst.sval;
+    char * temp = top_ostack()->inst.sval;
     for (i=0; i<n; i++) {
-        if (memcmp(top_ostack()->inst.sval, to_find, under_top_ostack()->size)==0) {
+        if (memcmp(temp, to_find, under_top_ostack()->size)==0) {
             found = 1;
             break;
         }
+        temp += under_top_ostack()->size;
     }
     pop_ostack();
     pop_ostack();
