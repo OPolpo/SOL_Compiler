@@ -16,7 +16,7 @@ letter		[a-zA-Z]
 digit		[0-9]
 id			{letter}({letter}|{digit})*
 num 		{digit}+
-sugar 		[\(\)\[\]\{\}".":,;]
+sugar 		[\(\)\[\]".":,;]
 charconst 	\'.\'
 intconst 	{num}
 realconst	{num}?"."{num}
