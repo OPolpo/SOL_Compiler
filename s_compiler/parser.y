@@ -303,7 +303,7 @@ dynamic_output : WR specifier_opt {$$ = nontermnode(NWR_EXPR);
 
 
 
-int main(int argc, char * argv[]){
+int main(int argc, char ** argv){
 	int result = 0;
 	int c;
 	char *ovalue = "s.out";
@@ -332,11 +332,12 @@ int main(int argc, char * argv[]){
 		}
 		else{
 			fprintf(stderr,"Can't read input file.\n");
-			yyin = stdin;
+			exit(0);
 		}
 	}
 	else{
-		yyin = stdin;
+		printf("\tUsage: compiler [-o output_name] source_name.sol\n");
+		exit(0);
 	}
 	if((result = yyparse()) == 0){
         //printf("sizeof\nchar:\t%lu\nint:\t%lu\nfloat:\t%lu\nstring:\t%lu\n", sizeof(char), sizeof(int), sizeof(float), sizeof(char *));
