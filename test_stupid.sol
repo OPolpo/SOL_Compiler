@@ -1,6 +1,6 @@
 --test :P
 func f2(): int 
-	--var --person: struct(name, surname: string; birth: int;);
+	var and:int --person: struct(name, surname: string; birth: int;);
 		--book: struct(author: struct(name, surname: string;); title: string; --edition: struct(editor: string; year: int;););
 		--numbers: vector [10] of int;
 		--matrix: vector [3] of vector [5] of int;
