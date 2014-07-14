@@ -100,7 +100,7 @@ void basic_wr(FILE* stream, char* format, int on_file){
                 fprintf(stream, "%s", top_ostack()->inst.sval);
             break;
         case SCBOOL:
-            fprintf(stream, "%s", pop_bool()? "true" : "false");
+            fprintf(stream, "%s", top_ostack()->inst.cval ? "true" : "false");
             break;
         case SCVECTOR:
             print_vector(stream, top_ostack()->inst.sval, format_root->size, format_root->p1, on_file);
