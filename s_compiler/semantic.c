@@ -7,8 +7,6 @@
 char error_msg[100];
 char convert_bool[] = {'0','1'};
 
-Code code_new_aux;
-
 int sem_program(Pnode root, Phash_node f_loc_env, Code * code){
     Poid2address * func_table = new_o2a_table();
     
@@ -77,12 +75,12 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
 	int func_list_opt_ok = sem_func_list_opt(current, new_f_loc_env, &function_list_code, func_table);
 	current = current->brother;
     
-    code_new_aux = makecode(S_NOOP);
+    Code code_new_aux = makecode(S_NOOP);
 
     Stat * start = code->tail; //we save the pointer to first stat of the code to sanitize // this is for optimixe sanitization process of return
     int code_len = code->size; //we save the size of the code at the start point // this is for optimixe sanitization process of return
     Code func_body_code = makecode(S_NOOP);
-	int func_body_ok = sem_func_body(current, new_f_loc_env, &func_body_code); //during sem_func_body, the code_new_aux will be modified
+	int func_body_ok = sem_func_body(current, new_f_loc_env, &func_body_code, &code_new_aux); //during sem_func_body, the code_new_aux will be modified
     
     *code = appcode(*code, var_const_code);
     *code = appcode(*code, code_new_aux);
@@ -312,7 +310,7 @@ int sem_func_list_opt(Pnode root, Phash_node f_loc_env, Code * code, Poid2addres
     return ok;
 }
 
-int sem_func_body(Pnode root, Phash_node f_loc_env, Code * code){
+int sem_func_body(Pnode root, Phash_node f_loc_env, Code * code, Code * code_new_aux){
 #if VERBOSE
     printf("@@ in sem_func_body\n");
 #endif
@@ -326,7 +324,7 @@ int sem_func_body(Pnode root, Phash_node f_loc_env, Code * code){
     if (!ok) {
         sem_error(id1, "Function ID different from ID in function body BEGIN\n");
     }
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &return_ok, code);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &return_ok, code, code_new_aux);
     
     ok = ok && (strcmp(id1->value.sval, id2->value.sval) == 0);
     if (!ok) {
@@ -339,7 +337,7 @@ int sem_func_body(Pnode root, Phash_node f_loc_env, Code * code){
     return ok;
 }
 
-int sem_stat_list(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
+int sem_stat_list(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, Code * code_new_aux){
 #if VERBOSE
     printf("@@ in sem_stat_list\n");
 #endif
@@ -348,14 +346,14 @@ int sem_stat_list(Pnode root, Phash_node f_loc_env, int * w_return, Code * code)
     int w_return_stat = 0;
     
     while(stat_node != NULL){
-        ok = ok && sem_stat(stat_node, f_loc_env, &w_return_stat, code);
+        ok = ok && sem_stat(stat_node, f_loc_env, &w_return_stat, code, code_new_aux);
         stat_node = stat_node->brother;
         *w_return = *w_return || w_return_stat;
     }
     return ok;
 }
 
-int sem_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
+int sem_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, Code * code_new_aux){
 #if VERBOSE
     printf("@@ in sem_stat\n");
 #endif
@@ -365,21 +363,20 @@ int sem_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
     
     switch (child->value.ival) {//always a NONTERMINAL
         case NASSIGN_STAT:
-            printf("\n##assign %d\n", child->value.ival);
             ok = sem_assign_stat(child, f_loc_env, code);
             break;
         case NIF_STAT:
-            ok = sem_if_stat(child, f_loc_env, &return_ok, code);
+            ok = sem_if_stat(child, f_loc_env, &return_ok, code,  code_new_aux);
             *w_return = return_ok;
             break;
         case NWHILE_STAT:
-            ok = sem_while_stat(child, f_loc_env, code);
+            ok = sem_while_stat(child, f_loc_env, code, code_new_aux);
             break;
         case NFOR_STAT:
-            ok = sem_for_stat(child, f_loc_env, code);
+            ok = sem_for_stat(child, f_loc_env, code, code_new_aux);
             break;
         case NFOREACH_STAT:
-            ok = sem_foreach_stat(child, f_loc_env, code);
+            ok = sem_foreach_stat(child, f_loc_env, code, code_new_aux);
             break;
         case NRETURN_STAT:
             ok = sem_return_stat(child, f_loc_env, code);
@@ -591,7 +588,7 @@ int sem_indexing(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     return ok_index;
 }
 
-int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
+int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, Code * code_new_aux){
 #if VERBOSE
     printf("@@ in sem_if_stat\n");
 #endif
@@ -614,12 +611,12 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
     int return_elsif_stat_list_opt = 0;
     
     Code if_stat_list_code = makecode(S_NOOP);
-    int if_stat_list_ok = sem_stat_list(if_stat_list_node, f_loc_env, &return_if_stat_list, &if_stat_list_code);
+    int if_stat_list_ok = sem_stat_list(if_stat_list_node, f_loc_env, &return_if_stat_list, &if_stat_list_code, code_new_aux);
     
     Code else_stat_list_code = makecode(S_NOOP);
     int else_stat_list_ok = 1;
     if (else_stat_list_node) {
-        else_stat_list_ok = sem_stat_list(else_stat_list_node, f_loc_env, &return_else_list, &else_stat_list_code);
+        else_stat_list_ok = sem_stat_list(else_stat_list_node, f_loc_env, &return_else_list, &else_stat_list_code, code_new_aux);
     }
     else {
         return_else_list = 1;
@@ -627,7 +624,7 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
     
     int offset_to_exit = else_stat_list_code.size+1;
     Code elsif_stat_list_opt_code = makecode(S_NOOP);
-	int elsif_stat_list_opt_ok = sem_elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env, &return_elsif_stat_list_opt, &elsif_stat_list_opt_code, &offset_to_exit);
+	int elsif_stat_list_opt_ok = sem_elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env, &return_elsif_stat_list_opt, &elsif_stat_list_opt_code, code_new_aux, &offset_to_exit);
     
     *w_return = return_if_stat_list && return_else_list && return_elsif_stat_list_opt;
     
@@ -642,7 +639,7 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code){
 	return main_expr_ok && if_stat_list_ok && elsif_stat_list_opt_ok && else_stat_list_ok;
 }
 
-int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, int * offset_to_exit){
+int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, Code * code_new_aux, int * offset_to_exit){
 #if VERBOSE
     printf("@@ in sem_elsif_stat_list_opt\n");
 #endif
@@ -674,7 +671,7 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
         }
         int return_stat = 0;
         Code stat_list_code = makecode(S_NOOP);
-        stat_list_ok = sem_stat_list(stat_list_node, f_loc_env, &return_stat, &stat_list_code);
+        stat_list_ok = sem_stat_list(stat_list_node, f_loc_env, &return_stat, &stat_list_code, code_new_aux);
         
         *w_return = return_stat && *w_return;
         *ptemp_code = concode(*ptemp_code,
@@ -699,7 +696,7 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
 	return main_expr_ok && stat_list_ok;
 }
 
-int sem_while_stat(Pnode root, Phash_node f_loc_env, Code * code){
+int sem_while_stat(Pnode root, Phash_node f_loc_env, Code * code, Code * code_new_aux){
 #if VERBOSE
     printf("@@ in sem_while_stat\n");
 #endif
@@ -717,7 +714,7 @@ int sem_while_stat(Pnode root, Phash_node f_loc_env, Code * code){
     
     Code stat_list_code = makecode(S_NOOP);
     int not_used;
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code, code_new_aux);
     
     *code = concode(*code,
                     expr_code,
@@ -729,7 +726,7 @@ int sem_while_stat(Pnode root, Phash_node f_loc_env, Code * code){
     return ok;
 }
 
-int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
+int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code, Code * code_new_aux){
 #if VERBOSE
     printf("@@ in sem_for_stat\n");
 #endif
@@ -780,13 +777,13 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     f_loc_env->aux->num_obj++;
     end_condition_expr_value->schema = new_schema_node(SCINT);
     insert(end_condition_expr_value, f_loc_env->aux->locenv);
+    *code_new_aux = appcode(*code_new_aux, makecode1(S_NEW, sizeof(int)));
     
     int not_used;
     Code stat_list_code = makecode(S_NOOP);
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code, code_new_aux);
     
     *code = concode(*code,
-                    makecode1(S_NEW, sizeof(int)),
                     expr1_code,
                     makecode2(S_STO,offset,id_hash_node->oid),
                     expr2_code,
@@ -808,7 +805,7 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     return ok;
 }
 
-int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
+int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code, Code * code_new_aux){
 #if VERBOSE
     printf("@@ in sem_foreach_stat\n");
 #endif
@@ -849,6 +846,7 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     f_loc_env->aux->num_obj++;
     expr_value->schema = expr_schema;
     insert(expr_value, f_loc_env->aux->locenv);
+    *code_new_aux = appcode(*code_new_aux, makecode1(S_NEWS, compute_size(expr_schema)));
     
     char * id_aux_2;
     asprintf(&id_aux_2, "0_AUX_%d", f_loc_env->aux->last_oid);
@@ -857,6 +855,7 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     f_loc_env->aux->num_obj++;
     index->schema = new_schema_node(SCINT);
     insert(index, f_loc_env->aux->locenv);
+    *code_new_aux = appcode(*code_new_aux, makecode1(S_NEW, sizeof(int)));
     
     Code e_s_il_code;
     if((expr_schema->p1)->type == SCSTRUCT || (expr_schema->p1)->type == SCVECTOR)
@@ -866,11 +865,9 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
     
     int not_used;
     Code stat_list_code = makecode(S_NOOP);
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code, code_new_aux);
     
     *code = concode(*code,
-                    makecode1(S_NEWS, compute_size(expr_schema)),
-                    makecode1(S_NEW, sizeof(int)),
                     makecode1(S_LDI,0),
                     makecode2(S_STO,0,index->oid),
                     expr_code,

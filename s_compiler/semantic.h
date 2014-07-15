@@ -40,18 +40,22 @@ int sem_vector_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
 int sem_var_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects);
 int sem_const_sect_opt(Pnode root, Phash_node f_loc_env, Code * code, int * num_objects);
 int sem_func_list_opt(Pnode root, Phash_node f_loc_env, Code * code, Poid2address * func_table);
-int sem_func_body(Pnode root, Phash_node f_loc_env, Code * code);
-int sem_stat_list(Pnode root, Phash_node f_loc_env, int * w_return, Code * code);
-int sem_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code);
+
+int sem_func_body(Pnode root, Phash_node f_loc_env, Code * code, Code * code_new_aux);
+
+int sem_stat_list(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, Code * code_new_aux);
+int sem_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, Code * code_new_aux);
 int sem_assign_stat(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_left_hand_side(Pnode root, Phash_node f_loc_env, Pschema * type, Class * lhs_class, Code * code, int is_addr, int * is_s);
 int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * type, Class * lhs_class, Code * code, int is_addr, int * is_s);
 int sem_indexing(Pnode root, Phash_node f_loc_env, Pschema * type, Class * lhs_class, Code * code, int is_addr, int * is_s);
-int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code);
-int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, int * offset_to_exit);
-int sem_while_stat(Pnode root, Phash_node f_loc_env, Code * code);
-int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code);
-int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code);
+int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, Code * code_new_aux);
+int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, Code * code_new_aux, int * offset_to_exit);
+int sem_while_stat(Pnode root, Phash_node f_loc_env, Code * code, Code * code_new_aux);
+
+int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code, Code * code_new_aux);
+int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code, Code * code_new_aux);
+
 int sem_return_stat(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_read_stat(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_specifier_opt(Pnode specifier_opt, Phash_node f_loc_env, Code * code, int * is_null);

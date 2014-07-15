@@ -11,10 +11,10 @@ begin tester
 	write v1;
 
 
-	for i=0 to 10 do
+	for i=0 to 9 do
 		for j=0 to 19 do
-			--v2[i][j] = i+j;
-			write 10;
+			v2[i][j] = i+j;
+			--write 10;
 		endfor;
 	endfor;
 
