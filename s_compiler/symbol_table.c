@@ -110,6 +110,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     
                     
                     print_func_node(func);
+                    printf("(((%d)))\n", ((func->aux)->last_oid));
                     printSchema(func->schema," ");
                     print_hash_content((func->aux)->locenv);
                     

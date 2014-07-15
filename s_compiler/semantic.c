@@ -7,6 +7,8 @@
 char error_msg[100];
 char convert_bool[] = {'0','1'};
 
+Code code_new_aux;
+
 int sem_program(Pnode root, Phash_node f_loc_env, Code * code){
     Poid2address * func_table = new_o2a_table();
     
@@ -71,17 +73,19 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     int const_sect_opt_ok = sem_const_sect_opt(current, new_f_loc_env, &var_const_code, &const_num_objects);
 	current = current->brother;
     
-    
     Code function_list_code = makecode(S_NOOP);
 	int func_list_opt_ok = sem_func_list_opt(current, new_f_loc_env, &function_list_code, func_table);
 	current = current->brother;
     
+    code_new_aux = makecode(S_NOOP);
+
     Stat * start = code->tail; //we save the pointer to first stat of the code to sanitize // this is for optimixe sanitization process of return
     int code_len = code->size; //we save the size of the code at the start point // this is for optimixe sanitization process of return
     Code func_body_code = makecode(S_NOOP);
-	int func_body_ok = sem_func_body(current, new_f_loc_env, &func_body_code);
+	int func_body_ok = sem_func_body(current, new_f_loc_env, &func_body_code); //during sem_func_body, the code_new_aux will be modified
     
     *code = appcode(*code, var_const_code);
+    *code = appcode(*code, code_new_aux);
     *code = appcode(*code, func_body_code);
     
     cleanup_return(start, code_len, code); //sanitize
@@ -569,7 +573,7 @@ int sem_indexing(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     }
     
     Pschema index_type = new_schema_node(-1);
-    ok_index = ok_index && sem_expr(index_node, f_loc_env, &index_type, code, is_addr);
+    ok_index = ok_index && sem_expr(index_node, f_loc_env, &index_type, code, 0);
     ok_index = ok_index && (index_type->type == SCINT);
     if (!ok_index) {
         sem_error(root, "Semantic error, index must be of type INT\n");//to_do
@@ -769,10 +773,6 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     Class id_class = id_hash_node->class_node;
     id_hash_node->class_node = CLCOUNT;
     
-    int not_used;
-    Code stat_list_code = makecode(S_NOOP);
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
-    
     char * id_aux;
     asprintf(&id_aux, "0_AUX_%d", f_loc_env->aux->last_oid);
     Phash_node end_condition_expr_value = new_id_node(id_aux, CLCONST, f_loc_env->aux->last_oid);
@@ -780,6 +780,10 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code){
     f_loc_env->aux->num_obj++;
     end_condition_expr_value->schema = new_schema_node(SCINT);
     insert(end_condition_expr_value, f_loc_env->aux->locenv);
+    
+    int not_used;
+    Code stat_list_code = makecode(S_NOOP);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
     
     *code = concode(*code,
                     makecode1(S_NEW, sizeof(int)),
@@ -837,9 +841,6 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
         sprintf(error_msg, "Variable ID \"%s\" must be of the same type of VECTOR elements in FOREACH STAT\n",id_node->value.sval);
         sem_error(id_node, error_msg);
     }
-    int not_used;
-    Code stat_list_code = makecode(S_NOOP);
-    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
     
     char * id_aux_1;
     asprintf(&id_aux_1, "0_AUX_%d", f_loc_env->aux->last_oid);
@@ -862,6 +863,10 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code){
         e_s_il_code = makecode1(S_SIL, compute_size(expr_schema->p1));
     else
         e_s_il_code = makecode1(S_EIL, compute_size(expr_schema->p1));
+    
+    int not_used;
+    Code stat_list_code = makecode(S_NOOP);
+    ok = ok && sem_stat_list(stat_list_node, f_loc_env, &not_used, &stat_list_code);
     
     *code = concode(*code,
                     makecode1(S_NEWS, compute_size(expr_schema)),

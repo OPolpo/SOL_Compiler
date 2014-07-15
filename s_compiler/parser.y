@@ -349,6 +349,7 @@ int main(int argc, char ** argv){
         Code code = makecode(S_NOOP);
         sem_program(root, symtab, &code);
         printf("## END\n");
+        printf("(((%d)))\n", ((symtab->aux)->last_oid));
 	
         FILE *fp = fopen(ovalue, "w");
 		if (fp){

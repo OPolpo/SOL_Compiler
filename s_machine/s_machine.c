@@ -47,7 +47,7 @@ void start_machine(char * input) {
 }
 
 void end_machine() {
-    //printf("\n%d %d %d\n", ap, op, ip);
+    printf("\n%d %d %d\n", ap, op, ip);
 
     freemem((char*)prog, sizeof(Scode)*code_size);
     freemem((char*)astack, sizeof(Adescr*)*asize);
@@ -178,7 +178,6 @@ void move_down_istack(int to_move, int this_much){
 
 int pop_int(){
     int i = top_ostack()->inst.ival;
-    printf("--%d-- \n", i);
     pop_ostack();
     return i;
 }
