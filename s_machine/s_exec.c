@@ -11,7 +11,7 @@ void exec(Scode *stat) {
     //print_code_instruction(stat);
     //printf("pc %d, ap %d, op %d, ip %d\n",pc,ap,op,ip);
     
-    printf("[%3d] exec %d\n", pc, stat->op);
+    // printf("[%3d] exec %d\n", pc, stat->op);
     switch (stat->op) {
         case S_PUSH: exec_push(stat->args[0].ival, stat->args[1].ival, stat->args[2].ival, pc+1); break;
         case S_GOTO: exec_goto(stat->args[0].ival); break;
@@ -133,18 +133,21 @@ void exec_equ(){
 
 void exec_neq(){
     void * n, * m;
-    if (top_ostack()->mode == EMB){
-        n = &(top_ostack()->inst);
-        m = &(under_top_ostack()->inst);
+    int res = top_ostack()->size == under_top_ostack()->size;
+    if (res) {
+        if (top_ostack()->mode == EMB){
+            n = &(top_ostack()->inst);
+            m = &(under_top_ostack()->inst);
+        }
+        else{
+            n = (top_ostack()->inst).sval;
+            m = (under_top_ostack()->inst).sval;
+        }
+        res = memcmp(n, m, top_ostack()->size) == 0;
     }
-    else{
-        n = (top_ostack()->inst).sval;
-        m = (under_top_ostack()->inst).sval;
-    }
-    int res = !memcmp(n, m, top_ostack()->size) != 0;
     pop_ostack();
     pop_ostack();
-    push_bool(res);
+    push_bool(!res);
 }
 
 void exec_cgt(){
@@ -243,6 +246,7 @@ void exec_ile(){
     int n, m;
     n = pop_int();
     m = pop_int();
+        printf("-- %d <= %d -> %d\n",m,n,m<=n);
     push_bool(m<=n);
 }
 

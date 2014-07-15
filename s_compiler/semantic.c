@@ -617,6 +617,7 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, C
     int else_stat_list_ok = 1;
     if (else_stat_list_node) {
         else_stat_list_ok = sem_stat_list(else_stat_list_node, f_loc_env, &return_else_list, &else_stat_list_code, code_new_aux);
+        else_stat_list_code = appcode(makecode1(S_JMP, else_stat_list_code.size+1), else_stat_list_code);
     }
     else {
         return_else_list = 1;
@@ -632,7 +633,6 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, C
                     makecode1(S_JMF, if_stat_list_code.size+2),
                     if_stat_list_code,
                     elsif_stat_list_opt_code,
-                    makecode1(S_JMP, else_stat_list_code.size+1),
                     else_stat_list_code,
                     endcode());
     
