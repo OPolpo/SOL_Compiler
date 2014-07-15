@@ -5,10 +5,10 @@ var i,j: int;
 	lab:string;
 begin tester
 
-	for i=0 to 9 do
-		v1[i] = i;
-	endfor;
-	write v1;
+for i=0 to 9 do
+	v1[i] = i;
+endfor;
+write v1;
 
 
 	for i=0 to 9 do
@@ -18,15 +18,18 @@ begin tester
 		endfor;
 	endfor;
 
+	i = 3;
+	j=3;
 	write v2;
-	--lab = "reference";
-	--write v1[i+j];
-	--write v2[i-j][i+j];
-	--lab = "assignment";
-	--v1[i+j] = i*j;
-	--v2[i-j][i+j] = i*j;
---
-	--write v1;
-	--write v2;
+	write "reference";
+	write v1[i+j];
+	write v2[i-j][i+j];
+	
+	write "assignment";
+	v1[i+j] = i*j;
+	v2[i-j][i+j] = i*j;
+	write v1;
+	write v2;
+	
 	return 100;
 end tester
