@@ -623,7 +623,7 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, C
         return_else_list = 1;
     }
     
-    int offset_to_exit = else_stat_list_code.size+1;
+    int offset_to_exit = else_stat_list_code.size;
     Code elsif_stat_list_opt_code = makecode(S_NOOP);
 	int elsif_stat_list_opt_ok = sem_elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env, &return_elsif_stat_list_opt, &elsif_stat_list_opt_code, code_new_aux, &offset_to_exit);
     

@@ -10,7 +10,7 @@ func F4():bool
 		var i:int;
 		begin insertoken
 			for i=0 to 5 do
-				if board[cols-1][i] ==0 then
+				if board[cols-1][i] == 0 then
 					board[cols-1][i] = player;
 					return true;
 				endif;
@@ -61,60 +61,60 @@ func F4():bool
 			return true;
 		end printheader
 
-	func checkwin():bool
-		var res:bool;
-
-		func checkrows():bool
-			var i,j, count:int;
-			begin checkrows
-				count = 0;
-				write "cicle\n";
-				for i=0 to 5 do
-					for j=1 to 6 do
-						--if( board[j][i] == board[j-1][i]) then
-					--	write i;
-					--	write "---";
-					--	write j;
-					--	write "\n";
-						dummy = j==1 ;
-						if dummy then
-							write board;
-							
-						--else
-						--	write "false";
-						--	write board;
-						endif;
-					----	--if( board[j][i] == 1) then
+--	func checkwin():bool
+--		var res:bool;
 --
-					--	--dummy = board[j][i] == board[j-1][i];
+--		func checkrows():bool
+--			var i,j, count:int;
+--			begin checkrows
+--				count = 0;
+--				write "cicle\n";
+--				for i=0 to 5 do
+--					for j=1 to 6 do
+--						--if( board[j][i] == board[j-1][i]) then
+--					--	write i;
+--					--	write "---";
+--					--	write j;
+--					--	write "\n";
+--						dummy = j==1 ;
+--						if true then
+--							write board;
+							--
+--						--else
+--						--	write "false";
+--						--	write board;
+--						endif;
+--					----	--if( board[j][i] == 1) then
+----
+--					--	--dummy = board[j][i] == board[j-1][i];
+----
+--					--	--	--count = count + 1;
+--					--	--	--if count == 4 then
+--					--	--	--	return true;
+--					--	--	--endif;
+--					--	--endif;
+--					--	write i;
+--					--	write "---";
+--					--	write j;
+--					--	write "\n";
+--						dummy=false;
+--					endfor;
+--				endfor;
+--				return false;
+--			end checkrows
+--		func checkcols():bool
+--			begin checkcols
+--				return false;
+--			end checkcols
+--		func checkdiag():bool
+--			begin checkdiag
+--				return false;
+--			end checkdiag
 --
-					--	--	--count = count + 1;
-					--	--	--if count == 4 then
-					--	--	--	return true;
-					--	--	--endif;
-					--	--endif;
-					--	write i;
-					--	write "---";
-					--	write j;
-					--	write "\n";
-						dummy=false;
-					endfor;
-				endfor;
-				return false;
-			end checkrows
-		func checkcols():bool
-			begin checkcols
-				return false;
-			end checkcols
-		func checkdiag():bool
-			begin checkdiag
-				return false;
-			end checkdiag
-
-		begin checkwin
-			res = checkrows() and checkcols() and checkdiag();
-			return false;
-		end checkwin
+--		begin checkwin
+--			res = checkrows() or checkcols() or checkdiag();
+--			return false;
+--		end checkwin
 
 	func printwinner(player:int;):bool
 		begin printwinner
@@ -142,10 +142,10 @@ func F4():bool
 			read userchoice;
 			if (userchoice>0 and userchoice<8) then
 				if(insertoken(userchoice, player)) then
-					if checkwin() then
-						dummy = printwinner(player);
-						return true;
-					endif;
+					--if checkwin() then
+					--	dummy = printwinner(player);
+						--return true;
+					--endif;
 					dummy = cls();
 					dummy = printheader(player);
 					dummy = printboard();
