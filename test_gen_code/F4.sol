@@ -1,10 +1,11 @@
---test Volpe Forza 4 XD
-func F4():bool
+--test FOX FORCE 4 XD
+func FF4():bool
 	var board: vector [7] of vector [6] of int;
 		i,j:int;
 		userchoice:int;
 		player:int;
 		dummy:bool;
+		ok, okfull, first:bool;
 
 	func insertoken(cols:int; player:int;):bool
 		var i:int;
@@ -21,14 +22,18 @@ func F4():bool
 	func printboard():bool
 		var i,j:int;
 		begin printboard
-			write "-----------------------------------------------------------\n";
+			--write "-----------------------------------------------------------\n";
 			for j=0 to 5 do 
 				write "||-------------------------------------------------------||\n";
 				write "||       |       |       |       |       |       |       ||\n";
 				write "||";
 				for i=0 to 6 do 
 					write "   ";
-					write board[i][5-j];
+					if (board[i][5-j] == 0) then
+						write " ";
+					else
+						write board[i][5-j];
+					endif;
 					write "   |";
 				endfor;
 				write "|\n";
@@ -36,7 +41,7 @@ func F4():bool
 	
 			endfor;
 			write "-----------------------------------------------------------\n";
-			write "-----------------------------------------------------------\n";
+			--write "-----------------------------------------------------------\n";
 	
 			return true;
 		end printboard
@@ -49,6 +54,7 @@ func F4():bool
 
 	func printheader(player:int;):bool
 		begin printheader
+			dummy = gamename();
 			write "-----------------------------------------------------------\n";
 			write "------------------      ";
 			if (player == 1) then
@@ -57,9 +63,21 @@ func F4():bool
 				write "PLAYER  TWO";
 			endif;
 			write "      ------------------\n";
-			write "-----------------------------------------------------------\n";
 			return true;
 		end printheader
+	
+	func gamename():bool
+		begin gamename
+			write "             _______  _______                ___   \n";
+			write "            (  ____ \(  ____ \              /   )  \n";
+			write "            | (    \/| (    \/             / /) |  \n";
+			write "            | (__    | (__       _____    / (_) (_ \n";
+			write "            |  __)   |  __)     (_____)  (____   _)\n";
+			write "            | (      | (                      ) (  \n";
+			write "            | )      | )                      | |  \n";
+			write "            |/       |/                       (_)  \n\n\n\n\n";
+			return true;
+		end gamename
 
 	func checkwin():bool
 		var res:bool;
@@ -177,6 +195,14 @@ func F4():bool
 			return true;
 		end printmenu
 
+	func refreshscreen():bool
+	begin refreshscreen
+		dummy = cls();
+		dummy = printheader(player);
+		dummy = printboard();
+		return true;
+	end refreshscreen
+
 	begin F4
 		for j=0 to 6 do 
 			for i=0 to 5 do 
@@ -189,26 +215,41 @@ func F4():bool
 		dummy = printheader(player);
 		dummy = printboard();
 		while true do
+			dummy = refreshscreen();
 			write "select the column\n";
-
 			read userchoice;
-			if (userchoice>0 and userchoice<8) then
-				if(insertoken(userchoice, player)) then
-					if checkwin() then
-						dummy = printwinner(player);
-						return true;
-						--return true;
-					endif;			
-					--dummy = cls();
-					dummy = printheader(player);
-					dummy = printboard();
-					dummy=false;
-				else
-					write "This column is full\n";
+			ok=true;
+			okfull=true;
+			first = true;
+			while(not ok or not okfull or first) do
+				first=false;
+				if (not ok) then
+					dummy = refreshscreen();
+					write "Please, insert a number between 1 and 7\n";
+					read userchoice;
 				endif;
-			else
-				write "Please, insert a number between 1 and 7\n";
-			endif;
+				if(userchoice>=1 and userchoice<=7) then
+					ok = true;
+				else
+					ok = false;
+				endif;
+				if(ok) then
+					if(insertoken(userchoice, player)) then
+						okfull = true;
+						if checkwin() then
+							dummy = refreshscreen();
+							dummy = printwinner(player);
+							return true;
+						endif;
+					else
+						okfull = false;
+						dummy = refreshscreen();
+						write "This column is full, try again\n";
+						read userchoice;
+					endif;
+				endif;
+			endwhile;
+
 			if player == 1 then
 				player = 2;
 			else
