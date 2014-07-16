@@ -633,7 +633,7 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, C
     // }
 
     *code = concode(*code,
-                    makecode1(S_JMF, if_stat_list_code.size + ((elsif_stat_list_opt_node->child)? 2 : 1)), //se manca il blocco elseif deve essere +1
+                    makecode1(S_JMF, if_stat_list_code.size + ((elsif_stat_list_opt_node->child)? 2 : (else_stat_list_node ? 2 : 1))), //se manca il blocco elseif deve essere +1
                     if_stat_list_code,
                     elsif_stat_list_opt_code,
                     else_stat_list_code,
