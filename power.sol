@@ -23,6 +23,7 @@
 			else
 				return res;
 			endif;
+			return res;
 		end pow
 	begin call
 		write msgReq;

@@ -139,6 +139,9 @@ func F4():bool
 		player = 1;
 		while true do
 			write "select the column\n";
+			dummy = cls();
+			dummy = printheader(player);
+			dummy = printboard();
 			read userchoice;
 			if (userchoice>0 and userchoice<8) then
 				if(insertoken(userchoice, player)) then
@@ -146,9 +149,7 @@ func F4():bool
 					--	dummy = printwinner(player);
 						--return true;
 					--endif;
-					dummy = cls();
-					dummy = printheader(player);
-					dummy = printboard();
+					dummy=false;
 				else
 					write "This column is full\n";
 				endif;
@@ -161,7 +162,6 @@ func F4():bool
 				player = 1;
 			endif;
 		endwhile;
-		dummy = printboard();
 		return true;
 	end F4
 

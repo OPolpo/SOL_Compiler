@@ -657,6 +657,7 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
     
     Stack_node_code * top = NULL;
     Code * ptemp_code;
+    int no_else = (*offset_to_exit==1);
     
     *w_return = 1;
     while (main_expr_node) {
@@ -676,9 +677,10 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
         Code stat_list_code = makecode(S_NOOP);
         stat_list_ok = sem_stat_list(stat_list_node, f_loc_env, &return_stat, &stat_list_code, code_new_aux);
         
+        printf("\n\n offset_to_exit vale %d", *offset_to_exit);
         *w_return = return_stat && *w_return;
         *ptemp_code = concode(*ptemp_code,
-                              makecode1(S_JMF, stat_list_code.size+1),
+                              makecode1(S_JMF, stat_list_code.size+((stat_list_node->brother)? 2 : (no_else ? 1 : 2))),
                               stat_list_code,
                               endcode());
         StackPush(&top, ptemp_code);
@@ -689,7 +691,7 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
     while (top != NULL) {
         Code * current_code = StackPop(&top);
         (*offset_to_exit) += (current_code->size+1);
-        reverse = concode(makecode1(S_JMP, *offset_to_exit),
+        reverse = concode(makecode1(S_JMP, *offset_to_exit + (no_else ? -1 : 0)),
                           *current_code,
                           reverse,
                           endcode());
