@@ -45,6 +45,63 @@ func FF4():bool
 	
 			return true;
 		end printboard
+
+	func printboard2():bool
+	var i,j:int;
+	begin printboard2
+		--write "-----------------------------------------------------------\n";
+		for j=0 to 5 do 
+			write "||-------------------------------------------------------||\n";
+			--write "||       |       |       |       |       |       |       ||\n";
+			write "||";
+			for i=0 to 6 do 
+				if (board[i][5-j] == 0) then
+					write "       |";
+				else
+					if(board[i][5-j] == 1) then
+						write "   *   |";
+					else
+						write "  ###  |";
+					endif;
+				endif;
+			endfor;
+			write "|\n";
+			write "||";
+
+			for i=0 to 6 do 
+				if (board[i][5-j] == 0) then
+					write "       |";
+				else
+					if(board[i][5-j] == 1) then
+						write "  ***  |";
+					else
+						write " ##### |";
+					endif;
+				endif;
+			endfor;
+			write "|\n";
+			write "||";
+
+			for i=0 to 6 do 
+				if (board[i][5-j] == 0) then
+					write "       |";
+				else
+					if(board[i][5-j] == 1) then
+						write " ***** |";
+					else
+						write "  ###  |";
+					endif;
+				endif;
+			endfor;
+			write "|\n";
+			--write "||       |       |       |       |       |       |       ||\n";
+	
+		endfor;
+		write "-----------------------------------------------------------\n";
+		--write "-----------------------------------------------------------\n";
+	
+		return true;
+	end printboard2
 	
 	func cls():bool
 		begin cls
@@ -199,11 +256,11 @@ func FF4():bool
 	begin refreshscreen
 		dummy = cls();
 		dummy = printheader(player);
-		dummy = printboard();
+		dummy = printboard2();
 		return true;
 	end refreshscreen
 
-	begin F4
+	begin FF4
 		for j=0 to 6 do 
 			for i=0 to 5 do 
 				--write i;
@@ -257,5 +314,5 @@ func FF4():bool
 			endif;
 		endwhile;
 		return true;
-	end F4
+	end FF4
 
