@@ -137,18 +137,22 @@ func F4():bool
 			endfor;
 		endfor;
 		player = 1;
+		dummy = cls();
+		dummy = printheader(player);
+		dummy = printboard();
 		while true do
 			write "select the column\n";
-			dummy = cls();
-			dummy = printheader(player);
-			dummy = printboard();
+
 			read userchoice;
 			if (userchoice>0 and userchoice<8) then
 				if(insertoken(userchoice, player)) then
 					--if checkwin() then
 					--	dummy = printwinner(player);
 						--return true;
-					--endif;
+					--endif;			
+					dummy = cls();
+					dummy = printheader(player);
+					dummy = printboard();
 					dummy=false;
 				else
 					write "This column is full\n";
