@@ -246,7 +246,7 @@ void exec_ile(){
     int n, m;
     n = pop_int();
     m = pop_int();
-        printf("-- %d <= %d -> %d\n",m,n,m<=n);
+      //  printf("-- %d <= %d -> %d\n",m,n,m<=n);
     push_bool(m<=n);
 }
 

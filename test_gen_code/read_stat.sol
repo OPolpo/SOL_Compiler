@@ -7,8 +7,8 @@ var k:int;
 	v:Vect;
 begin tester
 	read k;
-	read r;
-	read [s] x;
-	read v;
+	--read r;
+	read x;
+	--read v;
 	return 100;
 end tester

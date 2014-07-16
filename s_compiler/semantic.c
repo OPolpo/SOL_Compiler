@@ -628,9 +628,12 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, C
 	int elsif_stat_list_opt_ok = sem_elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env, &return_elsif_stat_list_opt, &elsif_stat_list_opt_code, code_new_aux, &offset_to_exit);
     
     *w_return = return_if_stat_list && return_else_list && return_elsif_stat_list_opt;
-    
+    // if(elsif_stat_list_opt_node->child){
+    //     printf("il blocco elsif ce quindi sommo %d",((elsif_stat_list_opt_node->child)? 2 : 1));
+    // }
+
     *code = concode(*code,
-                    makecode1(S_JMF, if_stat_list_code.size+2),
+                    makecode1(S_JMF, if_stat_list_code.size + ((elsif_stat_list_opt_node->child)? 2 : 1)), //se manca il blocco elseif deve essere +1
                     if_stat_list_code,
                     elsif_stat_list_opt_code,
                     else_stat_list_code,
@@ -675,7 +678,7 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
         
         *w_return = return_stat && *w_return;
         *ptemp_code = concode(*ptemp_code,
-                              makecode1(S_JMF, stat_list_code.size+2),
+                              makecode1(S_JMF, stat_list_code.size+1),
                               stat_list_code,
                               endcode());
         StackPush(&top, ptemp_code);
