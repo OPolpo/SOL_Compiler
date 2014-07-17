@@ -8,7 +8,7 @@ void mem_error(char * msg){
 }
 
 void * newmem(int size) {
-    //printf("\n+%d\n", size);
+    printf("\n+%d\n", size);
     void *p;
     if((p = calloc(1,size)) == NULL) mem_error("Failure in memory allocation");
     size_allocated += size;
@@ -16,7 +16,7 @@ void * newmem(int size) {
 }
 
 void freemem(char *p, int size) {
-    //printf("\n-%d\n", size);
+    printf("\n-%d\n", size);
     free(p);
     size_deallocated += size;
 }
