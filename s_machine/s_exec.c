@@ -11,7 +11,7 @@ void exec(Scode *stat) {
     //print_code_instruction(stat);
     //printf("pc %d, ap %d, op %d, ip %d\n",pc,ap,op,ip);
     
-    //printf("[%3d] exec %d\n", pc, stat->op);
+    printf("[%3d] exec %d\n", pc, stat->op);
     switch (stat->op) {
         case S_PUSH:
             //printf("pc: %d\n",pc);
@@ -110,7 +110,13 @@ void exec_pop(){
 }
 
 void exec_ist(){
-    memcpy(under_top_ostack()->inst.sval, &(top_ostack()->inst), top_ostack()->size);
+    char * to_copy;
+    if (top_ostack()->mode == EMB) {
+        to_copy = (char *)&(top_ostack()->inst);
+    }else{
+        to_copy = top_ostack()->inst.sval;
+    }
+    memcpy(under_top_ostack()->inst.sval, to_copy, top_ostack()->size);
     pop_ostack();
     pop_ostack();
 }
