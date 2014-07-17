@@ -139,18 +139,18 @@ void read_atomic_istack(Pformatted elem, char * elem_addr, Pschema elem_type){
 void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema){
     //char* str_readed = newmem(1000);
     //fscanf(stream, "%s", str_readed);
-    printf("parse formatted\n");
+    //printf("parse formatted\n");
     parse_formatted(stream);
 
 
     //freemem(str_readed, 1000);
     //return 1;
-    printf("formatted2schema");
+    //printf("formatted2schema");
     Pschema formatted_schema = formatted2schema(formatted_root,NULL);
     
     // print_sch(format_root);
     // printf("schema letto\n");
-    print_sch(formatted_schema);
+    //print_sch(formatted_schema);
     // printf("\nfine schema letto\n");
 
     if(!are_compatible(schema, formatted_schema)){
@@ -181,7 +181,7 @@ void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema){
         default:
             break;
     }
-    printf("destroy\n");
+    //printf("destroy\n");
     destroy_schema(formatted_schema);
     destroy_formatted(formatted_root);
 }

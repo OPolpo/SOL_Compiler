@@ -1,6 +1,6 @@
 --test FOX FORCE 4 XD
 func FF4():bool
-	type gametype: struct(board: vector [7] of vector [6] of int; properclose: bool; player: int;);
+	type gametype: struct(board: vector [7] of vector [6] of int; gameend: bool; player: int;);
 	var --board: vector [7] of vector [6] of int;
 		i,j:int;
 		userchoice:int;
@@ -8,7 +8,6 @@ func FF4():bool
 		dummy:bool;
 		ok, okfull, first:bool;
 		game:gametype;
-		altro:gametype;
 
 	func insertoken(cols:int; player:int;):bool
 		var i:int;
@@ -31,9 +30,9 @@ func FF4():bool
 
 		--write "-----------------------------------------------------------\n";
 		for j=0 to 5 do 
-			write "||-------------------------------------------------------||\n";
+			write "   ||-------------------------------------------------------||\n";
 			--write "||       |       |       |       |       |       |       ||\n";
-			write "||";
+			write "   ||";
 			for i=0 to 6 do 
 				if (board[i][5-j] == 0) then
 					write "       |";
@@ -46,7 +45,7 @@ func FF4():bool
 				endif;
 			endfor;
 			write "|\n";
-			write "||";
+			write "   ||";
 
 			for i=0 to 6 do 
 				if (board[i][5-j] == 0) then
@@ -60,7 +59,7 @@ func FF4():bool
 				endif;
 			endfor;
 			write "|\n";
-			write "||";
+			write "   ||";
 
 			for i=0 to 6 do 
 				if (board[i][5-j] == 0) then
@@ -77,37 +76,35 @@ func FF4():bool
 			--write "||       |       |       |       |       |       |       ||\n";
 	
 		endfor;
-		write "-----------------------------------------------------------\n";
-		write "|    1   |   2   |   3   |   4   |   5   |   6   |   7    |\n";
-		write "-----------------------------------------------------------\n";
+		write "   -----------------------------------------------------------\n";
+		write "   |    1   |   2   |   3   |   4   |   5   |   6   |   7    |\n";
+		--write "-----------------------------------------------------------\n";
 	
 		return true;
 	end printboard
 	
 	func cls():bool
 		begin cls
-			write("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+			write("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 			return true;
 		end cls
 
 	func printheader(player:int;):bool
 		func gamename():bool
 			begin gamename
-				write "             _______  _______                ___   \n";
-				write "            (  ____ \(  ____ \              /   )  \n";
-				write "            | (    \/| (    \/             / /) |  \n";
-				write "            | (__    | (__       _____    / (_) (_ \n";
-				write "            |  __)   |  __)     (_____)  (____   _)\n";
-				write "            | (      | (                      ) (  \n";
-				write "            | )      | )                      | |  \n";
-				write "            |/       |/                       (_)  \n\n\n\n";
+
+				write "     ______                ______                          __ __ \n";
+				write "    / ____/___  _  __     / ____/___  _____________       / // / \n";
+				write "   / /_  / __ \| |/_/    / /_  / __ \/ ___/ ___/ _ \     / // /_ \n";
+				write "  / __/ / /_/ />  <     / __/ / /_/ / /  / /__/  __/    /__  __/ \n";
+				write " /_/    \____/_/|_|    /_/    \____/_/   \___/\___/       /_/    \n\n";
 				return true;
 			end gamename
 
 		begin printheader
 			dummy = gamename();
-			write "-----------------------------------------------------------\n";
-			write "------------------      ";
+			write "   -----------------------------------------------------------\n";
+			write "   ------------------      ";
 			if (game.player == 1) then
 				write "PLAYER  ONE";
 			else
@@ -223,29 +220,41 @@ func FF4():bool
 			return res;
 		end checkwin
 
+	func checkfull():bool
+		var i:int;
+		begin checkfull
+			for i=0 to 6 do
+				if(game.board[i][5] == 0) then
+					return false;
+				endif;
+			endfor;
+			return true;
+		end checkfull
+
 	func printwinner(player:int;):bool
 		begin printwinner
-			write "PLAYER ";
-			write player;
-			write " WINS\n";
-			return false;
+			if (game.player == 1) then
+				dummy = printmessage("PLAYER ONE WINS !!!!", 20);
+			else
+				dummy = printmessage("PLAYER TWO WINS !!!!", 20);
+			endif;
+			return true;
 		end printwinner
 
 	func printmenu():bool
 		begin printmenu
-			write "|---------------------------------------------------------|\n";
-			write "|                                                         |\n";
-			write "|                                                         |\n";
-			write "|                                                         |\n";
-			write "|                                                         |\n";
-			write "|---------------------------------------------------------|\n";
+			write "   |---------------------------------------------------------|\n";
+			write "   |        0      *  Exit                                   |\n";
+			write "   |        1/7    *  Insert Token                           |\n";
+			write "   |        9      *  Reset Game                             |\n";
+			write "   |---------------------------------------------------------|\n";
 			return true;
 		end printmenu
 
 	func printmessage(message:string; len:int;):bool
 		var i:int;
 		begin printmessage
-			write "|";
+			write "   |";
 			for i=0 to (55-len) / 2 do
 				write " ";
 			endfor;
@@ -254,6 +263,7 @@ func FF4():bool
 				write " ";
 			endfor;
 			write "|\n";
+			write "   -----------------------------------------------------------\n";
 			return true;
 		end printmessage
 
@@ -280,51 +290,72 @@ func FF4():bool
 		return true;
 	end savegame
 
+	func resetgame():bool
+	begin resetgame
+		game.gameend = false;
+		for j=0 to 6 do 
+			for i=0 to 5 do 
+				game.board[j][i]=0;
+			endfor;
+		endfor;
+		game.player = 1;
+		first = true;
+		return true;
+	end resetgame
+
 	begin FF4
 		read ["game.ff4"] game;
-		--write game;
-		if game.properclose == true then
-			write "SIIII";
-			game.properclose = false;
-			for j=0 to 6 do 
-				for i=0 to 5 do 
-					--write i;
-					game.board[i][j]=0;
-				endfor;
-			endfor;
-			game.player = 1;
+		if game.gameend == true then
+			game.gameend = false;
+			dummy = resetgame();
 		endif;
-		--write game;
+--		if checkwin() then
+--			dummy = resetgame();
+--		endif;
 		dummy = refreshscreen();
 		while true do
-			write game.properclose;
+			--write game.gameend;
 			dummy = refreshscreen();
-			dummy = printmessage("select the column", 17);
-			dummy = saferead();
 			ok=true;
 			okfull=true;
 			first = true;
+			if checkwin() then
+				dummy = refreshscreen();
+				game.gameend = true;
+				dummy = printwinner(game.player);
+			elsif checkfull() then
+				dummy = refreshscreen();
+				game.gameend = true;
+				dummy = printmessage("No Winner...",12);
+			else
+				dummy = printmessage("Select the column", 17);
+				--dummy = saferead();
+			endif;
 			while(not ok or not okfull or first) do
+				dummy = saferead();
 				first=false;
-				if (not ok) then
+				if (not ok and not game.gameend) then
 					dummy = refreshscreen();
-					--write "Please, insert a number between 1 and 7\n";
 					dummy = printmessage("Please, insert a number between 1 and  7", 40);
 					dummy = saferead();
 				endif;
-				if(userchoice>=1 and userchoice<=7) then
+
+
+				if(userchoice>=1 and userchoice<=7 and not game.gameend) then
 					ok = true;
+				elsif (userchoice==9) then
+					dummy = resetgame();
+					dummy = refreshscreen();
+					dummy = printmessage("Select the column", 17);
+					ok=true;
+				elsif (userchoice==0) then
+					return true;
 				else
 					ok = false;
 				endif;
-				if(ok) then
+				if(ok and not game.gameend) then
 					if(insertoken(userchoice, game.player)) then
 						okfull = true;
-						if checkwin() then
-							dummy = refreshscreen();
-							dummy = printwinner(game.player);
-							return true;
-						endif;
 					else
 						okfull = false;
 						dummy = refreshscreen();
@@ -332,12 +363,23 @@ func FF4():bool
 						dummy = saferead();
 					endif;
 				endif;
+				if checkwin() then
+					dummy = refreshscreen();
+					game.gameend = true;
+					dummy = printwinner(game.player);
+				endif;
+				if checkfull() then
+					dummy = refreshscreen();
+					dummy = printmessage("No Winner...",12);
+					game.gameend = true;
+				endif;
 			endwhile;
-
-			if game.player == 1 then
-				game.player = 2;
-			else
-				game.player = 1;
+			if (not game.gameend ) then
+				if game.player == 1 then
+					game.player = 2;
+				else
+					game.player = 1;
+				endif;
 			endif;
 		endwhile;
 		return true;
