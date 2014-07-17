@@ -281,9 +281,10 @@ func FF4():bool
 	end savegame
 
 	begin FF4
-		--read ["game.ff4"] altro;
+		read ["game.ff4"] game;
 		--write game;
-		--if game.properclose == true then
+		if game.properclose == true then
+			write "SIIII";
 			game.properclose = false;
 			for j=0 to 6 do 
 				for i=0 to 5 do 
@@ -292,10 +293,11 @@ func FF4():bool
 				endfor;
 			endfor;
 			game.player = 1;
-		--endif;
+		endif;
 		--write game;
 		dummy = refreshscreen();
 		while true do
+			write game.properclose;
 			dummy = refreshscreen();
 			dummy = printmessage("select the column", 17);
 			dummy = saferead();

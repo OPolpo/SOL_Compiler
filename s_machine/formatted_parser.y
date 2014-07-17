@@ -6,7 +6,8 @@
     #include "sol_io.h"
     
     #define YYSTYPE Pformatted
-    
+
+    extern YY_FLUSH_BUFFER;
     extern FILE *formattedin;
     extern Value lexval;
     extern Str_c_node ** format_stringtable;
@@ -104,6 +105,7 @@ void parse_formatted(FILE* stream){
     //if((result = formattedparse()) == 0)
     //print_sch(formatted_root);
     formattedin=stream;
+    formattedrestart(formattedin);
     yyparse();
 }
 
