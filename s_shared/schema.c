@@ -213,7 +213,7 @@ void destroy_schema(Pschema schema){
         destroy_schema(schema->p1);
     if(schema->p2 != NULL)
         destroy_schema(schema->p2);
-    printf("freeSchema %lu", sizeof(Schema));
+    //printf("freeSchema %lu", sizeof(Schema));
     freemem((void*)schema, sizeof(Schema));
     schema = NULL;
 }

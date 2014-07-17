@@ -25,7 +25,7 @@ void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type, int 
                 fprintf(stream, "%s",*(char**)elem_addr);
             break;
         case SCBOOL:
-            fprintf(stream, "%s", (*(int *)elem_addr)? "true" : "false");
+            fprintf(stream, "%s", (*elem_addr!='0')? "true" : "false");
             break;
         default:
             break;
@@ -100,7 +100,7 @@ void basic_wr(FILE* stream, char* format, int on_file){
                 fprintf(stream, "%s", top_ostack()->inst.sval);
             break;
         case SCBOOL:
-            fprintf(stream, "%s", top_ostack()->inst.cval ? "true" : "false");
+            fprintf(stream, "%s", top_ostack()->inst.cval != '0' ? "true" : "false");
             break;
         case SCVECTOR:
             print_vector(stream, top_ostack()->inst.sval, format_root->size, format_root->p1, on_file);
@@ -140,7 +140,10 @@ void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema){
     //char* str_readed = newmem(1000);
     //fscanf(stream, "%s", str_readed);
     
+    printf("blaaaaaaaaaaaaaaaaaaaaaaaaa");
     parse_formatted(stream);
+    printf("blooooooooooooooooooooooooo");
+
 
     //freemem(str_readed, 1000);
     //return 1;

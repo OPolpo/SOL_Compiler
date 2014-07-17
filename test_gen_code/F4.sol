@@ -1,13 +1,14 @@
 --test FOX FORCE 4 XD
 func FF4():bool
-	--type gametype: struct(board: vector [7] of vector [6] of int; properclose: bool; player: int;);
+	type gametype: struct(board: vector [7] of vector [6] of int; properclose: bool; player: int;);
 	var --board: vector [7] of vector [6] of int;
 		i,j:int;
 		userchoice:int;
 		--player:int;
 		dummy:bool;
 		ok, okfull, first:bool;
-		game:struct(board: vector [7] of vector [6] of int; properclose: bool; player: int;);
+		game:gametype;
+		altro:gametype;
 
 	func insertoken(cols:int; player:int;):bool
 		var i:int;
@@ -280,7 +281,8 @@ func FF4():bool
 	end savegame
 
 	begin FF4
-		read ["game.ff4"] game;
+		--read ["game.ff4"] altro;
+		--write game;
 		--if game.properclose == true then
 			game.properclose = false;
 			for j=0 to 6 do 
@@ -291,6 +293,7 @@ func FF4():bool
 			endfor;
 			game.player = 1;
 		--endif;
+		--write game;
 		dummy = refreshscreen();
 		while true do
 			dummy = refreshscreen();
