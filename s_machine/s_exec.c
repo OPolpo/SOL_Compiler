@@ -110,13 +110,13 @@ void exec_pop(){
 }
 
 void exec_ist(){
-    char * to_copy;
     if (top_ostack()->mode == EMB) {
-        to_copy = (char *)&(top_ostack()->inst);
+        memcpy(under_top_ostack()->inst.sval, (char *)&(top_ostack()->inst), top_ostack()->size);
     }else{
-        to_copy = top_ostack()->inst.sval;
+        memcpy(under_top_ostack()->inst.sval, top_ostack()->inst.sval, top_ostack()->size);
+        pop_istack(top_ostack()->size);
     }
-    memcpy(under_top_ostack()->inst.sval, to_copy, top_ostack()->size);
+    
     pop_ostack();
     pop_ostack();
 }
@@ -384,7 +384,12 @@ void exec_sto(int env_offset, int oid){
         a_declaration = a_declaration->alink; // not sure TODO check
     }
     Odescr * o_to_store = *(get_p2objects(a_declaration->pos_objects) + oid-1);
-    memcpy(&(o_to_store->inst), &(top_ostack()->inst), sizeof(Value));
+    if (o_to_store->mode == EMB) {
+        memcpy(&(o_to_store->inst), &(top_ostack()->inst), sizeof(Value));
+    }else{
+        memcpy(o_to_store->inst.sval, top_ostack()->inst.sval, o_to_store->size);
+        pop_istack(o_to_store->size);
+    }
     pop_ostack();
 }
 
