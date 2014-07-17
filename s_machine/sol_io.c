@@ -241,7 +241,7 @@ Pschema formatted2schema(Pformatted root, char * id){
             node->id = id;
             break;
         case F_INTCONST:
-            printf("root is int\n");
+            //printf("root is int\n");
             node = new_schema_node(SCINT);
             node->id = id;
             break;
@@ -254,12 +254,12 @@ Pschema formatted2schema(Pformatted root, char * id){
             node->id = id;
             break;
         case F_BOOLCONST:
-            printf("root is bool\n");
+            //printf("root is bool\n");
             node = new_schema_node(SCBOOL);
             node->id = id;
             break;
         case F_STRUCT:
-            printf("root is struct\n");
+            //printf("root is struct\n");
             node = new_schema_node(SCSTRUCT);
             node->id = id;
             current_node = root->child;
@@ -273,14 +273,14 @@ Pschema formatted2schema(Pformatted root, char * id){
             }
             break;
         case F_VECTOR:
-            printf("root is vector\n");
+            //printf("root is vector\n");
             node = new_schema_node(SCVECTOR);
             node->id = id;
             current_node = root->child;
             current_schema = formatted2schema(current_node, current_node->id);
             current_node = current_node->brother;
             count++;
-            printf("other children\n");
+            //printf("other children\n");
             while (current_node) {
                 Pschema next = formatted2schema(current_node, current_node->id);
                 if (!are_compatible(next, current_schema)) {
