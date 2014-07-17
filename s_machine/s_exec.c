@@ -475,12 +475,18 @@ void exec_fread(int offset, int oid, char * format){
 
 void exec_write(char* format){
     basic_wr(stdout, format, 0);
+    if (top_ostack()->mode == STA) {
+        pop_istack(top_ostack()->size);
+    }
     pop_ostack();
 }
 
 
 void exec_fwrite(char* format){
     exec_fwr(format);
+    if (top_ostack()->mode == STA) {
+        pop_istack(top_ostack()->size);
+    }
     pop_ostack();
 }
 

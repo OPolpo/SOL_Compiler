@@ -20,8 +20,10 @@ int main(int argc, char* argv[]){
 	Scode * stat;
 	start_machine(argv[1]);
     //print_str_c_table();
-	while((stat = &prog[pc++])->op != S_HALT)
+	while((stat = &prog[pc++])->op != S_HALT){
         exec(stat);
+        printf("ap: %d, op: %d, ip: %d\n", ap, op, ip);
+    }
     
     
     printf("\n");
