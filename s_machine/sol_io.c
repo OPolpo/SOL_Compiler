@@ -139,19 +139,18 @@ void read_atomic_istack(Pformatted elem, char * elem_addr, Pschema elem_type){
 void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema){
     //char* str_readed = newmem(1000);
     //fscanf(stream, "%s", str_readed);
-    
-    printf("blaaaaaaaaaaaaaaaaaaaaaaaaa");
+    printf("parse formatted\n");
     parse_formatted(stream);
-    printf("blooooooooooooooooooooooooo");
 
 
     //freemem(str_readed, 1000);
     //return 1;
+    printf("formatted2schema");
     Pschema formatted_schema = formatted2schema(formatted_root,NULL);
     
     // print_sch(format_root);
     // printf("schema letto\n");
-    // print_sch(formatted_schema);
+    print_sch(formatted_schema);
     // printf("\nfine schema letto\n");
 
     if(!are_compatible(schema, formatted_schema)){
@@ -182,6 +181,7 @@ void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema){
         default:
             break;
     }
+    printf("destroy\n");
     destroy_schema(formatted_schema);
     destroy_formatted(formatted_root);
 }
@@ -242,6 +242,7 @@ Pschema formatted2schema(Pformatted root, char * id){
             node->id = id;
             break;
         case F_INTCONST:
+            //printf("root is int\n");
             node = new_schema_node(SCINT);
             node->id = id;
             break;
@@ -254,10 +255,12 @@ Pschema formatted2schema(Pformatted root, char * id){
             node->id = id;
             break;
         case F_BOOLCONST:
+            //printf("root is bool\n");
             node = new_schema_node(SCBOOL);
             node->id = id;
             break;
         case F_STRUCT:
+            //printf("root is struct\n");
             node = new_schema_node(SCSTRUCT);
             node->id = id;
             current_node = root->child;
@@ -271,17 +274,20 @@ Pschema formatted2schema(Pformatted root, char * id){
             }
             break;
         case F_VECTOR:
+            //printf("root is vector\n");
             node = new_schema_node(SCVECTOR);
             node->id = id;
             current_node = root->child;
             current_schema = formatted2schema(current_node, current_node->id);
             current_node = current_node->brother;
             count++;
+            //printf("other children\n");
             while (current_node) {
                 Pschema next = formatted2schema(current_node, current_node->id);
                 if (!are_compatible(next, current_schema)) {
                     machine_error("Vector elements must be of the same type\n");
                 }
+                destroy_schema(next);
                 current_node = current_node->brother;
                 count++;
             }
