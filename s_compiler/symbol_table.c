@@ -99,7 +99,8 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     func->schema = create_schema(current, func->father, NULL);
                     
                     current = current->brother; //TYPE_SECT_OPT
-                    handle_function_part(current, func, &((func->aux)->last_oid), CLTYPE, &(func->aux->num_obj));
+                    int not_used = 0;
+                    handle_function_part(current, func, &not_used, CLTYPE, &not_used);
                     
                     current = current->brother; //VAR_SECT_OPT
                     handle_function_part(current, func, &((func->aux)->last_oid), CLVAR, &(func->aux->num_obj));
@@ -110,7 +111,6 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     
                     
                     print_func_node(func);
-                    printf("(((%d)))\n", ((func->aux)->last_oid));
                     printSchema(func->schema," ");
                     print_hash_content((func->aux)->locenv);
                     

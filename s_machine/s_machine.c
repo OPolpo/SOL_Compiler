@@ -1,5 +1,7 @@
 #include "s_machine.h"
 #include "s_exec.h"
+#include "../s_shared/schema.h"
+#include "sol_io.h"
 
 extern Scode *prog;
 extern int pc;

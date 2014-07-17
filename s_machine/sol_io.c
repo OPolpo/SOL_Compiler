@@ -104,11 +104,11 @@ void basic_wr(FILE* stream, char* format, int on_file){
             break;
         case SCVECTOR:
             print_vector(stream, top_ostack()->inst.sval, format_root->size, format_root->p1, on_file);
-            pop_istack(top_ostack()->size);
+            //pop_istack(top_ostack()->size);
             break;
         case SCSTRUCT:
             print_struct(stream, top_ostack()->inst.sval, format_root->p1, on_file);
-            pop_istack(top_ostack()->size);
+            //pop_istack(top_ostack()->size);
             break;
         default:
             break;

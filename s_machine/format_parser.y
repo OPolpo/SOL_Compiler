@@ -36,7 +36,7 @@ attr_list : ',' attr attr_list {$$ = $2;
                                 $2->p2 = $3;}
         | /*eps*/ {$$ = NULL;}
 
-attr : FORMAT_LEX_ID {$$ = new_schema_node(SCSTRING); $$->id = lexval.sval;} format {$$ = $3; $3->id = get_str_c($2->id); free($2);}
+attr : FORMAT_LEX_ID {$$ = new_schema_node(SCSTRING); $$->id = lexval.sval;} format {$$ = $3; $3->id = get_str_c($2->id); freemem($2, sizeof(Schema));}
 
 vector_format : '[' FORMAT_LEX_INT {$$ = new_schema_node(SCVECTOR); $$->size = lexval.ival;} ',' format ']' {$$ = $3; $$->p1 = $5;}
 
