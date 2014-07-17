@@ -615,15 +615,18 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, C
     
     Code else_stat_list_code = makecode(S_NOOP);
     int else_stat_list_ok = 1;
+    int offset_to_exit;
     if (else_stat_list_node) {
         else_stat_list_ok = sem_stat_list(else_stat_list_node, f_loc_env, &return_else_list, &else_stat_list_code, code_new_aux);
         else_stat_list_code = appcode(makecode1(S_JMP, else_stat_list_code.size+1), else_stat_list_code);
+        offset_to_exit = else_stat_list_code.size;
     }
     else {
         return_else_list = 1;
+        offset_to_exit = 0;
     }
     
-    int offset_to_exit = else_stat_list_code.size;
+    
     Code elsif_stat_list_opt_code = makecode(S_NOOP);
 	int elsif_stat_list_opt_ok = sem_elsif_stat_list_opt(elsif_stat_list_opt_node, f_loc_env, &return_elsif_stat_list_opt, &elsif_stat_list_opt_code, code_new_aux, &offset_to_exit);
     
@@ -657,7 +660,6 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
     
     Stack_node_code * top = NULL;
     Code * ptemp_code;
-    int no_else = (*offset_to_exit==1);
     
     *w_return = 1;
     while (main_expr_node) {
@@ -680,7 +682,7 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
         printf("\n\n offset_to_exit vale %d", *offset_to_exit);
         *w_return = return_stat && *w_return;
         *ptemp_code = concode(*ptemp_code,
-                              makecode1(S_JMF, stat_list_code.size+((stat_list_node->brother)? 2 : (no_else ? 1 : 2))),
+                              makecode1(S_JMF, stat_list_code.size+((stat_list_node->brother)? 2 : (!offset_to_exit ? 1 : 2))),
                               stat_list_code,
                               endcode());
         StackPush(&top, ptemp_code);
@@ -691,7 +693,7 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
     while (top != NULL) {
         Code * current_code = StackPop(&top);
         (*offset_to_exit) += (current_code->size+1);
-        reverse = concode(makecode1(S_JMP, *offset_to_exit + (no_else ? -1 : 0)),
+        reverse = concode(makecode1(S_JMP, *offset_to_exit),
                           *current_code,
                           reverse,
                           endcode());
