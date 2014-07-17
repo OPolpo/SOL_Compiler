@@ -146,10 +146,10 @@ void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema){
     //return 1;
     Pschema formatted_schema = formatted2schema(formatted_root,NULL);
     
-    //print_sch(format_root);
-    //printf("schema letto\n");
-    //print_sch(formatted_schema);
-    //printf("\nfine schema letto\n");
+    // print_sch(format_root);
+    // printf("schema letto\n");
+    // print_sch(formatted_schema);
+    // printf("\nfine schema letto\n");
 
     if(!are_compatible(schema, formatted_schema)){
         char* msg;
@@ -209,10 +209,10 @@ void read_struct(Pformatted elem, char * elem_addr, Pschema elem_type){
     while (elem_type_temp){
         switch (elem_type_temp->type) {
             case SCVECTOR:
-                read_vector(elem_temp, elem_addr, elem_type_temp->size, elem_type_temp->p1);
+                read_vector(elem_temp->child, elem_addr, elem_type_temp->size, elem_type_temp->p1);
                 break;
             case SCSTRUCT:
-                read_struct(elem_temp, elem_addr, elem_type_temp->p1);
+                read_struct(elem_temp->child, elem_addr, elem_type_temp->p1);
                 break;
             default:
                 read_atomic_istack(elem_temp, elem_addr, elem_type_temp);
