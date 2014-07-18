@@ -351,7 +351,6 @@ func FF4():bool
 						okfull = false;
 						dummy = refreshscreen();
 						dummy = printmessage("This column is full, try again",30);
-						dummy = saferead();
 					endif;
 				endif;
 				if checkwin() then
