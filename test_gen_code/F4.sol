@@ -1,10 +1,8 @@
 --test FOX FORCE 4 XD
 func FF4():bool
 	type gametype: struct(board: vector [7] of vector [6] of int; gameend: bool; player: int;);
-	var --board: vector [7] of vector [6] of int;
-		i,j:int;
+	var i,j:int;
 		userchoice:int;
-		--player:int;
 		dummy:bool;
 		ok, okfull, first:bool;
 		game:gametype;
@@ -28,10 +26,8 @@ func FF4():bool
 	begin printboard
 		board=game.board;
 
-		--write "-----------------------------------------------------------\n";
 		for j=0 to 5 do 
 			write "   ||-------------------------------------------------------||\n";
-			--write "||       |       |       |       |       |       |       ||\n";
 			write "   ||";
 			for i=0 to 6 do 
 				if (board[i][5-j] == 0) then
@@ -73,12 +69,10 @@ func FF4():bool
 				endif;
 			endfor;
 			write "|\n";
-			--write "||       |       |       |       |       |       |       ||\n";
 	
 		endfor;
 		write "   -----------------------------------------------------------\n";
 		write "   |    1   |   2   |   3   |   4   |   5   |   6   |   7    |\n";
-		--write "-----------------------------------------------------------\n";
 	
 		return true;
 	end printboard
@@ -305,16 +299,14 @@ func FF4():bool
 
 	begin FF4
 		read ["game.ff4"] game;
+
 		if game.gameend == true then
 			game.gameend = false;
 			dummy = resetgame();
 		endif;
---		if checkwin() then
---			dummy = resetgame();
---		endif;
+
 		dummy = refreshscreen();
 		while true do
-			--write game.gameend;
 			dummy = refreshscreen();
 			ok=true;
 			okfull=true;
@@ -329,7 +321,6 @@ func FF4():bool
 				dummy = printmessage("No Winner...",12);
 			else
 				dummy = printmessage("Select the column", 17);
-				--dummy = saferead();
 			endif;
 			while(not ok or not okfull or first) do
 				dummy = saferead();

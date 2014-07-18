@@ -96,6 +96,8 @@ formatted_list  : formatted ',' formatted_list {$$ = $1; $1->brother = $3;}
 
 int yyerror(){
     fprintf(stderr, "Error while parsing the formatted values.\n");
+    //destroy_formatted(formatted_root);
+    formatted_root=NULL;
     return -1;
 }
 
