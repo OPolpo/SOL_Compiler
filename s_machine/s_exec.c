@@ -11,7 +11,7 @@ void exec(Scode *stat) {
     //print_code_instruction(stat);
     //printf("pc %d, ap %d, op %d, ip %d\n",pc,ap,op,ip);
     
-    //printf("[%3d] exec %d\n", pc, stat->op);
+    printf("[%3d] exec %d\n", pc, stat->op);
     switch (stat->op) {
         case S_PUSH:
             //printf("pc: %d\n",pc);
@@ -527,7 +527,7 @@ void exec_frd(char* format){
     }else{
         exec_new(compute_size(format_root));
     }
-    basic_read(stdin, top_ostack(), format_root);
+    basic_read(fp, top_ostack(), format_root);
     destroy_schema(format_root);
     fclose (fp);
 }
