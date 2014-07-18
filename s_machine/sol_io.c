@@ -305,5 +305,5 @@ void destroy_formatted(Pformatted formatted){
         destroy_formatted(formatted->child);
     if(formatted->brother != NULL)
         destroy_formatted(formatted->brother);
-    free(formatted);
+    freemem(formatted, sizeof(Formatted));
 }
