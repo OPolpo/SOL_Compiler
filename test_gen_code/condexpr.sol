@@ -1,8 +1,8 @@
 func tester():bool
 var i,j: int;
 begin tester
-read i;
-j = if i==0 then
+i = rd ["b.txt"] int;
+j = if i==rd ["a.txt"] int then
 	i + 3
 --elsif i>5 then
 --  	i - 2
@@ -12,7 +12,7 @@ else
   	i * 3
 endif;
 
-write j;
+write wr ["c.txt"] j;
 
 return true;
 end tester

@@ -523,7 +523,8 @@ int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     int field_offset = 0;
     while (found==0 && lhs_attr != NULL) {
         if (strcmp(id_node->value.sval, lhs_attr->id)==0) {
-            *stype = lhs_attr;
+            memcpy(*stype, lhs_attr, sizeof(Schema));
+            (*stype)->p2=NULL;
             found = 1;
             if (!is_addr && first_field) {
                 if (lhs_attr->type == SCVECTOR || lhs_attr->type == SCSTRUCT) {
@@ -1325,6 +1326,7 @@ int sem_instance_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * 
 			while (current_node){//cicle for the other brother
 				Pschema next = new_schema_node(-1);
 				expr_ok = sem_expr(current_node, f_loc_env, &next, code, 0);
+                //current_schema->id = NULL;
 				current_schema->p2 = next;
 				current_schema = next;
 				current_node = current_node->brother;

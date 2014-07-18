@@ -162,6 +162,7 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
     //func: function node of the local environment
     Pnode dom_child = domain->child;
     Pschema node = NULL;
+    Pschema node_tmp = NULL;
     Phash_node type_decl = NULL;
     switch (dom_child->type) {
         case T_NONTERMINAL:
@@ -216,7 +217,7 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
             while (func != NULL) {
                 type_decl = getNode(dom_child->value.sval, (func->aux)->locenv);
                 if (type_decl != NULL){
-                    node = type_decl->schema;
+                    node_tmp = type_decl->schema;
                     break;
                 }
                 func = func->father;
@@ -225,6 +226,9 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                 sprintf(error_msg_symb, "ERROR type not found: %s\n", dom_child->value.sval);
                 sem_error(dom_child, error_msg_symb);
             }
+            node = new_schema_node(-1);
+            memcpy(node, node_tmp, sizeof(Schema));
+            node->id = id;
             break;
         case T_ATOMIC_DOMAIN:
             //CHAR, INT, REAL, STRING, BOOL

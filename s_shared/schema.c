@@ -181,12 +181,12 @@ char * schema2format(Pschema schema){
         case SCSTRUCT:
             tmp_schema = schema->p1;
             tmp_str = schema2format(tmp_schema);
-            asprintf(&str, "(%s:%s", tmp_schema->id, tmp_str);
+            asprintf(&str, "(%s:%s", (tmp_schema->id != NULL)? tmp_schema->id : "NULL", tmp_str);
             
             tmp_schema = tmp_schema->p2;
             while (tmp_schema) {
                 tmp_str = schema2format(tmp_schema);
-                asprintf(&tmp2_str, "%s,%s:%s", str, (tmp_schema->id? tmp_schema->id: ""), tmp_str);
+                asprintf(&tmp2_str, "%s,%s:%s", str, (tmp_schema->id? tmp_schema->id: "NULL"), tmp_str);
                 str = tmp2_str;
                 tmp_schema = tmp_schema->p2;
             }
@@ -202,10 +202,16 @@ char * schema2format(Pschema schema){
 
 char * make_format(Pschema schema){
     char * str, * tmp_str;
+    print_sch(schema);
     tmp_str = schema2format(schema);
     str = calloc(strlen(tmp_str)+3, sizeof(char));
     sprintf(str, "\"%s\"", tmp_str);
+    printf("%s\n", str);
     return str;
+}
+
+void duplicate_schema(Pschema schema){
+   
 }
 
 void destroy_schema(Pschema schema){

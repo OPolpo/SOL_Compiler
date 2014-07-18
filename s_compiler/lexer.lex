@@ -14,7 +14,7 @@ spacing		([ \t])+
 eol			\n
 letter		[a-zA-Z]
 digit		[0-9]
-id			{letter}({letter}|{digit})*
+id			{letter}({letter}|{digit}|_)*
 num 		{digit}+
 sugar 		[\(\)\[\]".":,;]
 charconst 	\'.\'

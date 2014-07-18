@@ -28,7 +28,7 @@ stringconst \"([^\"])*\"
 {intconst}		{lexval.ival = atoi(yytext); return(INTCONST);}
 {realconst}		{lexval.rval = atof(yytext); return(REALCONST);}
 {charconst}		{lexval.ival = yytext[1]; return(CHARCONST);}
-{stringconst}	{lexval.sval = insert_str_c(yytext); return(STRCONST);}
+{stringconst}	{lexval.sval = insert_strWclean(yytext); return(STRCONST);}
 {sugar}			{return(yytext[0]);}
 {id}			{yytext[strlen(yytext)-1]=0;lexval.sval = insert_str_c(yytext); return FORMATTED_LEX_ID;}
 .				{return (FORMATTED_LEX_ERROR);}

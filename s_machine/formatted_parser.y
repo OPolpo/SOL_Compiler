@@ -14,7 +14,7 @@
     Pformatted formatted_root = NULL;
     
     Pformatted newnode(Typeformatted tnode){
-        Pformatted p = malloc(sizeof(Formatted));
+        Pformatted p = newmem(sizeof(Formatted));
         p->type = tnode;
         p->child = p->brother = NULL;
         p->id = NULL;
@@ -50,6 +50,7 @@
     
     Pformatted sconstnode(){
         Pformatted p = newnode(F_STRCONST);
+        //p->value.sval = insert_strWclean(lexval.sval);
         p->value.sval = lexval.sval;
         return(p);
     }
@@ -84,7 +85,7 @@ struct_formatted :  '(' attr_list ')' {$$ = structnode(); $$->child = $2;}
 attr_list   : attr ',' attr_list {$$ = $1; $$->brother = $3;}
             | attr
 
-attr : FORMATTED_LEX_ID {$$ = newnode(F_TEMP); $$->id = lexval.sval;} formatted {$$ = $3; $3->id = $2->id; free($2);}
+attr : FORMATTED_LEX_ID {$$ = newnode(F_TEMP); $$->id = lexval.sval;} formatted {$$ = $3; $3->id = $2->id; freemem($2, sizeof(Formatted));}
 
 vector_formatted : '[' formatted_list ']' {$$ = vectornode(); $$->child = $2;}
 
