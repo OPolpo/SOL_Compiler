@@ -7,10 +7,13 @@
     
     #define YYSTYPE Pformatted
 
-    extern YY_FLUSH_BUFFER;
+    //extern YY_FLUSH_BUFFER;
     extern FILE *formattedin;
     extern Value lexval;
     extern Str_c_node ** format_stringtable;
+    extern int formattedlex();
+    extern void formattedrestart(FILE *);
+    extern int yyerror();
     Pformatted formatted_root = NULL;
     
     Pformatted newnode(Typeformatted tnode){

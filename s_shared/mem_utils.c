@@ -15,7 +15,7 @@ void * newmem(int size) {
     return p;
 }
 
-void freemem(char *p, int size) {
+void freemem(void *p, int size) {
     //printf("\n-%d\n", size);
     free(p);
     size_deallocated += size;

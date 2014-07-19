@@ -5,6 +5,6 @@
 #include <stdlib.h>
 
 void *newmem(int size);
-void freemem(char *p, int size);
+void freemem(void *p, int size);
 
 #endif

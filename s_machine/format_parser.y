@@ -10,6 +10,11 @@
 
 extern Value lexval;
 extern Str_c_node ** format_stringtable;
+extern int format_scan_string(char *);
+extern int formatlex();
+
+int yyerror();
+
 Pschema format_root = NULL;
 
 %}
@@ -49,7 +54,8 @@ int yyerror(){
 
 int parse_format(char * format){
     int result;
-    format_scan_string(format,strlen(format));
+    //format_scan_string(format,strlen(format));
+    format_scan_string(format);
     if((result = formatparse()) == 0){
         //print_sch(format_root);
     }

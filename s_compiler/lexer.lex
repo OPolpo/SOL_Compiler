@@ -7,7 +7,7 @@
 Value lexval;
 unsigned int line = 1;
 %}
-%option	noyywrap
+%option	noyywrap nounput
 
 
 spacing		([ \t])+

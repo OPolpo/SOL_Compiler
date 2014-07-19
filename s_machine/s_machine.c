@@ -18,6 +18,10 @@ Str_c_node ** str_const_table;
 
 int main(int argc, char* argv[]){
 	Scode * stat;
+    if(argc != 2){
+        fprintf(stderr, "%s %s %s\n", "\tHow to use: ", argv[0], "filename");
+        exit(0);
+    }
 	start_machine(argv[1]);
     print_str_c_table();
 	while((stat = &prog[pc++])->op != S_HALT){

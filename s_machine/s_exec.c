@@ -76,7 +76,8 @@ void exec(Scode *stat) {
         case S_FREAD: exec_fread(stat->args[0].ival, stat->args[1].ival, stat->args[2].sval); break;
         case S_WRITE: exec_write(stat->args[0].sval); break;
         case S_FWRITE: exec_fwrite(stat->args[0].sval); break;
-        case S_FUNC: exec_func(stat->args[0].ival); break;
+        //case S_FUNC: exec_func(stat->args[0].ival); break;
+        case S_FUNC: break;
         case S_RETURN: exec_return(); break;
         default: machine_error("Unknown operator"); break;
     }
@@ -561,9 +562,9 @@ void exec_ldc(char arg1){
     push_char(arg1);
 }
 
-void exec_func(int arg1){
-    
-}
+// void exec_func(int arg1){
+   
+// }
 
 void exec_goto(int arg1){
     pc = arg1;

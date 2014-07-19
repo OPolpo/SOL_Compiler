@@ -5,7 +5,7 @@
 
 Value lexval;
 %}
-%option	noyywrap
+%option	noyywrap nounput
 
 
 spacing		([ \t])+
