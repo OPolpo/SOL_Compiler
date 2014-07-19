@@ -10,7 +10,10 @@ extern int parse_formatted();
 void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type, int on_file){
     switch (elem_type->type) {
         case SCCHAR:
-            fprintf(stream, "\'%c\'",*elem_addr);
+            if(on_file)
+                fprintf(stream, "\'%c\'",*elem_addr);
+            else
+                fprintf(stream, "%c",*elem_addr);
             break;
         case SCINT:
             fprintf(stream, "%d",*(int *)elem_addr);
@@ -85,7 +88,10 @@ void basic_wr(FILE* stream, char* format, int on_file){
     parse_format(format);
     switch (format_root->type) {
         case SCCHAR:
-            fprintf(stream, "\'%c\'", top_ostack()->inst.cval);
+            if(on_file)
+                fprintf(stream, "\'%c\'", top_ostack()->inst.cval);
+            else
+                fprintf(stream, "%c", top_ostack()->inst.cval);
             break;
         case SCINT:
             fprintf(stream, "%d", top_ostack()->inst.ival);
