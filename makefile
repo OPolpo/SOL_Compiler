@@ -18,13 +18,13 @@ M_OBJ = $(M_PATH_LEX)/lex.o $(M_PATH_PRSR)/parser.o  $(M_PATH_F_LEX)/format_lexe
 
 all: compiler machine
 
-machine: $(M_OBJ)
-	$(CC) -o $@ $^
+machine: $(M_OBJ) $(SHARED_PATH)/SOL_def.h
+	$(CC) -o $@ $(M_OBJ)
 
-compiler: $(C_OBJ)
-	$(CC) -o $@ $^
+compiler: $(C_OBJ) $(C_PATH)/def.h
+	$(CC) -o $@ $(C_OBJ) 
 
-%.o: %.c
+%.o: %.c %.h
 	$(CC) -o $*.o -c $*.c
 
 $(M_PATH_LEX)/lex.c: $(M_PATH_LEX)/lexer.lex
