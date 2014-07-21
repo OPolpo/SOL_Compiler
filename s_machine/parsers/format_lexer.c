@@ -476,13 +476,18 @@ int format_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *formattext;
 #line 1 "s_machine/parsers/format_lexer.lex"
-#line 2 "s_machine/parsers/format_lexer.lex"
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief lexer for formatt parser
+ */
+#line 9 "s_machine/parsers/format_lexer.lex"
 #include <string.h>
 #include "format_parser.h"
 #include "../s_machine.h"
 
 Value lexval;
-#line 486 "s_machine/parsers/format_lexer.c"
+#line 491 "s_machine/parsers/format_lexer.c"
 
 #define INITIAL 0
 
@@ -662,9 +667,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 15 "s_machine/parsers/format_lexer.lex"
+#line 22 "s_machine/parsers/format_lexer.lex"
 
-#line 668 "s_machine/parsers/format_lexer.c"
+#line 673 "s_machine/parsers/format_lexer.c"
 
 	if ( !(yy_init) )
 		{
@@ -749,40 +754,40 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 16 "s_machine/parsers/format_lexer.lex"
+#line 23 "s_machine/parsers/format_lexer.lex"
 ;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 17 "s_machine/parsers/format_lexer.lex"
+#line 24 "s_machine/parsers/format_lexer.lex"
 {lexval.ival = atoi(formattext); return(FORMAT_LEX_INT);}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 18 "s_machine/parsers/format_lexer.lex"
+#line 25 "s_machine/parsers/format_lexer.lex"
 {return formattext[0];}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 19 "s_machine/parsers/format_lexer.lex"
+#line 26 "s_machine/parsers/format_lexer.lex"
 {lexval.cval = formattext[0]; return formattext[0];}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 20 "s_machine/parsers/format_lexer.lex"
+#line 27 "s_machine/parsers/format_lexer.lex"
 {formattext[strlen(formattext)-1]=0; lexval.sval = insert_str_c(formattext); return FORMAT_LEX_ID;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 21 "s_machine/parsers/format_lexer.lex"
+#line 28 "s_machine/parsers/format_lexer.lex"
 {return(FORMAT_LEX_ERROR);}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 22 "s_machine/parsers/format_lexer.lex"
+#line 29 "s_machine/parsers/format_lexer.lex"
 ECHO;
 	YY_BREAK
-#line 786 "s_machine/parsers/format_lexer.c"
+#line 791 "s_machine/parsers/format_lexer.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1742,7 +1747,7 @@ void formatfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 22 "s_machine/parsers/format_lexer.lex"
+#line 29 "s_machine/parsers/format_lexer.lex"
 
 
 

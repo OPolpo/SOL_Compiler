@@ -1,3 +1,10 @@
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief This file contains the function for the execution of I/O s_code instructions.
+ */
+
+
 #include "sol_io.h"
 #include "s_machine.h"
 
@@ -7,32 +14,48 @@ extern int parse_format();
 extern int parse_formatted();
 
 
-void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type, int on_file){
-    switch (elem_type->type) {
+/**
+ * @brief this function write the value on top of the ostack to the given stram.
+ * @param stream the stream where write the data.
+ * @param format the format of the data that will be written.
+ * @param on_file 0 if in console 1 on a file, this discriminate if print or not the qotation mark.
+ */
+void basic_wr(FILE* stream, char* format, int on_file){
+    parse_format(format);
+    switch (format_root->type) {
         case SCCHAR:
             if(on_file)
-                fprintf(stream, "\'%c\'",*elem_addr);
+                fprintf(stream, "\'%c\'", top_ostack()->inst.cval);
             else
-                fprintf(stream, "%c",*elem_addr);
+                fprintf(stream, "%c", top_ostack()->inst.cval);
             break;
         case SCINT:
-            fprintf(stream, "%d",*(int *)elem_addr);
+            fprintf(stream, "%d", top_ostack()->inst.ival);
             break;
         case SCREAL:
-            fprintf(stream, "%f",*(float *)elem_addr);
+            fprintf(stream, "%f", top_ostack()->inst.rval);
             break;
         case SCSTRING:
             if(on_file)
-                fprintf(stream, "\"%s\"",*(char**)elem_addr);
+                fprintf(stream, "\"%s\"", top_ostack()->inst.sval);
             else
-                fprintf(stream, "%s",*(char**)elem_addr);
+                fprintf(stream, "%s", top_ostack()->inst.sval);
             break;
         case SCBOOL:
-            fprintf(stream, "%s", (*elem_addr!='0')? "true" : "false");
+            fprintf(stream, "%s", top_ostack()->inst.cval != '0' ? "true" : "false");
+            break;
+        case SCVECTOR:
+            print_vector(stream, top_ostack()->inst.sval, format_root->size, format_root->p1, on_file);
+            //pop_istack(top_ostack()->size);
+            break;
+        case SCSTRUCT:
+            print_struct(stream, top_ostack()->inst.sval, format_root->p1, on_file);
+            //pop_istack(top_ostack()->size);
             break;
         default:
             break;
     }
+    destroy_schema(format_root);
 }
 
 void print_vector(FILE* stream, char * elem_addr, int elem_num, Pschema elem_type, int on_file){
@@ -84,64 +107,40 @@ void print_struct(FILE* stream, char * elem_addr, Pschema elem_type, int on_file
     fprintf(stream, ")");
 }
 
-void basic_wr(FILE* stream, char* format, int on_file){
-    parse_format(format);
-    switch (format_root->type) {
-        case SCCHAR:
-            if(on_file)
-                fprintf(stream, "\'%c\'", top_ostack()->inst.cval);
-            else
-                fprintf(stream, "%c", top_ostack()->inst.cval);
-            break;
-        case SCINT:
-            fprintf(stream, "%d", top_ostack()->inst.ival);
-            break;
-        case SCREAL:
-            fprintf(stream, "%f", top_ostack()->inst.rval);
-            break;
-        case SCSTRING:
-            if(on_file)
-                fprintf(stream, "\"%s\"", top_ostack()->inst.sval);
-            else
-                fprintf(stream, "%s", top_ostack()->inst.sval);
-            break;
-        case SCBOOL:
-            fprintf(stream, "%s", top_ostack()->inst.cval != '0' ? "true" : "false");
-            break;
-        case SCVECTOR:
-            print_vector(stream, top_ostack()->inst.sval, format_root->size, format_root->p1, on_file);
-            //pop_istack(top_ostack()->size);
-            break;
-        case SCSTRUCT:
-            print_struct(stream, top_ostack()->inst.sval, format_root->p1, on_file);
-            //pop_istack(top_ostack()->size);
-            break;
-        default:
-            break;
-    }
-    destroy_schema(format_root);
-}
-
-void read_atomic_istack(Pformatted elem, char * elem_addr, Pschema elem_type){
+void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type, int on_file){
     switch (elem_type->type) {
         case SCCHAR:
-        case SCBOOL:
-            memcpy(elem_addr, &elem->value, sizeof(char));
+            if(on_file)
+                fprintf(stream, "\'%c\'",*elem_addr);
+            else
+                fprintf(stream, "%c",*elem_addr);
             break;
         case SCINT:
-            memcpy(elem_addr, &elem->value, sizeof(int));
+            fprintf(stream, "%d",*(int *)elem_addr);
             break;
         case SCREAL:
-            memcpy(elem_addr, &elem->value, sizeof(float));
+            fprintf(stream, "%f",*(float *)elem_addr);
             break;
         case SCSTRING:
-            memcpy(elem_addr, &elem->value, sizeof(char*));
+            if(on_file)
+                fprintf(stream, "\"%s\"",*(char**)elem_addr);
+            else
+                fprintf(stream, "%s",*(char**)elem_addr);
+            break;
+        case SCBOOL:
+            fprintf(stream, "%s", (*elem_addr!='0')? "true" : "false");
             break;
         default:
             break;
     }
 }
 
+/**
+ * @brief this function read the value from the given stram and save it in the right place.
+ * @param stream the stream where read the data.
+ * @param o_to_lod where to put the reader data.
+ * @param schema the schema of the variable where put the data.
+ */
 void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema){
     //char* str_readed = newmem(1000);
     //fscanf(stream, "%s", str_readed);
@@ -233,6 +232,32 @@ void read_struct(Pformatted elem, char * elem_addr, Pschema elem_type){
     }
 }
 
+void read_atomic_istack(Pformatted elem, char * elem_addr, Pschema elem_type){
+    switch (elem_type->type) {
+        case SCCHAR:
+        case SCBOOL:
+            memcpy(elem_addr, &elem->value, sizeof(char));
+            break;
+        case SCINT:
+            memcpy(elem_addr, &elem->value, sizeof(int));
+            break;
+        case SCREAL:
+            memcpy(elem_addr, &elem->value, sizeof(float));
+            break;
+        case SCSTRING:
+            memcpy(elem_addr, &elem->value, sizeof(char*));
+            break;
+        default:
+            break;
+    }
+}
+
+/**
+ * @brief this function creat a schema given the tree generated by the formatted parser.
+ * @param root root of the tree.
+ * @param id of the node, can be NULL.
+ * @return The Pschema associated to the tree given.
+ */
 Pschema formatted2schema(Pformatted root, char * id){
     Pschema node = NULL;
     Pformatted current_node;
@@ -306,6 +331,13 @@ Pschema formatted2schema(Pformatted root, char * id){
     return node;
 }
 
+/**
+ * @brief This function free the formatted tree.
+ *
+ * This function free the tree generated by the formatted parser.
+ *
+ * @param formatted root of the tree.
+ */
 void destroy_formatted(Pformatted formatted){
     if(formatted->child != NULL)
         destroy_formatted(formatted->child);

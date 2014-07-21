@@ -1,3 +1,10 @@
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief lexer for formatted parser
+ */
+
+
 %{
 #include <stdlib.h>
 #include "formatted_parser.h"

@@ -491,13 +491,18 @@ int formatted_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *formattedtext;
 #line 1 "s_machine/parsers/formatted_lexer.lex"
-#line 2 "s_machine/parsers/formatted_lexer.lex"
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief lexer for formatted parser
+ */
+#line 9 "s_machine/parsers/formatted_lexer.lex"
 #include <stdlib.h>
 #include "formatted_parser.h"
 #include "../s_machine.h"
 
 Value lexval;
-#line 501 "s_machine/parsers/formatted_lexer.c"
+#line 506 "s_machine/parsers/formatted_lexer.c"
 
 #define INITIAL 0
 
@@ -677,9 +682,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 24 "s_machine/parsers/formatted_lexer.lex"
+#line 31 "s_machine/parsers/formatted_lexer.lex"
 
-#line 683 "s_machine/parsers/formatted_lexer.c"
+#line 688 "s_machine/parsers/formatted_lexer.c"
 
 	if ( !(yy_init) )
 		{
@@ -764,62 +769,62 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 25 "s_machine/parsers/formatted_lexer.lex"
+#line 32 "s_machine/parsers/formatted_lexer.lex"
 ;
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 26 "s_machine/parsers/formatted_lexer.lex"
+#line 33 "s_machine/parsers/formatted_lexer.lex"
 return -1;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 27 "s_machine/parsers/formatted_lexer.lex"
+#line 34 "s_machine/parsers/formatted_lexer.lex"
 {lexval.cval = (formattedtext[0] == 'f' ? '0' : '1'); return(BOOLCONST);}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 28 "s_machine/parsers/formatted_lexer.lex"
+#line 35 "s_machine/parsers/formatted_lexer.lex"
 {lexval.ival = atoi(formattedtext); return(INTCONST);}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 29 "s_machine/parsers/formatted_lexer.lex"
+#line 36 "s_machine/parsers/formatted_lexer.lex"
 {lexval.rval = atof(formattedtext); return(REALCONST);}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 30 "s_machine/parsers/formatted_lexer.lex"
+#line 37 "s_machine/parsers/formatted_lexer.lex"
 {lexval.ival = formattedtext[1]; return(CHARCONST);}
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 31 "s_machine/parsers/formatted_lexer.lex"
+#line 38 "s_machine/parsers/formatted_lexer.lex"
 {lexval.sval = insert_strWclean(formattedtext); return(STRCONST);}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 32 "s_machine/parsers/formatted_lexer.lex"
+#line 39 "s_machine/parsers/formatted_lexer.lex"
 {return(formattedtext[0]);}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 33 "s_machine/parsers/formatted_lexer.lex"
+#line 40 "s_machine/parsers/formatted_lexer.lex"
 {formattedtext[strlen(formattedtext)-1]=0;lexval.sval = insert_str_c(formattedtext); return FORMATTED_LEX_ID;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 34 "s_machine/parsers/formatted_lexer.lex"
+#line 41 "s_machine/parsers/formatted_lexer.lex"
 {return (FORMATTED_LEX_ERROR);}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 35 "s_machine/parsers/formatted_lexer.lex"
+#line 42 "s_machine/parsers/formatted_lexer.lex"
 ECHO;
 	YY_BREAK
-#line 823 "s_machine/parsers/formatted_lexer.c"
+#line 828 "s_machine/parsers/formatted_lexer.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1779,4 +1784,4 @@ void formattedfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 35 "s_machine/parsers/formatted_lexer.lex"
+#line 42 "s_machine/parsers/formatted_lexer.lex"

@@ -1,3 +1,10 @@
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief S-code loader
+ */
+
+
 #include "../s_machine.h"
 #include "parser.h"
 
@@ -8,6 +15,10 @@ extern Scode * prog;
 extern int pc;
 extern int code_size;
 
+/**
+ * @brief This function initializes the code memory.
+ * @param input file pointer to the s_code file
+ */
 void load_scode(FILE * input){
     yyin = input;
     int a;
@@ -146,6 +157,10 @@ void load_scode(FILE * input){
 
 }
 
+/**
+ * @brief This function ask to the lexer the next token.
+ * @return the next lexer recognized token
+ */
 int next(){
     return yylex();
 }

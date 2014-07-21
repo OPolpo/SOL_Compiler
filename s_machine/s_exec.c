@@ -1,3 +1,9 @@
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief This file contains th function for the excecution of the s_code instruction, the I/O function are in a separated file.
+ */
+
 #include "s_exec.h"
 #include "sol_io.h"
 

@@ -1,3 +1,10 @@
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief parser for formatted data, to parsering saved file or console input.
+ */
+
+
 %{
     #include <stdlib.h>
     #include <stdio.h>

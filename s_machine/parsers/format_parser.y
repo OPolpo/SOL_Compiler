@@ -1,3 +1,10 @@
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief parser for format string.
+ */
+
+
 %{
 #include <stdlib.h>
 #include <stdio.h>

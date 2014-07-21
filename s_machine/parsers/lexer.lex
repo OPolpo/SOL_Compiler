@@ -1,3 +1,9 @@
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief lexer for the s-code loader
+ */
+
 %{
 #include <stdlib.h>
 #include "../../s_shared/SOL_def.h"

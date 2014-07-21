@@ -1,3 +1,9 @@
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief Virtual Machine
+ */
+
 #include "s_machine.h"
 #include "s_exec.h"
 #include "../s_shared/schema.h"
@@ -10,7 +16,7 @@ Adescr **astack;
 Odescr **ostack;
 char *istack;
 int asize, osize, isize, code_size;
-int ap, op, ip; // point to he first free elements of their stack
+int ap, op, ip; // point to the first free elements of their stack
 extern long size_allocated;
 extern long size_deallocated;
 
@@ -19,7 +25,7 @@ Str_c_node ** str_const_table;
 int main(int argc, char* argv[]){
 	Scode * stat;
     if(argc != 2){
-        fprintf(stderr, "%s %s %s\n", "\tHow to use: ", argv[0], "filename");
+        fprintf(stderr, "%s %s %s\n", "\tUsage: ", argv[0], "filename");
         exit(0);
     }
 	start_machine(argv[1]);
@@ -29,13 +35,16 @@ int main(int argc, char* argv[]){
         //printf("ap: %d, op: %d, ip: %d\n", ap, op, ip);
     }
     
-    
     printf("\n");
     print_str_c_table();
     end_machine();
     return 0;
 }
 
+/**
+ * @brief This functin open the input file and do the initial memory allocation of data structures.
+ * @param input the s_code filename.
+ */
 void start_machine(char * input) {
     str_const_table = (Str_c_node **)newmem(sizeof(Str_c_node*)*STR_CONST_DIM);
     FILE *input_file = fopen(input, "r");
@@ -54,6 +63,9 @@ void start_machine(char * input) {
     isize = ISTACK_UNIT;
 }
 
+/**
+ * @brief This functin free the data structures.
+ */
 void end_machine() {
     printf("\n%d %d %d\n", ap, op, ip);
 
@@ -69,18 +81,10 @@ void end_machine() {
     printf("Residue: %ld bytes\n", size_allocated - size_deallocated);
 }
 
-// void * newmem(int size) {
-//     void *p;
-//     if((p = calloc(1,size)) == NULL) machine_error("Failure in memory allocation");
-//     size_allocated += size;
-//     return p;
-// }
-
-// void freemem(char *p, int size) {
-//     free(p);
-//     size_deallocated += size;
-// }
-
+/**
+ * return a pointer the top of the astack.
+ * @return The Adescr* on top of the astack.
+ */
 Adescr * top_astack(){
     if (ap==0) {
         machine_error("top_astack");
@@ -88,6 +92,13 @@ Adescr * top_astack(){
     return astack[ap-1];
 }
 
+/**
+ * @brief Allocate memory for the adescr adn put it on top of the astack.
+ *
+ * If necessary expand the astack.
+ *
+ * @return a pointer to the top of astack.
+ */
 Adescr * push_astack(){
     Adescr **old_astack; int i;
     if(ap == asize) {
@@ -101,15 +112,27 @@ Adescr * push_astack(){
     return (astack[ap++] = (Adescr*)newmem(sizeof(Adescr)));
 }
 
+/**
+ * @brief Free the adescr on the top of the astack.
+ */
 void pop_astack() {
     if(ap == 0) machine_error("pop_adescr()");
     freemem((char*)astack[--ap], sizeof(Adescr));
 }
 
+/**
+ * @brief return the poitner of an object given the index of the ostak.
+ * @param i The index of the object.
+ * @return the Odescr** the point to the given index.
+ */
 Odescr ** get_p2objects(int i){
     return &ostack[i];
 }
 
+/**
+ * return a pointer the top of the ostack.
+ * @return The Odescr** on top of the astack.
+ */
 Odescr ** top_ostack_addr(){
     if (op==0) {
         machine_error("top_ostack");
@@ -117,10 +140,18 @@ Odescr ** top_ostack_addr(){
     return &ostack[op-1];
 }
 
+/**
+ * return the pointer to the first free elements of ostack.
+ * @return op.
+ */
 int get_next_op(){
     return op;
 }
 
+/**
+ * return a pointer the top of the ostack.
+ * @return The Odescr* on top of the astack.
+ */
 Odescr * top_ostack(){
     if (op==0) {
         machine_error("top_ostack");
@@ -128,10 +159,18 @@ Odescr * top_ostack(){
     return ostack[op-1];
 }
 
+/**
+ * return a pointer the element over the element on top of the ostack.
+ * @return The Odescr* to the Odescr over the Odescr on top of the astack.
+ */
 Odescr * over_top_ostack(){
     return top_ostack()+sizeof(Odescr *);
 }
 
+/**
+ * return a pointer the element below the element on top of the ostack.
+ * @return The Odescr* to the Odescr below the Odescr on top of the astack.
+ */
 Odescr * under_top_ostack(){
     if (op<=1) {
         machine_error("under_top_ostack");
@@ -139,6 +178,13 @@ Odescr * under_top_ostack(){
     return ostack[op-2];
 }
 
+/**
+ * @brief Allocate memory for the odescr adn put it on top of the ostack.
+ *
+ * If necessary expand the ostack.
+ *
+ * @return a pointer to the top of ostack.
+ */
 Odescr * push_ostack(){
     Odescr **old_ostack; int i;
     if(op == osize) {
@@ -152,11 +198,22 @@ Odescr * push_ostack(){
     return (ostack[op++] = (Odescr*)newmem(sizeof(Odescr)));
 }
 
+/**
+ * @brief Free the odescr on the top of the ostack.
+ */
 void pop_ostack() {
     if(op == 0) machine_error("pop_odescr()");
     freemem((char*)ostack[--op], sizeof(Odescr));
 }
 
+/**
+ * @brief Increment the istack with the size and return the new top.
+ *
+ * If necessary expand the istack.
+ * 
+ * @param size how much increment the istack.
+ * @return a pointer to the top of istack.
+ */
 char * push_istack(int size){
     char *old_istack; int i;
     if(ip+size >= isize) {
@@ -171,13 +228,22 @@ char * push_istack(int size){
     return &(istack[ip-size]);
 }
 
+/**
+ * @brief Decrement the istack with the size and return the new top.
+ *
+ * @param size how much increment the istack.
+ */
 void pop_istack(int size) {
     if(ip < size) machine_error("pop_istack()");
     ip = ip-size;
 }
 
+/**
+ * @brief This function shift down the memory chunk express by to move of the quantity express by this much.
+ * @param to_move how much bytes are to move.
+ * @param this_much How much byte shift down the memory block
+ */
 void move_down_istack(int to_move, int this_much){
-    
     if(ip - to_move - this_much < 0) machine_error("move_down_istack()");
     if (to_move<0 || this_much<0) machine_error("move_down_istack() parameters");
     memmove(&istack[ip-to_move-this_much], &istack[ip-to_move], to_move);
@@ -250,7 +316,11 @@ void push_string(char * s){ //assuming is "mallocated" and is in the hash table
 }
 
 
-//manage str_const_table
+/**
+ * @brief Insert a string in the string table
+ * @param s The string to insert.
+ * @return the pointer to ther string in the string table.
+ */
 char * insert_str_c(char * s){
     char *without = s;
     
@@ -277,6 +347,11 @@ char * insert_str_c(char * s){
     return p_on_table;
 }
 
+/**
+ * @brief Insert a string in the string table without the first and last character
+ * @param s The string to insert.
+ * @return the pointer to ther string in the string table.
+ */
 char * insert_strWclean(char * s){
     char * without = s+1;
     without[strlen(without)-1]=0;
@@ -284,6 +359,11 @@ char * insert_strWclean(char * s){
     return insert_str_c(without);
 }
 
+/**
+ * @brief get the pointer to the string in string table
+ * @param s to search
+ * @return the pointer to ther string in the string table, null otherwise.
+ */
 char * get_str_c(char * s){
     int pos = hash_str_c(s);
     Str_c_node * node = str_const_table[pos];
@@ -296,6 +376,11 @@ char * get_str_c(char * s){
     return NULL;
 }
 
+/**
+ * @brief hash function of string table
+ * @param s the string 
+ * @return the hash value.
+ */
 int hash_str_c(char * s){
     int i, h = 0;
     for(i = 0; s[i] != '\0'; i++){
@@ -304,6 +389,9 @@ int hash_str_c(char * s){
     return h;
 }
 
+/**
+ * @brief this function free all string table
+ */
 void free_str_c_table(){
     int i=0;
     for (i=0; i<STR_CONST_DIM; i++) {
