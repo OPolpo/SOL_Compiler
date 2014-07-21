@@ -18,9 +18,9 @@ void exec(Scode *stat) {
     //printf("pc %d, ap %d, op %d, ip %d\n",pc,ap,op,ip);
     
     //printf("[%3d] exec %d\n", pc, stat->op);
+    printf("pc: %d  ",pc);
     switch (stat->op) {
         case S_PUSH:
-            //printf("pc: %d\n",pc);
             exec_push(stat->args[0].ival, stat->args[1].ival, stat->args[2].ival, pc+1);
             break;
         case S_GOTO: exec_goto(stat->args[0].ival); break;

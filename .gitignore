@@ -32,3 +32,11 @@ s_machine/formatted_parser.c
 s_machine/formatted_lexer.c
 
 s_machine/formatted_lexer.c
+
+smachine
+
+scompiler
+
+*.ff4
+
+*.ff4

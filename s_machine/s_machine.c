@@ -32,7 +32,7 @@ int main(int argc, char* argv[]){
     print_str_c_table();
 	while((stat = &prog[pc++])->op != S_HALT){
         exec(stat);
-        //printf("ap: %d, op: %d, ip: %d\n", ap, op, ip);
+        printf("ap: %d, op: %d, ip: %d\n", ap, op, ip);
     }
     
     printf("\n");
