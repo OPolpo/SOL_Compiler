@@ -779,9 +779,8 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code, Code * code_new_
     id_hash_node->class_node = CLCOUNT;
     
     char * id_aux;
-    asprintf(&id_aux, "0_AUX_%d", f_loc_env->aux->last_oid);
-    Phash_node end_condition_expr_value = new_id_node(id_aux, CLCONST, f_loc_env->aux->last_oid);
-    f_loc_env->aux->last_oid++;
+    asprintf(&id_aux, "0_AUX_%d", f_loc_env->aux->num_obj+1);
+    Phash_node end_condition_expr_value = new_id_node(id_aux, CLCONST, f_loc_env->aux->num_obj+1);
     f_loc_env->aux->num_obj++;
     end_condition_expr_value->schema = new_schema_node(SCINT);
     insert(end_condition_expr_value, f_loc_env->aux->locenv);
@@ -848,18 +847,16 @@ int sem_foreach_stat(Pnode root, Phash_node f_loc_env, Code * code, Code * code_
     }
     
     char * id_aux_1;
-    asprintf(&id_aux_1, "0_AUX_%d", f_loc_env->aux->last_oid);
-    Phash_node expr_value = new_id_node(id_aux_1, CLCONST, f_loc_env->aux->last_oid);
-    f_loc_env->aux->last_oid++;
+    asprintf(&id_aux_1, "0_AUX_%d", f_loc_env->aux->num_obj+1);
+    Phash_node expr_value = new_id_node(id_aux_1, CLCONST, f_loc_env->aux->num_obj+1);
     f_loc_env->aux->num_obj++;
     expr_value->schema = expr_schema;
     insert(expr_value, f_loc_env->aux->locenv);
     *code_new_aux = appcode(*code_new_aux, makecode1(S_NEWS, compute_size(expr_schema)));
     
     char * id_aux_2;
-    asprintf(&id_aux_2, "0_AUX_%d", f_loc_env->aux->last_oid);
-    Phash_node index = new_id_node(id_aux_2, CLCONST, f_loc_env->aux->last_oid);
-    f_loc_env->aux->last_oid++;
+    asprintf(&id_aux_2, "0_AUX_%d", f_loc_env->aux->num_obj+1);
+    Phash_node index = new_id_node(id_aux_2, CLCONST, f_loc_env->aux->num_obj+1);
     f_loc_env->aux->num_obj++;
     index->schema = new_schema_node(SCINT);
     insert(index, f_loc_env->aux->locenv);

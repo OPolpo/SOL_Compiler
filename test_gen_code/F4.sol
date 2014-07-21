@@ -4,7 +4,7 @@ func FF4():bool
 	var i,j:int;
 		userchoice:int;
 		dummy:bool;
-		ok, okfull, first:bool;
+		ok, colsselection, okfull, first:bool;
 		game:gametype;
 
 	func insertoken(cols:int; player:int;):bool
@@ -228,8 +228,10 @@ func FF4():bool
 	func printwinner(player:int;):bool
 		begin printwinner
 			if (game.player == 1) then
+				--write "bu1";
 				dummy = printmessage("PLAYER ONE WINS !!!!", 20);
 			else
+				--write"bu2";
 				dummy = printmessage("PLAYER TWO WINS !!!!", 20);
 			endif;
 			return true;
@@ -310,6 +312,7 @@ func FF4():bool
 			dummy = refreshscreen();
 			ok=true;
 			okfull=true;
+			colsselection=false;
 			first = true;
 			if checkwin() then
 				dummy = refreshscreen();
@@ -324,27 +327,34 @@ func FF4():bool
 			endif;
 			while(not ok or not okfull or first) do
 				dummy = saferead();
+				write userchoice;
+				dummy = refreshscreen();
+				dummy = printmessage("Select the column", 17);
 				first=false;
-				if (not ok and not game.gameend) then
-					dummy = refreshscreen();
-					dummy = printmessage("Please, insert a number between 1 and  7", 40);
-					dummy = saferead();
-				endif;
-
 
 				if(userchoice>=1 and userchoice<=7 and not game.gameend) then
+					colsselection=true;
 					ok = true;
 				elsif (userchoice==9) then
 					dummy = resetgame();
 					dummy = refreshscreen();
 					dummy = printmessage("Select the column", 17);
 					ok=true;
+					colsselection=false;
 				elsif (userchoice==0) then
 					return true;
+					colsselection=false;
 				else
 					ok = false;
+					colsselection=false;
 				endif;
-				if(ok and not game.gameend) then
+
+				if (not colsselection and not game.gameend) then
+					dummy = refreshscreen();
+					dummy = printmessage("Please, insert a number between 1 and  7", 40);
+				endif;
+
+				if(not game.gameend and colsselection) then
 					if(insertoken(userchoice, game.player)) then
 						okfull = true;
 					else

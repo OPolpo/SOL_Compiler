@@ -5,7 +5,7 @@
 int oid = 1;
 char error_msg_symb[100];
 
-void handle_function_part(Pnode current, Phash_node func, int * loc_oid, Class part_class, int * num_obj){
+void handle_function_part(Pnode current, Phash_node func, Class part_class, int * num_obj){
     int count = (part_class == CLVAR || part_class == CLCONST);
     if (current->child != NULL) { //?_SECT_OPT
         Pnode child;
@@ -16,8 +16,8 @@ void handle_function_part(Pnode current, Phash_node func, int * loc_oid, Class p
             
             Pnode id = id_list->child;
             while (id != NULL){
-                Phash_node id_node = new_id_node(id->value.sval, part_class, *loc_oid);
-                (*loc_oid)++;
+                *num_obj++;
+                Phash_node id_node = new_id_node(id->value.sval, part_class, *num_obj);
                 id_node->schema = domain_sch;
                 if (count) {
                     (*num_obj)++;
@@ -52,7 +52,6 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     func->father = father;
                     Phash_node * loc = new_hash_table();
                     (func->aux)->locenv = loc;
-                    (func->aux)->last_oid = 1;
                     
                     (func->aux)->formals_num = 0;
                     current = current->brother; //DECL_LIST_OPT
@@ -66,8 +65,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                             
                             Pnode id = id_list->child;
                             while (id != NULL){ //loop on IDs
-                                Phash_node id_node = new_id_node(id->value.sval, CLPAR, ((func->aux)->last_oid));
-                                ((func->aux)->last_oid)++;//non sono convinto
+                                Phash_node id_node = new_id_node(id->value.sval, CLPAR, ((func->aux)->num_obj));
                                 id_node->schema = domain_sch;
                                 if (!insert(id_node, (func->aux)->locenv)) {
                                     sprintf(error_msg_symb, "Name of formal parameters must be unique, \"%s\" already declared\n", id->value.sval);
@@ -100,13 +98,13 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     
                     current = current->brother; //TYPE_SECT_OPT
                     int not_used = 0;
-                    handle_function_part(current, func, &not_used, CLTYPE, &not_used);
+                    handle_function_part(current, func, CLTYPE, &not_used);
                     
                     current = current->brother; //VAR_SECT_OPT
-                    handle_function_part(current, func, &((func->aux)->last_oid), CLVAR, &(func->aux->num_obj));
+                    handle_function_part(current, func, CLVAR, &(func->aux->num_obj));
                     
                     current = current->brother; //CONST_SECT_OPT
-                    handle_function_part(current, func, &((func->aux)->last_oid), CLCONST, &(func->aux->num_obj));
+                    handle_function_part(current, func, CLCONST, &(func->aux->num_obj));
                     
                     
                     

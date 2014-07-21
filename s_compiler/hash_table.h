@@ -22,7 +22,6 @@ typedef struct sformalsnode{
 } Formal;
 
 typedef struct saux_fun_param{
-    int last_oid;
     int num_obj;
     struct shash_node ** locenv;
     int formals_num;

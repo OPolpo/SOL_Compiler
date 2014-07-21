@@ -1,3 +1,9 @@
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief This file contains the function for the schema, the schema represent the type structure of data.
+ */
+
 //http://en.wikipedia.org/wiki/List_of_prime_numbers
 #include "schema.h"
 #include "mem_utils.h"
@@ -67,12 +73,22 @@ void print_sch(Pschema root){
     printf("\n");
 }
 
+/**
+ * @brief this function allocate memory fot the schema.
+ * @param _type the type.
+ * @return a poitner to the memory.
+ */
 Pschema new_schema_node(int _type){
     Pschema node = (Pschema) newmem(1*sizeof(Schema));
     node->type = _type;
     return node;
 }
 
+/**
+ * @brief this function compute the size in byte of the given schema.
+ * @param schema the schema.
+ * @return the size in byte.
+ */
 int compute_size(Pschema schema){
     switch(schema->type){
         case SCCHAR:
@@ -108,6 +124,15 @@ int compute_size(Pschema schema){
     }
 }
 
+/**
+ * @brief this function compare two schema.
+ *
+ * check it the schema have the structure type.
+ *
+ * @param a one of the schema to compare.
+ * @param b one of the schema to compare.
+ * @return 0 if the schema aren't compatible.
+ */
 int are_compatible(Pschema a, Pschema b){
     int ok;
     if (a == NULL && b == NULL) {
@@ -155,6 +180,21 @@ int are_compatible(Pschema a, Pschema b){
     //return 0;
 }
 
+/**
+ * @brief this function create a format givea a schema
+ * @param schema the schema
+ * @return the format relative to the given schema
+ */
+char * make_format(Pschema schema){
+    char * str, * tmp_str;
+    print_sch(schema);
+    tmp_str = schema2format(schema);
+    str = calloc(strlen(tmp_str)+3, sizeof(char));
+    sprintf(str, "\"%s\"", tmp_str);
+    printf("%s\n", str);
+    return str;
+}
+
 char * schema2format(Pschema schema){
     char * str, * tmp_str, * tmp2_str; //mallocami
     Pschema tmp_schema;
@@ -200,20 +240,10 @@ char * schema2format(Pschema schema){
     return str;
 }
 
-char * make_format(Pschema schema){
-    char * str, * tmp_str;
-    print_sch(schema);
-    tmp_str = schema2format(schema);
-    str = calloc(strlen(tmp_str)+3, sizeof(char));
-    sprintf(str, "\"%s\"", tmp_str);
-    printf("%s\n", str);
-    return str;
-}
-
-void duplicate_schema(Pschema schema){
-   
-}
-
+/**
+ * @brief this function free the schema.
+ * @param schema a poitner to the Schema.
+ */
 void destroy_schema(Pschema schema){
     if(schema->p1 != NULL)
         destroy_schema(schema->p1);
