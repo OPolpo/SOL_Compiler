@@ -8,14 +8,14 @@ s_compiler/parser.h
 prova
 SOL_compiler/*
 SOL_compilers/*
-compiler
+scompiler
 SOL_machine/*
 s_machine/formatted_parser.h
 s_machine/formatted_lexer.c
 
 *.out
 
-machine
+smachine
 
 s_machine/format_parser.h
 
