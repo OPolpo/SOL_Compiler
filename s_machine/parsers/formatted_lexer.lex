@@ -1,7 +1,7 @@
 %{
 #include <stdlib.h>
 #include "formatted_parser.h"
-#include "s_machine.h"
+#include "../s_machine.h"
 
 Value lexval;
 %}

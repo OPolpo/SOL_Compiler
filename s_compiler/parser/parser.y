@@ -1,12 +1,12 @@
 %{
 #include <unistd.h>
 #include <ctype.h>
-#include "def.h"
-#include "../s_shared/SOL_def.h"
-#include "tree.h"
-#include "symbol_table.h"
-#include "semantic.h"
-#include "code_gen.h"
+#include "../def.h"
+#include "../../s_shared/SOL_def.h"
+#include "../tree.h"
+#include "../symbol_table.h"
+#include "../semantic.h"
+#include "../code_gen.h"
 
 
 #define YYSTYPE Pnode

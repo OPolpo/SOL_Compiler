@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "s_machine.h"
-#include "../s_shared/schema.h"
-#include "../s_shared/SOL_def.h"
+#include "../s_machine.h"
+#include "../../s_shared/schema.h"
+#include "../../s_shared/SOL_def.h"
 
 #define YYSTYPE Pschema
 

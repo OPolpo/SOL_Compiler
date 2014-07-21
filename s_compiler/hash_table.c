@@ -1,6 +1,6 @@
 //http://en.wikipedia.org/wiki/List_of_prime_numbers
 #include "hash_table.h"
-#include "parser.h"
+#include "parser/parser.h"
 #include "semantic.h"
 
 int hash (char* id){

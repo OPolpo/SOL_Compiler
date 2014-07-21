@@ -1,5 +1,5 @@
 #include "symbol_table.h"
-#include "parser.h"
+#include "parser/parser.h"
 #include "semantic.h"
 
 int oid = 1;

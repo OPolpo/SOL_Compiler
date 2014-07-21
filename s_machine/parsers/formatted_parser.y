@@ -2,8 +2,8 @@
     #include <stdlib.h>
     #include <stdio.h>
     #include <string.h>
-    #include "s_machine.h"
-    #include "sol_io.h"
+    #include "../s_machine.h"
+    #include "../sol_io.h"
     
     #define YYSTYPE Pformatted
 

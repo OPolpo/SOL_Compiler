@@ -1,7 +1,7 @@
 %{
 #include <stdlib.h>
-#include "def.h"
-#include "../s_shared/SOL_def.h"
+#include "../def.h"
+#include "../../s_shared/SOL_def.h"
 #include "parser.h"
 
 Value lexval;

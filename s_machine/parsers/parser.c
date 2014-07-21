@@ -1,4 +1,4 @@
-#include "s_machine.h"
+#include "../s_machine.h"
 #include "parser.h"
 
 extern FILE * yyin;
