@@ -68,7 +68,8 @@ char * tabOperator[]={
     "RETURN",
     "FAKE_RETURN",
     "---",
-    "FAKE_GOTO"
+    "FAKE_GOTO",
+    "FAKE_PUSH"
 };
 
 
@@ -259,18 +260,20 @@ Code makecode_xread(Operator op, int arg1, int arg2, char * arg3){
     return code;
 }
 
-// case S_PUSH
-Code makecode_push(int arg1, int arg2, int arg3){
+/* 
+ case S_PUSH
+ case S_FAKE_PUSH */
+Code makecode_fake_push(int arg1, int arg2, int arg3){
     Code code;
-    code = makecode(S_PUSH);
+    code = makecode(S_FAKE_PUSH);
     code.head->args[0].ival = arg1;
     code.head->args[1].ival = arg2;
     code.head->args[2].ival = arg3;
     return code;
 }
 
-Code make_push_pop(int param, int size, int chain, int entry){
-    return concode(makecode_push(param, size, chain),
+Code make_push_pop(int param, int oid, int chain, int entry){
+    return concode(makecode_fake_push(param, oid, chain),
                    makecode1(S_FAKE_GOTO, entry),
                    makecode(S_POP),
                    endcode());
@@ -353,7 +356,8 @@ void print_stat(FILE * stream, Stat * stat){
         case S_FREAD:
             fprintf(stream, "%d %d %s", stat->args[0].ival, stat->args[1].ival, stat->args[2].sval);
             break;
-            
+        
+        case S_FAKE_PUSH:
         case S_PUSH:
             fprintf(stream, "%d %d %d", stat->args[0].ival, stat->args[1].ival, stat->args[2].ival);
             break;
@@ -451,6 +455,18 @@ int get_f_addr_by_oid(int oid, Poid2address * table){
     while(node){
         if (node->oid == oid) {
             return *(node->address);
+        }
+        node = node->next;
+    }
+    return -1;
+}
+
+int get_f_num_obj_by_oid(int oid, Poid2address * table){
+    int pos = oid % TOT;
+    Poid2address node = table[pos];
+    while(node){
+        if (node->oid == oid) {
+            return node->num_obj;
         }
         node = node->next;
     }

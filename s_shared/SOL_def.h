@@ -78,7 +78,8 @@ typedef enum{
     S_RETURN,
     S_FAKE_RETURN,
     S_NOOP,
-    S_FAKE_GOTO
+    S_FAKE_GOTO,
+    S_FAKE_PUSH
 } Operator;
 
 

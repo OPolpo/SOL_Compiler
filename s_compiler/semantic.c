@@ -29,13 +29,13 @@ int sem_program(Pnode root, Phash_node f_loc_env, Code * code){
     
     *code = concode(makecode1(S_SCODE, func_decl_code.size+5+f_loc_env->aux->formals_num),
                     param_code,
-                    make_push_pop(f_loc_env->aux->formals_num,f_loc_env->aux->num_obj, -1, f_loc_env->oid),
+                    make_push_pop(f_loc_env->aux->formals_num,f_loc_env->oid, -1, f_loc_env->oid),
                     write_return,
                     makecode(S_HALT),
                     func_decl_code,
                     endcode());
     
-    cleanup_goto(code, func_table);
+    cleanup_fake(code, func_table);
     destroy_o2a(func_table);
     return ok;
 }
@@ -53,7 +53,8 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     else
         new_f_loc_env = f_loc_env;
     *code = appcode(*code, makecode1(S_FUNC, new_f_loc_env->oid));
-    insert_o2a(new_o2a(new_f_loc_env->oid, &(code->tail->address)),func_table);
+    
+    Poid2address this_o2a = new_o2a(new_f_loc_env->oid, &(code->tail->address));
 	current = current->brother;
     
     Pschema domain_schema = new_schema_node(-1);
@@ -88,6 +89,9 @@ int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, 
     
     cleanup_return(start, code_len, code); //sanitize
     *code = appcode(*code, function_list_code);
+    
+    this_o2a->num_obj = new_f_loc_env->aux->num_obj;
+    insert_o2a(this_o2a,func_table);
     
     return /*decl_list_opt_ok &&*/ domain_ok && var_sect_opt_ok && const_sect_opt_ok && func_list_opt_ok && func_body_ok;
 }
@@ -1409,7 +1413,7 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
     (*stype) = h_id_node->schema;
     
     *code = concode(*code,
-                    make_push_pop(h_id_node->aux->formals_num, h_id_node->aux->num_obj, offset , h_id_node->oid),
+                    make_push_pop(h_id_node->aux->formals_num, h_id_node->oid, offset , h_id_node->oid),
                     endcode());
     return id_ok && expr_ok && param_ok;
 }
@@ -1682,12 +1686,15 @@ void cleanup_return(Stat * start, int code_len,Code * code){
     
 }
 
-void cleanup_goto(Code * code, Poid2address * func_table){
+void cleanup_fake(Code * code, Poid2address * func_table){
     Stat * stat = code->head;
     while(stat){
         if(stat->op==S_FAKE_GOTO){
             stat->op=S_GOTO;
             stat->args[0].ival=get_f_addr_by_oid(stat->args[0].ival, func_table);
+        }else if(stat->op==S_FAKE_PUSH){
+            stat->op=S_PUSH;
+            stat->args[1].ival=get_f_num_obj_by_oid(stat->args[1].ival, func_table);
         }
         stat = stat->next;
     }
