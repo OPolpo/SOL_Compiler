@@ -64,7 +64,7 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                             
                             Pnode id = id_list->child;
                             while (id != NULL){ //loop on IDs
-                                Phash_node id_node = new_id_node(id->value.sval, CLPAR, ((func->aux)->num_obj));
+                                Phash_node id_node = new_id_node(id->value.sval, CLPAR, ((func->aux)->num_obj)+1+(func->aux)->formals_num);
                                 id_node->schema = domain_sch;
                                 if (!insert(id_node, (func->aux)->locenv)) {
                                     sprintf(error_msg_symb, "Name of formal parameters must be unique, \"%s\" already declared\n", id->value.sval);

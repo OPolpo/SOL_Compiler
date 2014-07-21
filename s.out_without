@@ -1,0 +1,1293 @@
+SCODE 1292 
+PUSH 0 9 -1
+GOTO 6 
+POP 
+WRITE "b" 
+HALT 
+FUNC 1 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 1 
+NEW 1 
+NEW 1 
+NEW 1 
+NEW 1 
+NEWS 173 
+LDS "game.ff4" 
+FREAD 0 9 "(board:[7,[6,i]],gameend:b,player:i)"
+LDA 0 9 
+FDA 168 
+EIL 1 
+LDC '1' 
+EQU 
+JMF 9 
+LDA 0 9 
+FDA 168 
+LDC '0' 
+IST 
+PUSH 0 2 0
+GOTO 1244 
+POP 
+STO 0 4 
+PUSH 0 0 0
+GOTO 1208 
+POP 
+STO 0 4 
+LDC '1' 
+JMF 257 
+PUSH 0 0 0
+GOTO 1208 
+POP 
+STO 0 4 
+LDC '1' 
+STO 0 5 
+LDC '1' 
+STO 0 7 
+LDC '0' 
+STO 0 6 
+LDC '1' 
+STO 0 8 
+PUSH 0 2 0
+GOTO 556 
+POP 
+JMF 17 
+PUSH 0 0 0
+GOTO 1208 
+POP 
+STO 0 4 
+LDA 0 9 
+FDA 168 
+LDC '1' 
+IST 
+LDA 0 9 
+FDA 169 
+EIL 4 
+PUSH 1 1 0
+GOTO 1121 
+POP 
+STO 0 4 
+JMP 26 
+PUSH 0 2 0
+GOTO 1091 
+POP 
+JMF 16 
+PUSH 0 0 0
+GOTO 1208 
+POP 
+STO 0 4 
+LDA 0 9 
+FDA 168 
+LDC '1' 
+IST 
+LDS "No Winner..." 
+LDI 12 
+PUSH 2 5 0
+GOTO 1156 
+POP 
+STO 0 4 
+JMP 7 
+LDS "Select the column" 
+LDI 17 
+PUSH 2 5 0
+GOTO 1156 
+POP 
+STO 0 4 
+LOD 0 5 
+NEG 
+JMF 3 
+LDC '1' 
+JMP 3 
+LOD 0 7 
+NEG 
+JMF 3 
+LDC '1' 
+JMP 2 
+LOD 0 8 
+JMF 167 
+PUSH 0 0 0
+GOTO 1230 
+POP 
+STO 0 4 
+LOD 0 3 
+WRITE "i" 
+PUSH 0 0 0
+GOTO 1208 
+POP 
+STO 0 4 
+LDS "Select the column" 
+LDI 17 
+PUSH 2 5 0
+GOTO 1156 
+POP 
+STO 0 4 
+LDC '0' 
+STO 0 8 
+LOD 0 3 
+LDI 1 
+IGE 
+JMF 5 
+LOD 0 3 
+LDI 7 
+ILE 
+JMP 2 
+LDC '0' 
+JMF 6 
+LDA 0 9 
+FDA 168 
+EIL 1 
+NEG 
+JMP 2 
+LDC '0' 
+JMF 6 
+LDC '1' 
+STO 0 6 
+LDC '1' 
+STO 0 5 
+JMP 37 
+LOD 0 3 
+LDI 9 
+EQU 
+JMF 20 
+PUSH 0 2 0
+GOTO 1244 
+POP 
+STO 0 4 
+PUSH 0 0 0
+GOTO 1208 
+POP 
+STO 0 4 
+LDS "Select the column" 
+LDI 17 
+PUSH 2 5 0
+GOTO 1156 
+POP 
+STO 0 4 
+LDC '1' 
+STO 0 5 
+LDC '0' 
+STO 0 6 
+JMP 14 
+LOD 0 3 
+LDI 0 
+EQU 
+JMF 6 
+LDC '1' 
+JMP 120 
+LDC '0' 
+STO 0 6 
+JMP 5 
+LDC '0' 
+STO 0 5 
+LDC '0' 
+STO 0 6 
+LOD 0 6 
+NEG 
+JMF 6 
+LDA 0 9 
+FDA 168 
+EIL 1 
+NEG 
+JMP 2 
+LDC '0' 
+JMF 11 
+PUSH 0 0 0
+GOTO 1208 
+POP 
+STO 0 4 
+LDS "Please, insert a number between 1 and  7" 
+LDI 40 
+PUSH 2 5 0
+GOTO 1156 
+POP 
+STO 0 4 
+LDA 0 9 
+FDA 168 
+EIL 1 
+NEG 
+JMF 3 
+LOD 0 6 
+JMP 2 
+LDC '0' 
+JMF 24 
+LOD 0 3 
+LDA 0 9 
+FDA 169 
+EIL 4 
+PUSH 2 4 0
+GOTO 296 
+POP 
+JMF 4 
+LDC '1' 
+STO 0 7 
+JMP 13 
+LDC '0' 
+STO 0 7 
+PUSH 0 0 0
+GOTO 1208 
+POP 
+STO 0 4 
+LDS "This column is full, try again" 
+LDI 30 
+PUSH 2 5 0
+GOTO 1156 
+POP 
+STO 0 4 
+PUSH 0 2 0
+GOTO 556 
+POP 
+JMF 16 
+PUSH 0 0 0
+GOTO 1208 
+POP 
+STO 0 4 
+LDA 0 9 
+FDA 168 
+LDC '1' 
+IST 
+LDA 0 9 
+FDA 169 
+EIL 4 
+PUSH 1 1 0
+GOTO 1121 
+POP 
+STO 0 4 
+PUSH 0 2 0
+GOTO 1091 
+POP 
+JMF 15 
+PUSH 0 0 0
+GOTO 1208 
+POP 
+STO 0 4 
+LDS "No Winner..." 
+LDI 12 
+PUSH 2 5 0
+GOTO 1156 
+POP 
+STO 0 4 
+LDA 0 9 
+FDA 168 
+LDC '1' 
+IST 
+JMP -177 
+LDA 0 9 
+FDA 168 
+EIL 1 
+NEG 
+JMF 16 
+LDA 0 9 
+FDA 169 
+EIL 4 
+LDI 1 
+EQU 
+JMF 6 
+LDA 0 9 
+FDA 169 
+LDI 2 
+IST 
+JMP 5 
+LDA 0 9 
+FDA 169 
+LDI 1 
+IST 
+JMP -257 
+LDC '1' 
+RETURN 
+FUNC 2 
+NEW 4 
+NEW 4 
+LDI 0 
+STO 0 3 
+LDI 5 
+STO 0 4 
+LOD 0 3 
+LOD 0 4 
+ILE 
+JMF 32 
+LDA 1 9 
+FDA 0 
+LOD 0 0 
+LDI 1 
+IMINUS 
+IXA 24 
+LOD 0 3 
+IXA 4 
+EIL 4 
+LDI 0 
+EQU 
+JMF 15 
+LDA 1 9 
+FDA 0 
+LOD 0 0 
+LDI 1 
+IMINUS 
+IXA 24 
+LOD 0 3 
+IXA 4 
+LDA 1 9 
+FDA 169 
+EIL 4 
+IST 
+LDC '1' 
+JMP 7 
+LOD 0 3 
+LDI 1 
+IPLUS 
+STO 0 3 
+JMP -34 
+LDC '0' 
+RETURN 
+FUNC 3 
+NEW 4 
+NEW 4 
+NEWS 168 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 4 
+LDA 1 9 
+FDA 0 
+SIL 168 
+STO 0 3 
+LDI 0 
+STO 0 2 
+LDI 5 
+STO 0 4 
+LOD 0 2 
+LOD 0 4 
+ILE 
+JMF 149 
+LDS "   ||-------------------------------------------------------||\n" 
+WRITE "s" 
+LDS "   ||" 
+WRITE "s" 
+LDI 0 
+STO 0 1 
+LDI 6 
+STO 0 5 
+LOD 0 1 
+LOD 0 5 
+ILE 
+JMF 36 
+LDA 0 3 
+LOD 0 1 
+IXA 24 
+LDI 5 
+LOD 0 2 
+IMINUS 
+IXA 4 
+EIL 4 
+LDI 0 
+EQU 
+JMF 4 
+LDS "       |" 
+WRITE "s" 
+JMP 17 
+LDA 0 3 
+LOD 0 1 
+IXA 24 
+LDI 5 
+LOD 0 2 
+IMINUS 
+IXA 4 
+EIL 4 
+LDI 1 
+EQU 
+JMF 4 
+LDS "   *   |" 
+WRITE "s" 
+JMP 3 
+LDS "  ###  |" 
+WRITE "s" 
+LOD 0 1 
+LDI 1 
+IPLUS 
+STO 0 1 
+JMP -38 
+LDS "|\n" 
+WRITE "s" 
+LDS "   ||" 
+WRITE "s" 
+LDI 0 
+STO 0 1 
+LDI 6 
+STO 0 6 
+LOD 0 1 
+LOD 0 6 
+ILE 
+JMF 36 
+LDA 0 3 
+LOD 0 1 
+IXA 24 
+LDI 5 
+LOD 0 2 
+IMINUS 
+IXA 4 
+EIL 4 
+LDI 0 
+EQU 
+JMF 4 
+LDS "       |" 
+WRITE "s" 
+JMP 17 
+LDA 0 3 
+LOD 0 1 
+IXA 24 
+LDI 5 
+LOD 0 2 
+IMINUS 
+IXA 4 
+EIL 4 
+LDI 1 
+EQU 
+JMF 4 
+LDS "  ***  |" 
+WRITE "s" 
+JMP 3 
+LDS " ##### |" 
+WRITE "s" 
+LOD 0 1 
+LDI 1 
+IPLUS 
+STO 0 1 
+JMP -38 
+LDS "|\n" 
+WRITE "s" 
+LDS "   ||" 
+WRITE "s" 
+LDI 0 
+STO 0 1 
+LDI 6 
+STO 0 7 
+LOD 0 1 
+LOD 0 7 
+ILE 
+JMF 36 
+LDA 0 3 
+LOD 0 1 
+IXA 24 
+LDI 5 
+LOD 0 2 
+IMINUS 
+IXA 4 
+EIL 4 
+LDI 0 
+EQU 
+JMF 4 
+LDS "       |" 
+WRITE "s" 
+JMP 17 
+LDA 0 3 
+LOD 0 1 
+IXA 24 
+LDI 5 
+LOD 0 2 
+IMINUS 
+IXA 4 
+EIL 4 
+LDI 1 
+EQU 
+JMF 4 
+LDS " ***** |" 
+WRITE "s" 
+JMP 3 
+LDS "  ###  |" 
+WRITE "s" 
+LOD 0 1 
+LDI 1 
+IPLUS 
+STO 0 1 
+JMP -38 
+LDS "|\n" 
+WRITE "s" 
+LOD 0 2 
+LDI 1 
+IPLUS 
+STO 0 2 
+JMP -151 
+LDS "   -----------------------------------------------------------\n" 
+WRITE "s" 
+LDS "   |    1   |   2   |   3   |   4   |   5   |   6   |   7    |\n" 
+WRITE "s" 
+LDC '1' 
+RETURN 
+FUNC 4 
+LDS "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" 
+WRITE "s" 
+LDC '1' 
+RETURN 
+FUNC 5 
+PUSH 0 0 0
+GOTO 543 
+POP 
+STO 1 4 
+LDS "   -----------------------------------------------------------\n" 
+WRITE "s" 
+LDS "   ------------------      " 
+WRITE "s" 
+LDA 1 9 
+FDA 169 
+EIL 4 
+LDI 1 
+EQU 
+JMF 4 
+LDS "PLAYER  ONE" 
+WRITE "s" 
+JMP 3 
+LDS "PLAYER  TWO" 
+WRITE "s" 
+LDS "      ------------------\n" 
+WRITE "s" 
+LDC '1' 
+RETURN 
+FUNC 6 
+LDS "     ______                ______                          __ __ \n" 
+WRITE "s" 
+LDS "    / ____/___  _  __     / ____/___  _____________       / // / \n" 
+WRITE "s" 
+LDS "   / /_  / __ \| |/_/    / /_  / __ \/ ___/ ___/ _ \     / // /_ \n" 
+WRITE "s" 
+LDS "  / __/ / /_/ />  <     / __/ / /_/ / /  / /__/  __/    /__  __/ \n" 
+WRITE "s" 
+LDS " /_/    \____/_/|_|    /_/    \____/_/   \___/\___/       /_/    \n\n" 
+WRITE "s" 
+LDC '1' 
+RETURN 
+FUNC 7 
+NEW 1 
+NEWS 168 
+LDA 1 9 
+FDA 0 
+SIL 168 
+STO 0 2 
+PUSH 0 5 0
+GOTO 581 
+POP 
+JMF 3 
+LDC '1' 
+JMP 4 
+PUSH 0 5 0
+GOTO 657 
+POP 
+JMF 3 
+LDC '1' 
+JMP 4 
+PUSH 0 11 0
+GOTO 733 
+POP 
+STO 0 1 
+LOD 0 1 
+RETURN 
+FUNC 8 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 4 
+LDI 0 
+STO 0 1 
+LDI 5 
+STO 0 4 
+LOD 0 1 
+LOD 0 4 
+ILE 
+JMF 61 
+LDI 0 
+STO 0 3 
+LDI 1 
+STO 0 2 
+LDI 6 
+STO 0 5 
+LOD 0 2 
+LOD 0 5 
+ILE 
+JMF 46 
+LDA 1 2 
+LOD 0 2 
+IXA 24 
+LOD 0 1 
+IXA 4 
+EIL 4 
+LDI 0 
+NEQ 
+JMF 17 
+LDA 1 2 
+LOD 0 2 
+IXA 24 
+LOD 0 1 
+IXA 4 
+EIL 4 
+LDA 1 2 
+LOD 0 2 
+LDI 1 
+IMINUS 
+IXA 24 
+LOD 0 1 
+IXA 4 
+EIL 4 
+EQU 
+JMP 2 
+LDC '0' 
+JMF 12 
+LOD 0 3 
+LDI 1 
+IPLUS 
+STO 0 3 
+LOD 0 3 
+LDI 3 
+EQU 
+JMF 3 
+LDC '1' 
+JMP 15 
+JMP 3 
+LDI 0 
+STO 0 3 
+LOD 0 2 
+LDI 1 
+IPLUS 
+STO 0 2 
+JMP -48 
+LOD 0 1 
+LDI 1 
+IPLUS 
+STO 0 1 
+JMP -63 
+LDC '0' 
+RETURN 
+FUNC 9 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 4 
+LDI 0 
+STO 0 2 
+LDI 6 
+STO 0 4 
+LOD 0 2 
+LOD 0 4 
+ILE 
+JMF 61 
+LDI 0 
+STO 0 3 
+LDI 1 
+STO 0 1 
+LDI 5 
+STO 0 5 
+LOD 0 1 
+LOD 0 5 
+ILE 
+JMF 46 
+LDA 1 2 
+LOD 0 2 
+IXA 24 
+LOD 0 1 
+IXA 4 
+EIL 4 
+LDI 0 
+NEQ 
+JMF 17 
+LDA 1 2 
+LOD 0 2 
+IXA 24 
+LOD 0 1 
+IXA 4 
+EIL 4 
+LDA 1 2 
+LOD 0 2 
+IXA 24 
+LOD 0 1 
+LDI 1 
+IMINUS 
+IXA 4 
+EIL 4 
+EQU 
+JMP 2 
+LDC '0' 
+JMF 12 
+LOD 0 3 
+LDI 1 
+IPLUS 
+STO 0 3 
+LOD 0 3 
+LDI 3 
+EQU 
+JMF 3 
+LDC '1' 
+JMP 15 
+JMP 3 
+LDI 0 
+STO 0 3 
+LOD 0 1 
+LDI 1 
+IPLUS 
+STO 0 1 
+JMP -48 
+LOD 0 2 
+LDI 1 
+IPLUS 
+STO 0 2 
+JMP -63 
+LDC '0' 
+RETURN 
+FUNC 10 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 4 
+NEW 4 
+LDI 1 
+STO 0 2 
+LDI 3 
+STO 0 4 
+LOD 0 2 
+LOD 0 4 
+ILE 
+JMF 73 
+LDI 0 
+STO 0 3 
+LDI 1 
+STO 0 1 
+LDI 5 
+LOD 0 2 
+LDI 1 
+IMINUS 
+IMINUS 
+STO 0 5 
+LOD 0 1 
+LOD 0 5 
+ILE 
+JMF 54 
+LDA 1 2 
+LOD 0 1 
+LOD 0 2 
+IPLUS 
+IXA 24 
+LOD 0 1 
+IXA 4 
+EIL 4 
+LDI 0 
+NEQ 
+JMF 23 
+LDA 1 2 
+LOD 0 1 
+LOD 0 2 
+IPLUS 
+IXA 24 
+LOD 0 1 
+IXA 4 
+EIL 4 
+LDA 1 2 
+LOD 0 1 
+LDI 1 
+IMINUS 
+LOD 0 2 
+IPLUS 
+IXA 24 
+LOD 0 1 
+LDI 1 
+IMINUS 
+IXA 4 
+EIL 4 
+EQU 
+JMP 2 
+LDC '0' 
+JMF 12 
+LOD 0 3 
+LDI 1 
+IPLUS 
+STO 0 3 
+LOD 0 3 
+LDI 3 
+EQU 
+JMF 3 
+LDC '1' 
+JMP 279 
+JMP 3 
+LDI 0 
+STO 0 3 
+LOD 0 1 
+LDI 1 
+IPLUS 
+STO 0 1 
+JMP -56 
+LOD 0 2 
+LDI 1 
+IPLUS 
+STO 0 2 
+JMP -75 
+LDI 1 
+STO 0 2 
+LDI 3 
+STO 0 6 
+LOD 0 2 
+LOD 0 6 
+ILE 
+JMF 79 
+LDI 0 
+STO 0 3 
+LDI 1 
+STO 0 1 
+LDI 5 
+LOD 0 2 
+LDI 1 
+IMINUS 
+IMINUS 
+STO 0 7 
+LOD 0 1 
+LOD 0 7 
+ILE 
+JMF 60 
+LDA 1 2 
+LDI 6 
+LOD 0 1 
+LOD 0 2 
+IPLUS 
+IMINUS 
+IXA 24 
+LOD 0 1 
+IXA 4 
+EIL 4 
+LDI 0 
+NEQ 
+JMF 27 
+LDA 1 2 
+LDI 6 
+LOD 0 1 
+LOD 0 2 
+IPLUS 
+IMINUS 
+IXA 24 
+LOD 0 1 
+IXA 4 
+EIL 4 
+LDA 1 2 
+LDI 6 
+LOD 0 1 
+LDI 1 
+IMINUS 
+LOD 0 2 
+IPLUS 
+IMINUS 
+IXA 24 
+LOD 0 1 
+LDI 1 
+IMINUS 
+IXA 4 
+EIL 4 
+EQU 
+JMP 2 
+LDC '0' 
+JMF 12 
+LOD 0 3 
+LDI 1 
+IPLUS 
+STO 0 3 
+LOD 0 3 
+LDI 3 
+EQU 
+JMF 3 
+LDC '1' 
+JMP 193 
+JMP 3 
+LDI 0 
+STO 0 3 
+LOD 0 1 
+LDI 1 
+IPLUS 
+STO 0 1 
+JMP -62 
+LOD 0 2 
+LDI 1 
+IPLUS 
+STO 0 2 
+JMP -81 
+LDI 1 
+STO 0 2 
+LDI 3 
+STO 0 8 
+LOD 0 2 
+LOD 0 8 
+ILE 
+JMF 79 
+LDI 0 
+STO 0 3 
+LDI 1 
+STO 0 1 
+LDI 5 
+LOD 0 2 
+LDI 1 
+IMINUS 
+IMINUS 
+STO 0 9 
+LOD 0 1 
+LOD 0 9 
+ILE 
+JMF 60 
+LDA 1 2 
+LOD 0 1 
+IXA 24 
+LOD 0 1 
+LOD 0 2 
+LDI 1 
+IMINUS 
+IPLUS 
+IXA 4 
+EIL 4 
+LDI 0 
+NEQ 
+JMF 27 
+LDA 1 2 
+LOD 0 1 
+IXA 24 
+LOD 0 1 
+LOD 0 2 
+LDI 1 
+IMINUS 
+IPLUS 
+IXA 4 
+EIL 4 
+LDA 1 2 
+LOD 0 1 
+LDI 1 
+IMINUS 
+IXA 24 
+LOD 0 1 
+LOD 0 2 
+LDI 1 
+IMINUS 
+IPLUS 
+LDI 1 
+IMINUS 
+IXA 4 
+EIL 4 
+EQU 
+JMP 2 
+LDC '0' 
+JMF 12 
+LOD 0 3 
+LDI 1 
+IPLUS 
+STO 0 3 
+LOD 0 3 
+LDI 3 
+EQU 
+JMF 3 
+LDC '1' 
+JMP 107 
+JMP 3 
+LDI 0 
+STO 0 3 
+LOD 0 1 
+LDI 1 
+IPLUS 
+STO 0 1 
+JMP -62 
+LOD 0 2 
+LDI 1 
+IPLUS 
+STO 0 2 
+JMP -81 
+LDI 1 
+STO 0 2 
+LDI 3 
+STO 0 10 
+LOD 0 2 
+LOD 0 10 
+ILE 
+JMF 85 
+LDI 0 
+STO 0 3 
+LDI 1 
+STO 0 1 
+LDI 5 
+LOD 0 2 
+LDI 1 
+IMINUS 
+IMINUS 
+STO 0 11 
+LOD 0 1 
+LOD 0 11 
+ILE 
+JMF 66 
+LDA 1 2 
+LDI 6 
+LOD 0 1 
+IMINUS 
+IXA 24 
+LOD 0 1 
+LOD 0 2 
+LDI 1 
+IMINUS 
+IPLUS 
+IXA 4 
+EIL 4 
+LDI 0 
+NEQ 
+JMF 31 
+LDA 1 2 
+LDI 6 
+LOD 0 1 
+IMINUS 
+IXA 24 
+LOD 0 1 
+LOD 0 2 
+LDI 1 
+IMINUS 
+IPLUS 
+IXA 4 
+EIL 4 
+LDA 1 2 
+LDI 6 
+LOD 0 1 
+LDI 1 
+IMINUS 
+IMINUS 
+IXA 24 
+LOD 0 1 
+LOD 0 2 
+LDI 1 
+IMINUS 
+IPLUS 
+LDI 1 
+IMINUS 
+IXA 4 
+EIL 4 
+EQU 
+JMP 2 
+LDC '0' 
+JMF 12 
+LOD 0 3 
+LDI 1 
+IPLUS 
+STO 0 3 
+LOD 0 3 
+LDI 3 
+EQU 
+JMF 3 
+LDC '1' 
+JMP 15 
+JMP 3 
+LDI 0 
+STO 0 3 
+LOD 0 1 
+LDI 1 
+IPLUS 
+STO 0 1 
+JMP -68 
+LOD 0 2 
+LDI 1 
+IPLUS 
+STO 0 2 
+JMP -87 
+LDC '0' 
+RETURN 
+FUNC 11 
+NEW 4 
+NEW 4 
+LDI 0 
+STO 0 1 
+LDI 6 
+STO 0 2 
+LOD 0 1 
+LOD 0 2 
+ILE 
+JMF 18 
+LDA 1 9 
+FDA 0 
+LOD 0 1 
+IXA 24 
+LDI 5 
+IXA 4 
+EIL 4 
+LDI 0 
+EQU 
+JMF 3 
+LDC '0' 
+JMP 7 
+LOD 0 1 
+LDI 1 
+IPLUS 
+STO 0 1 
+JMP -20 
+LDC '1' 
+RETURN 
+FUNC 12 
+LDA 1 9 
+FDA 169 
+EIL 4 
+LDI 1 
+EQU 
+JMF 8 
+LDS "PLAYER ONE WINS !!!!" 
+LDI 20 
+PUSH 2 3 1
+GOTO 1156 
+POP 
+STO 1 4 
+JMP 7 
+LDS "PLAYER TWO WINS !!!!" 
+LDI 20 
+PUSH 2 3 1
+GOTO 1156 
+POP 
+STO 1 4 
+LDC '1' 
+RETURN 
+FUNC 13 
+LDS "   |---------------------------------------------------------|\n" 
+WRITE "s" 
+LDS "   |        0      *  Exit                                   |\n" 
+WRITE "s" 
+LDS "   |        1/7    *  Insert Token                           |\n" 
+WRITE "s" 
+LDS "   |        9      *  Reset Game                             |\n" 
+WRITE "s" 
+LDS "   |---------------------------------------------------------|\n" 
+WRITE "s" 
+LDC '1' 
+RETURN 
+FUNC 14 
+NEW 4 
+NEW 4 
+NEW 4 
+LDS "   |" 
+WRITE "s" 
+LDI 0 
+STO 0 3 
+LDI 55 
+LOD 0 0 
+IMINUS 
+LDI 2 
+IDIV 
+STO 0 4 
+LOD 0 3 
+LOD 0 4 
+ILE 
+JMF 8 
+LDS " " 
+WRITE "s" 
+LOD 0 3 
+LDI 1 
+IPLUS 
+STO 0 3 
+JMP -10 
+LOD 0 0 
+WRITE "s" 
+LDI 0 
+STO 0 3 
+LDI 56 
+LOD 0 0 
+IMINUS 
+LDI 2 
+IDIV 
+STO 0 5 
+LOD 0 3 
+LOD 0 5 
+ILE 
+JMF 8 
+LDS " " 
+WRITE "s" 
+LOD 0 3 
+LDI 1 
+IPLUS 
+STO 0 3 
+JMP -10 
+LDS "|\n" 
+WRITE "s" 
+LDS "   -----------------------------------------------------------\n" 
+WRITE "s" 
+LDC '1' 
+RETURN 
+FUNC 15 
+PUSH 0 0 1
+GOTO 514 
+POP 
+STO 1 4 
+LDA 1 9 
+FDA 169 
+EIL 4 
+PUSH 1 1 1
+GOTO 519 
+POP 
+STO 1 4 
+PUSH 0 7 1
+GOTO 340 
+POP 
+STO 1 4 
+PUSH 0 0 1
+GOTO 1143 
+POP 
+STO 1 4 
+LDC '1' 
+RETURN 
+FUNC 16 
+PUSH 0 0 1
+GOTO 1238 
+POP 
+STO 1 4 
+READ 1 3 "i"
+LDC '1' 
+RETURN 
+FUNC 17 
+LOD 1 9 
+LDS "game.ff4" 
+FWRITE "(board:[7,[6,i]],gameend:b,player:i)" 
+LDC '1' 
+RETURN 
+FUNC 18 
+NEW 4 
+NEW 4 
+LDA 1 9 
+FDA 168 
+LDC '0' 
+IST 
+LDI 0 
+STO 1 2 
+LDI 6 
+STO 0 1 
+LOD 1 2 
+LOD 0 1 
+ILE 
+JMF 27 
+LDI 0 
+STO 1 1 
+LDI 5 
+STO 0 2 
+LOD 1 1 
+LOD 0 2 
+ILE 
+JMF 14 
+LDA 1 9 
+FDA 0 
+LOD 1 2 
+IXA 24 
+LOD 1 1 
+IXA 4 
+LDI 0 
+IST 
+LOD 1 1 
+LDI 1 
+IPLUS 
+STO 1 1 
+JMP -16 
+LOD 1 2 
+LDI 1 
+IPLUS 
+STO 1 2 
+JMP -29 
+LDA 1 9 
+FDA 169 
+LDI 1 
+IST 
+LDC '1' 
+STO 1 8 
+LDC '1' 
+RETURN 
