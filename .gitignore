@@ -33,14 +33,4 @@ s_machine/formatted_lexer.c
 
 s_machine/formatted_lexer.c
 
-<<<<<<< HEAD
-smachine
-
-scompiler
-
 *.ff4
-
-*.ff4
-=======
-scompiler
->>>>>>> FETCH_HEAD

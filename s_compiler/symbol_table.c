@@ -2,11 +2,13 @@
 #include "parser/parser.h"
 #include "semantic.h"
 
+#define TABLE 1
+
 int oid = 1;
 char error_msg_symb[100];
 
 void handle_function_part(Pnode current, Phash_node func, Class part_class, int * num_obj){
-    int count = (part_class == CLVAR || part_class == CLCONST);
+    //int count = (part_class == CLVAR || part_class == CLCONST);
     if (current->child != NULL) { //?_SECT_OPT
         Pnode child;
         child = current->child; //DECL
@@ -19,7 +21,7 @@ void handle_function_part(Pnode current, Phash_node func, Class part_class, int 
                 Phash_node id_node = new_id_node(id->value.sval, part_class, *num_obj + 1);
                 id_node->schema = domain_sch;
                 //if (count) {
-                    (*num_obj)++;
+                (*num_obj)++;
                 //}
                 
                 if(!insert(id_node, (func->aux)->locenv)){
@@ -105,12 +107,11 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                     current = current->brother; //CONST_SECT_OPT
                     handle_function_part(current, func, CLCONST, &(func->aux->num_obj));
                     
-                    
-                    
+#if TABLE
                     print_func_node(func);
-                    printSchema(func->schema," ");
+                    print_sch(func->schema);
                     print_hash_content((func->aux)->locenv);
-                    
+#endif
                     current = current->brother; //FUNC_LIST_OPT
                     if (current->child != NULL) {
                         child = current->child; // FUNC DECL

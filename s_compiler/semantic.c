@@ -777,7 +777,10 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code, Code * code_new_
     }
     Class id_class = id_hash_node->class_node;
     id_hash_node->class_node = CLCOUNT;
-    
+
+#if VERBOSE
+    print_func_node(f_loc_env);
+#endif
     char * id_aux;
     asprintf(&id_aux, "0_AUX_%d", f_loc_env->aux->num_obj+1);
     Phash_node end_condition_expr_value = new_id_node(id_aux, CLCONST, f_loc_env->aux->num_obj+1);
@@ -785,6 +788,11 @@ int sem_for_stat(Pnode root, Phash_node f_loc_env, Code * code, Code * code_new_
     end_condition_expr_value->schema = new_schema_node(SCINT);
     insert(end_condition_expr_value, f_loc_env->aux->locenv);
     *code_new_aux = appcode(*code_new_aux, makecode1(S_NEW, sizeof(int)));
+    
+#if VERBOSE
+    print_func_node(f_loc_env);
+    print_generic_node(end_condition_expr_value);
+#endif
     
     int not_used;
     Code stat_list_code = makecode(S_NOOP);

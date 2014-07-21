@@ -88,6 +88,7 @@ void print_func_node(Phash_node node){
             printf(" | F_oid: %d", node->father->oid);
         else
             printf(" | F_oid: NULL");
+        printf ("((%d))", (node->aux)->num_obj);
     }
     printf ("\n");
 }
