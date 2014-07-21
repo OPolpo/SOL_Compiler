@@ -326,7 +326,6 @@ func FF4():bool
 				dummy = printmessage("Select the column", 17);
 			endif;
 			while(not ok or not okfull or first) do
-				write "questa";
 				dummy = saferead();
 				write userchoice;
 				dummy = refreshscreen();
