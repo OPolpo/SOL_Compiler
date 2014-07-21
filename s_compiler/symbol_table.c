@@ -16,12 +16,11 @@ void handle_function_part(Pnode current, Phash_node func, Class part_class, int 
             
             Pnode id = id_list->child;
             while (id != NULL){
-                *num_obj++;
-                Phash_node id_node = new_id_node(id->value.sval, part_class, *num_obj);
+                Phash_node id_node = new_id_node(id->value.sval, part_class, *num_obj + 1);
                 id_node->schema = domain_sch;
-                if (count) {
+                //if (count) {
                     (*num_obj)++;
-                }
+                //}
                 
                 if(!insert(id_node, (func->aux)->locenv)){
                     sprintf(error_msg_symb, "ID \"%s\" already defined in same environment\n", id->value.sval);
