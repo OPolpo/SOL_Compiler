@@ -16,7 +16,8 @@ void handle_function_part(Pnode current, Phash_node func, Class part_class, int 
             
             Pnode id = id_list->child;
             while (id != NULL){
-                Phash_node id_node = new_id_node(id->value.sval, part_class, *num_obj+1);
+                *num_obj++;
+                Phash_node id_node = new_id_node(id->value.sval, part_class, *num_obj);
                 id_node->schema = domain_sch;
                 if (count) {
                     (*num_obj)++;
