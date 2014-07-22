@@ -215,15 +215,19 @@ void pop_ostack() {
  * @return a pointer to the top of istack.
  */
 char * push_istack(int size){
-    char *old_istack; int i;
+    char *old_istack; int i, n;
     if(ip+size >= isize) {
+        n = size/ISTACK_UNIT;
         old_istack = istack;
         istack = newmem(isize + ISTACK_UNIT);
+        istack = newmem(isize + (n+1) * ISTACK_UNIT);
         for(i = 0; i < isize; i++)
             istack[i] = old_istack[i];
         freemem(old_istack, isize);
         isize += ISTACK_UNIT;
+        isize += (n+1) * ISTACK_UNIT;
     }
+
     ip+=size;
     return &(istack[ip-size]);
 }
