@@ -52,13 +52,13 @@ Phash_node find_visible_node(char * id, Phash_node func_node, int * offset){
             //printSchema(node->schema, " ");
             return node;
         }
+        if (f->father==NULL){
+            if (strcmp(f->name,id) == 0) {
+                return f;
+            }
+        }
         f = f->father;
         (*offset)++;
-    }
-    if (f == NULL) {
-        if (strcmp(func_node->name,id) == 0) {
-            return func_node;
-        }
     }
     return NULL;
 }

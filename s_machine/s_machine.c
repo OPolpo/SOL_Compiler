@@ -385,8 +385,8 @@ char * get_str_c(char * s){
 int hash_str_c(char * s){
     int i, h = 0;
     for(i = 0; s[i] != '\0'; i++){
-        h = ((h << STR_SHIFT) + s[i]) % STR_CONST_DIM;
-    }
+        h = abs(((h << STR_SHIFT) + s[i]) % STR_CONST_DIM);
+    }   
     return h;
 }
 
