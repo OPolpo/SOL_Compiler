@@ -207,23 +207,22 @@ void pop_ostack() {
 }
 
 /**
- * @brief Increments the istack with the size and return the new top.
+ * @brief Increment the istack with the size and return the new top.
  *
  * If necessary expand the istack.
  * 
- * @param size how much increments the istack.
+ * @param size how much increment the istack.
  * @return a pointer to the top of istack.
  */
 char * push_istack(int size){
-    char *old_istack; int i, n;
+    char *old_istack; int i;
     if(ip+size >= isize) {
-        n = size/ISTACK_UNIT;
         old_istack = istack;
-        istack = newmem(isize + (n+1) * ISTACK_UNIT);
+        istack = newmem(isize + ISTACK_UNIT);
         for(i = 0; i < isize; i++)
             istack[i] = old_istack[i];
         freemem(old_istack, isize);
-        isize += (n+1) * ISTACK_UNIT;
+        isize += ISTACK_UNIT;
     }
     ip+=size;
     return &(istack[ip-size]);
@@ -232,7 +231,7 @@ char * push_istack(int size){
 /**
  * @brief Decrement the istack with the size and return the new top.
  *
- * @param size how much increments the istack.
+ * @param size how much increment the istack.
  */
 void pop_istack(int size) {
     if(ip < size) machine_error("pop_istack()");
