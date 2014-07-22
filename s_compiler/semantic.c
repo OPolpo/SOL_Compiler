@@ -640,8 +640,10 @@ int sem_if_stat(Pnode root, Phash_node f_loc_env, int * w_return, Code * code, C
     //     printf("il blocco elsif ce quindi sommo %d",((elsif_stat_list_opt_node->child)? 2 : 1));
     // }
 
+    int with_jmp = ((else_stat_list_node != NULL) || (elsif_stat_list_opt_node->child != NULL))?1:0;
+    
     *code = concode(*code,
-                    makecode1(S_JMF, if_stat_list_code.size + ((elsif_stat_list_opt_node->child)? 2 : (else_stat_list_node ? 2 : 1))), //se manca il blocco elseif deve essere +1
+                    makecode1(S_JMF, if_stat_list_code.size + 1 + with_jmp),
                     if_stat_list_code,
                     elsif_stat_list_opt_code,
                     else_stat_list_code,
@@ -684,10 +686,11 @@ int sem_elsif_stat_list_opt(Pnode root, Phash_node f_loc_env, int * w_return, Co
         Code stat_list_code = makecode(S_NOOP);
         stat_list_ok = sem_stat_list(stat_list_node, f_loc_env, &return_stat, &stat_list_code, code_new_aux);
         
-        printf("\n\n offset_to_exit vale %d", *offset_to_exit);
+        int with_jmp = ((*offset_to_exit != 0) || (stat_list_node->brother != NULL))?1:0;
+        //printf("\n\n offset_to_exit vale %d", *offset_to_exit);
         *w_return = return_stat && *w_return;
         *ptemp_code = concode(*ptemp_code,
-                              makecode1(S_JMF, stat_list_code.size+((stat_list_node->brother)? 2 : (!offset_to_exit ? 1 : 2))),
+                              makecode1(S_JMF, stat_list_code.size+1+with_jmp),
                               stat_list_code,
                               endcode());
         StackPush(&top, ptemp_code);
