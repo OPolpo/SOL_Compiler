@@ -59,7 +59,6 @@ int get_f_addr_by_oid(int oid, Poid2address * table);
 int get_f_num_obj_by_oid(int oid, Poid2address * table);
 Poid2address new_o2a(int oid, int * addr);
 void destroy_o2a(Poid2address * table);
-//void free_list(Poid2address list);
 void destroy_code(Code *code);
 
 

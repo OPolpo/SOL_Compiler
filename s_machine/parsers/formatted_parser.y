@@ -14,7 +14,6 @@
     
     #define YYSTYPE Pformatted
 
-    //extern YY_FLUSH_BUFFER;
     extern FILE *formattedin;
     extern Value lexval;
     extern Str_c_node ** format_stringtable;
@@ -107,16 +106,11 @@ formatted_list  : formatted ',' formatted_list {$$ = $1; $1->brother = $3;}
 
 int yyerror(){
     fprintf(stderr, "Error while parsing the formatted values.\n");
-    //destroy_formatted(formatted_root);
     formatted_root=NULL;
     return -1;
 }
 
 void parse_formatted(FILE* stream){
-    //int result;
-    //formatted_scan_string(formatted,strlen(formatted));
-    //if((result = formattedparse()) == 0)
-    //print_sch(formatted_root);
     formattedin=stream;
     formattedrestart(formattedin);
     yyparse();

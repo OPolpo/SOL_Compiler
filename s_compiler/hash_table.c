@@ -54,8 +54,6 @@ Phash_node find_visible_node(char * id, Phash_node func_node, int * offset){
     while (f != NULL) {
         Phash_node node = getNode(id, f->aux->locenv);
         if (node != NULL) {
-            //print_generic_node(node);
-            //printSchema(node->schema, " ");
             return node;
         }
         if (f->father==NULL){
@@ -70,8 +68,6 @@ Phash_node find_visible_node(char * id, Phash_node func_node, int * offset){
 }
 
 Phash_node * new_hash_table(){
-    //Phash_node * table = (Phash_node *) malloc(TOT * sizeof(Phash_node));
-    //memset(table, '\0', TOT * sizeof(Phash_node)); // NULL == '\0'
     Phash_node * table = (Phash_node *) calloc(TOT, sizeof(Phash_node));
     return table;
 }
@@ -119,7 +115,7 @@ void print_generic_node(Phash_node node){
             printf("COUNT ");
             break;
         default:
-            //function... TODO merge with print_func_node OR not?
+            printf("Unexpected CLASS ");
             break;
     }
     (node->schema != NULL)? printf("ok schema |"): printf("no schema |");
@@ -144,18 +140,3 @@ void print_hash_content(Phash_node * table){
     }
     printf("-------------end\n");
 }
-
-
-
-/*
- typedef struct shash_node{
- char * name;
- int oid;
- Class class_node; //TYPE, VAR, CONST, FUNC, PAR
- Pschema schema;
- struct shash_node ** locenv;
- int formals_num;
- Formal * formal;
- struct shash_node * next;
- } Hash_node, * Phash_node;
- */

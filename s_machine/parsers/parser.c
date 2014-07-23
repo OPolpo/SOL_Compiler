@@ -110,11 +110,11 @@ void load_scode(FILE * input){
             case S_WR:
             case S_FWR:
             case S_LDS:
-            prog[pc].op=a;
-            next();
-            prog[pc].args[0].sval=insert_strWclean(yytext);
-            break;
-
+                prog[pc].op=a;
+                next();
+                prog[pc].args[0].sval=insert_strWclean(yytext);
+                break;
+                
             case S_LDR:
                 prog[pc].op=a;
                 next();
@@ -151,10 +151,6 @@ void load_scode(FILE * input){
             break;
         pc++;
     }
-    //printf("%d inizio stampa\n", pc);
-    //print_loaded_code(prog);
-    //printf("fine stampa\n");
-
 }
 
 /**
@@ -164,17 +160,3 @@ void load_scode(FILE * input){
 int next(){
     return yylex();
 }
-
-/*
-void print_loaded_code(Scode * prog){
-    int i = 0;
-    for(i=0;i<pc;i++){
-        print_code_instruction(&prog[i]);
-    }
-}*/
-
-/*
-void print_code_instruction(Scode * line){
-    Stat to_print = {pc,line->op,{line->args[0],line->args[1],line->args[2]},0};
-    print_stat(stdout, &to_print);
-}*/

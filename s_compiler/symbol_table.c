@@ -14,7 +14,6 @@ int oid = 1;
 char error_msg_symb[100];
 
 void handle_function_part(Pnode current, Phash_node func, Class part_class, int * num_obj){
-    //int count = (part_class == CLVAR || part_class == CLCONST);
     if (current->child != NULL) { //?_SECT_OPT
         Pnode child;
         child = current->child; //DECL
@@ -26,9 +25,7 @@ void handle_function_part(Pnode current, Phash_node func, Class part_class, int 
             while (id != NULL){
                 Phash_node id_node = new_id_node(id->value.sval, part_class, *num_obj + 1);
                 id_node->schema = domain_sch;
-                //if (count) {
                 (*num_obj)++;
-                //}
                 
                 if(!insert(id_node, (func->aux)->locenv)){
                     sprintf(error_msg_symb, "ID \"%s\" already defined in same environment\n", id->value.sval);
@@ -84,11 +81,9 @@ Phash_node create_symbol_table(Pnode root, Phash_node father){
                                 
                                 if(last_formal==NULL){
                                     (func->aux)->formal=to_add;
-                                    //printf("last_formal==NULL %d\n", func->formal);
                                 }
                                 else {
                                     last_formal->next=to_add;
-                                    //printf("last_formal!=NULL %d\n", id_node->oid);
                                 }
                                 last_formal = to_add;
                                 
@@ -186,7 +181,6 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                             Pschema to_add = create_schema(decl_domain, func, id->value.sval);
                             if(last == NULL){
                                 node->p1 = to_add;
-                                //last = node->p1;
                             }
                             else{
                                 Pschema temp = node->p1;
@@ -199,7 +193,6 @@ Pschema create_schema(Pnode domain, Phash_node func, char * id){
                                 }
                                 
                                 last->p2 = to_add;
-                                //last = last->p2;
                             }
                             last = to_add;
                             id = id->brother;

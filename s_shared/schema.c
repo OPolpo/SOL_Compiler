@@ -7,14 +7,12 @@
 //http://en.wikipedia.org/wiki/List_of_prime_numbers
 #include "schema.h"
 #include "mem_utils.h"
-//#include "parser.h"
 
 void printSchema(Pschema root, char* father_indent){
     if(root==NULL) return;
     Pschema p;
-
+    
     //--Indent Stuff
-
     char* my_indent = calloc(1000,sizeof(char));
     my_indent[0]=0;
     strcpy(my_indent, father_indent);
@@ -177,7 +175,6 @@ int are_compatible(Pschema a, Pschema b){
             return 0;
             break;
     }
-    //return 0;
 }
 
 /**
@@ -196,7 +193,7 @@ char * make_format(Pschema schema){
 }
 
 char * schema2format(Pschema schema){
-    char * str, * tmp_str, * tmp2_str; //mallocami
+    char * str, * tmp_str, * tmp2_str; //to be mallocated
     Pschema tmp_schema;
     switch (schema->type) {
         case SCCHAR:
@@ -250,5 +247,4 @@ void destroy_schema(Pschema schema){
     if(schema->p2 != NULL)
         destroy_schema(schema->p2);
     freemem((void*)schema, sizeof(Schema));
-    //schema = NULL;
 }

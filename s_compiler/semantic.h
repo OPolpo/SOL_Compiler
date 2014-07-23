@@ -7,27 +7,6 @@
 #include "code_gen.h"
 #include "../s_shared/schema.h"
 
-// typedef enum{
-// 	SEM_CHAR,
-// 	SEM_INT,
-// 	SEM_REAL,
-// 	SEM_STRING,
-// 	SEM_BOOL,
-// 	SEM_VECTOR,
-// 	SEM_STRUCT
-// } Sem_type;
-
-
-// char* tabsem_types[] ={
-// 	"SEM_CHAR",
-// 	"SEM_INT",
-// 	"SEM_REAL",
-// 	"SEM_STRING",
-// 	"SEM_BOOL",
-// 	"SEM_VECTOR",
-// 	"SEM_STRUCT"
-// };
-
 
 int sem_program(Pnode root, Phash_node f_loc_env, Code * code);
 int sem_func_decl(Pnode root, Phash_node f_loc_env, int not_first, Code * code, Poid2address * func_table);

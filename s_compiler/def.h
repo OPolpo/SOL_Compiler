@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "../s_shared/SOL_def.h"
 
-typedef enum{	
+typedef enum{
 	NPROGRAM,
 	NFUNC_DECL,
 	NDECL_LIST_OPT,
@@ -45,7 +45,6 @@ typedef enum{
 	NCOND_EXPR,
 	NELSIF_EXPR_LIST_OPT,
 	NBUILT_IN_CALL
-    
 } Nonterminal;
 
 typedef enum{
@@ -70,14 +69,14 @@ typedef struct snode{
 char *newstring(char*);
 
 Pnode nontermode(Nonterminal),
-	  idnode(),
-	  iconstnode(),
-	  sconstnode(),
-	  rconstnode(),
-	  bconstnode(),
-	  cconstnode(),
-      atomicdomainnode(int domain),
-	  newnode(Typenode);
+idnode(),
+iconstnode(),
+sconstnode(),
+rconstnode(),
+bconstnode(),
+cconstnode(),
+atomicdomainnode(int domain),
+newnode(Typenode);
 
 int yylex (void);
 int yyerror ();

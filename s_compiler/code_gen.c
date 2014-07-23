@@ -6,7 +6,6 @@
 
 
 #include "code_gen.h"
-//#include "parser.h"
 
 char * tabOperator[]={
     "NEW",
@@ -90,13 +89,6 @@ void relocate_address(Code code, int offset){
 
 Code appcode(Code code1, Code code2){
     Code rescode;
-    /*
-    printf("********\nAppendo a: \n");
-    print_code(stdout, &code1);
-    printf("\nTHIS: \n");
-    print_code(stdout, &code2);
-    printf("\nI OBTAIN: \n");
-    */
     if (code1.head == code2.head && code1.tail == code2.tail) {
         printf("Trying to concatenate a list with itself <==============\n");
         return code1;
@@ -106,20 +98,12 @@ Code appcode(Code code1, Code code2){
         if (code1.tail != code1.head) {
             fprintf(stderr, "********* Strange code starting with NOOP\n");
         }
-        /*
-        print_code(stdout, &code2);
-        printf("END append-> tail2. \n********\n");
-        */
         return code2;
     }
     else if (code2.head->op == S_NOOP) {
         if (code2.tail != code2.head) {
             fprintf(stderr, "********* Strange code starting with NOOP\n");
         }
-        /*
-        print_code(stdout, &code1);
-        printf("END append-> tail1. \n********\n");
-         */
         return code1;
     }
     else{
@@ -128,10 +112,6 @@ Code appcode(Code code1, Code code2){
         rescode.tail = code2.tail;
         code1.tail->next = code2.head;
         rescode.size = code1.size + code2.size;
-        /*
-        print_code(stdout, &rescode);
-        printf("END append. \n********\n");
-        */
         return rescode;
     }
 }
@@ -267,7 +247,7 @@ Code makecode_xread(Operator op, int arg1, int arg2, char * arg3){
     return code;
 }
 
-/* 
+/*
  case S_PUSH
  case S_FAKE_PUSH */
 Code makecode_fake_push(int arg1, int arg2, int arg3){
@@ -315,9 +295,7 @@ Code make_lds(char *s){
 }
 
 void print_stat(FILE * stream, Stat * stat){
-    // fprintf(stream, "[%d] %s ", stat->address, tabOperator[stat->op]);
     fprintf(stream, "%s ", tabOperator[stat->op]);
-    
     switch(stat->op){
         case S_HALT:
         case S_TOINT:
@@ -363,7 +341,7 @@ void print_stat(FILE * stream, Stat * stat){
         case S_FREAD:
             fprintf(stream, "%d %d %s", stat->args[0].ival, stat->args[1].ival, stat->args[2].sval);
             break;
-        
+            
         case S_FAKE_PUSH:
         case S_PUSH:
             fprintf(stream, "%d %d %d", stat->args[0].ival, stat->args[1].ival, stat->args[2].ival);
@@ -491,7 +469,6 @@ void destroy_o2a(Poid2address * table){
     int i=0;
     for (i=0; i<TOT; i++) {
         if (table[i]!= NULL) {
-            //free_list(table[i]);
             Poid2address newhead = table[i]->next;
             while(newhead){
                 free(table[i]);//free old head
@@ -502,15 +479,6 @@ void destroy_o2a(Poid2address * table){
         }
     }
 }
-
-//recursive solution for free the 
-
-// void free_list(Poid2address list){
-//     Poid2address newhead = list->next;
-//     free(list);
-//     if(newhead!=NULL)
-//         free_list(newhead);
-// }
 
 void destroy_code(Code *code){
     Stat * to_free = code->head;

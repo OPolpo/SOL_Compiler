@@ -30,7 +30,7 @@ typedef struct saux_fun_param{
 
 typedef struct shash_node{
     char * name;
-    int oid; 
+    int oid;
     Class class_node; //TYPE, VAR, CONST, FUNC, PAR
     Pschema schema;
     Paux_fun_param aux;
