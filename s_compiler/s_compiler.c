@@ -13,6 +13,7 @@
 #include "semantic.h"
 #include "code_gen.h"
 
+#define TREE 0
 
 #define YYSTYPE Pnode
 extern char *yytext;
@@ -60,16 +61,16 @@ int main(int argc, char ** argv){
 	}
 	
 	if((result = yyparse()) == 0){
-        //printf("sizeof\nchar:\t%lu\nint:\t%lu\nfloat:\t%lu\nstring:\t%lu\n", sizeof(char), sizeof(int), sizeof(float), sizeof(char *));
         
+#if TREE  
 		treeprint(root, " ");
+#endif		
 		Phash_node symtab = create_symbol_table(root, NULL);
         
-        printf("## START\n");
+        //printf("## START\n");
         Code code = makecode(S_NOOP);
         sem_program(root, symtab, &code);
-        printf("## END\n");
-        printf("(((%d)))\n", ((symtab->aux)->num_obj));
+        //printf("## END\n");
 	
         FILE *fp = fopen(ovalue, "w");
 		if (fp){
@@ -79,7 +80,7 @@ int main(int argc, char ** argv){
 			fprintf(stderr,"Can't create output file.\n");
 		}
  		
-    	print_code(stdout, &code);
+    	//print_code(stdout, &code);
 
         destroy_code(&code);
         

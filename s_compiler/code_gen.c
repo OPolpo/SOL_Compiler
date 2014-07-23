@@ -403,7 +403,6 @@ void print_code(FILE * stream, Code * code){
 
 //Code Stack
 void StackPush(Stack_node_code ** top, Code * element){
-    printf("->StackPush \n");
     Stack_node_code * new_node = (Stack_node_code *)malloc(sizeof(Stack_node_code));
     new_node->code = element;
     new_node->next = *top;
@@ -411,7 +410,6 @@ void StackPush(Stack_node_code ** top, Code * element){
 }
 
 Code * StackPop(Stack_node_code ** top){
-    printf("->StackPop\n");
     Code * element = NULL;
     if((*top)!=NULL){
         element = (*top)->code;

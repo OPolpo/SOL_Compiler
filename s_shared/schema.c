@@ -184,11 +184,9 @@ int are_compatible(Pschema a, Pschema b){
  */
 char * make_format(Pschema schema){
     char * str, * tmp_str;
-    print_sch(schema);
     tmp_str = schema2format(schema);
     str = calloc(strlen(tmp_str)+3, sizeof(char));
     sprintf(str, "\"%s\"", tmp_str);
-    printf("%s\n", str);
     return str;
 }
 

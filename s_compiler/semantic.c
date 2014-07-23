@@ -8,7 +8,7 @@
 #include "parser/parser.h"
 #include "tree.h"
 
-#define VERBOSE 1
+#define VERBOSE 0
 
 char error_msg[100];
 char convert_bool[] = {'0','1'};
@@ -153,6 +153,7 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 #if VERBOSE
     printf("@@ in sem_domain\n");
 #endif
+    int offset;
     int ok = 1;
     Pnode dom_node = root->child;
     Phash_node h_node;
@@ -174,7 +175,6 @@ int sem_domain(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code){
 #if VERBOSE
             printf("@@ T_ID\n");
 #endif
-            int offset;
             h_node = find_visible_node(dom_node->value.sval, f_loc_env, &offset);
             ok = ok && (h_node != NULL && h_node->class_node == CLTYPE);
             if (!ok) {
@@ -522,7 +522,7 @@ int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     
     ok_field = sem_left_hand_side(lhs_node, f_loc_env, &lhs_type, lhs_class, code, is_addr, is_s);
     
-    printSchema(lhs_type, " ");
+    //printSchema(lhs_type, " ");
     
     ok_field = ok_field && (lhs_type->type == SCSTRUCT);
     if (!ok_field) {
@@ -1254,7 +1254,7 @@ int sem_neg_expr(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code)
 	int expr_ok = sem_expr(root->child, f_loc_env, &expr_type, code, 0);
 	switch(root->qualifier){
 		case '-':
-            print_sch(expr_type);
+            //print_sch(expr_type);
 			if(expr_type->type != SCINT && expr_type->type != SCREAL){
 				sprintf(error_msg,"Type error, expected INT | REAL\n");
 				sem_error(root->child, error_msg);
@@ -1405,8 +1405,8 @@ int sem_func_call(Pnode root, Phash_node f_loc_env, Pschema * stype, Code * code
         
         expr_ok = expr_ok && sem_expr(param_node, f_loc_env, &current_schema, code, 0);
         
-        print_sch(current_schema);
-        print_sch(current_formal->formal->schema);
+        //print_sch(current_schema);
+        //print_sch(current_formal->formal->schema);
         param_ok = are_compatible(current_schema, current_formal->formal->schema);
         if(!param_ok)
             break;

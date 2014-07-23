@@ -8,7 +8,7 @@
 #include "parser/parser.h"
 #include "semantic.h"
 
-#define TABLE 1
+#define TABLE 0
 
 int oid = 1;
 char error_msg_symb[100];
