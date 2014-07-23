@@ -10,27 +10,23 @@ SOL_compiler/*
 SOL_compilers/*
 scompiler
 SOL_machine/*
-s_machine/formatted_parser.h
-s_machine/formatted_lexer.c
 
 *.out
 
 smachine
 
-s_machine/format_parser.h
-
-s_machine/format_parser.c
-
-s_machine/format_lexer.c
+s_machine/parsers/format_parser.c
+s_machine/parsers/format_lexer.c
 
 pippo.txt
 
 pippo.ff
 
-s_machine/formatted_parser.c
-
-s_machine/formatted_lexer.c
-
-s_machine/formatted_lexer.c
+s_machine/parsers/formatted_parser.c
+s_machine/parsers/formatted_lexer.c
 
 *.ff4
+
+s_compiler/parser/parser.h
+s_machine/parsers/format_parser.h
+s_machine/parsers/formatted_parser.h
