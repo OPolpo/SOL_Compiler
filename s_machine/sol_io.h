@@ -25,7 +25,7 @@ typedef struct sformatted{
 
 typedef enum{
     T_CHAR,
-    T_INT, 
+    T_INT,
     T_REAL,
     T_STRING,
     T_BOOL,

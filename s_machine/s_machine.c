@@ -35,12 +35,12 @@ int main(int argc, char* argv[]){
         printf("ap: %d, op: %d, ip: %d\n", ap, op, ip);
 #endif
     }
-
-#if DEBUG  
+    
+#if DEBUG
     printf("\n");
     print_str_c_table();
 #endif
-
+    
     end_machine();
     return 0;
 }
@@ -71,7 +71,7 @@ void start_machine(char * input) {
  * @brief This function frees the data structures.
  */
 void end_machine() {
-#if DEBUG  
+#if DEBUG
     printf("\n%d %d %d\n", ap, op, ip);
 #endif
     freemem((char*)prog, sizeof(Scode)*code_size);
@@ -79,7 +79,7 @@ void end_machine() {
     freemem((char*)ostack, sizeof(Odescr*)*osize);
     freemem(istack, isize);
     free_str_c_table();
-
+    
     printf("Program executed without errors\n");
     printf("Allocation: %ld bytes\n", size_allocated);
     printf("Deallocation: %ld bytes\n", size_deallocated);
@@ -215,7 +215,7 @@ void pop_ostack() {
  * @brief Increment the istack with the size and return the new top.
  *
  * If necessary expand the istack.
- * 
+ *
  * @param size how much increment the istack.
  * @return a pointer to the top of istack.
  */
@@ -232,7 +232,7 @@ char * push_istack(int size){
         isize += ISTACK_UNIT;
         isize += (n+1) * ISTACK_UNIT;
     }
-
+    
     ip+=size;
     return &(istack[ip-size]);
 }
@@ -339,7 +339,7 @@ char * insert_str_c(char * s){
         ++format_position;
         memmove(format_position, format_position+1, strlen(format_position+1)+1);
         format_position = strstr(without, "\\n");
-
+        
     }
     
     char * p_on_table = get_str_c(without);
@@ -387,14 +387,14 @@ char * get_str_c(char * s){
 
 /**
  * @brief hash function of string table
- * @param s the string 
+ * @param s the string
  * @return the hash value.
  */
 int hash_str_c(char * s){
     int i, h = 0;
     for(i = 0; s[i] != '\0'; i++){
         h = abs(((h << STR_SHIFT) + s[i]) % STR_CONST_DIM);
-    }   
+    }
     return h;
 }
 

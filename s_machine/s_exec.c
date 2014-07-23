@@ -80,7 +80,7 @@ void exec(Scode *stat) {
         case S_FREAD: exec_fread(stat->args[0].ival, stat->args[1].ival, stat->args[2].sval); break;
         case S_WRITE: exec_write(stat->args[0].sval); break;
         case S_FWRITE: exec_fwrite(stat->args[0].sval); break;
-        //case S_FUNC: exec_func(stat->args[0].ival); break;
+            //case S_FUNC: exec_func(stat->args[0].ival); break;
         case S_FUNC: break;
         case S_RETURN: exec_return(); break;
         default: machine_error("Unknown operator"); break;
@@ -99,7 +99,7 @@ void exec_toreal(){
 
 void exec_pop(){
     Odescr * temp = *(get_p2objects(top_astack()->pos_objects));
-   
+    
     *(get_p2objects(top_astack()->pos_objects))=top_ostack();
     *(top_ostack_addr()) = temp;
     
@@ -448,7 +448,7 @@ void exec_lod(int env_offset, int oid){
 
 void exec_read(int offset, int oid, char * format){
     parse_format(format);
-
+    
     Adescr * a_declaration = top_astack();
     int i;
     for (i=offset; i>0; i--) {
@@ -477,7 +477,7 @@ void exec_fread(int offset, int oid, char * format){
     }
     Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
     basic_read(fp, o_to_lod, format_root);
-
+    
     destroy_schema(format_root);
     fclose (fp);
 }

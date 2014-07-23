@@ -142,7 +142,7 @@ void print_atomic_istack(FILE* stream, char * elem_addr, Pschema elem_type, int 
 void basic_read(FILE* stream, Odescr * o_to_lod, Pschema schema){
     parse_formatted(stream);
     Pschema formatted_schema = formatted2schema(formatted_root,NULL);
-
+    
     if(!are_compatible(schema, formatted_schema)){
         char* msg;
         asprintf(&msg,"Read error: schema must be compatible");
