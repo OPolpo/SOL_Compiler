@@ -1,7 +1,7 @@
 func fib(n:int;): int
 begin fib
-	write n;
-	write "\n";
+	--write n;
+	--write "\n";
 	if (n == 0) then
 		return 0;
 	elsif(n == 1) then

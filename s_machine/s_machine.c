@@ -80,7 +80,7 @@ void end_machine() {
     freemem(istack, isize);
     free_str_c_table();
     
-    printf("Program executed without errors\n");
+    printf("\nProgram executed without errors\n");
     printf("Allocation: %ld bytes\n", size_allocated);
     printf("Deallocation: %ld bytes\n", size_deallocated);
     printf("Residue: %ld bytes\n", size_allocated - size_deallocated);
