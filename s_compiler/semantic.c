@@ -533,6 +533,7 @@ int sem_fielding(Pnode root, Phash_node f_loc_env, Pschema * stype, Class * lhs_
     int field_offset = 0;
     while (found==0 && lhs_attr != NULL) {
         if (strcmp(id_node->value.sval, lhs_attr->id)==0) {
+            *stype = malloc(sizeof(Schema));
             memcpy(*stype, lhs_attr, sizeof(Schema));
             (*stype)->p2=NULL;
             found = 1;
