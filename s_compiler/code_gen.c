@@ -1,3 +1,10 @@
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief This file contains the function to manage the code generation data structures.
+ */
+
+
 #include "code_gen.h"
 //#include "parser.h"
 
@@ -86,9 +93,9 @@ Code appcode(Code code1, Code code2){
     /*
     printf("********\nAppendo a: \n");
     print_code(stdout, &code1);
-    printf("\nQUESTO: \n");
+    printf("\nTHIS: \n");
     print_code(stdout, &code2);
-    printf("\nOttengo: \n");
+    printf("\nI OBTAIN: \n");
     */
     if (code1.head == code2.head && code1.tail == code2.tail) {
         printf("Trying to concatenate a list with itself <==============\n");
@@ -101,7 +108,7 @@ Code appcode(Code code1, Code code2){
         }
         /*
         print_code(stdout, &code2);
-        printf("FINE append-> coda2. \n********\n");
+        printf("END append-> tail2. \n********\n");
         */
         return code2;
     }
@@ -111,7 +118,7 @@ Code appcode(Code code1, Code code2){
         }
         /*
         print_code(stdout, &code1);
-        printf("FINE append-> coda1. \n********\n");
+        printf("END append-> tail1. \n********\n");
          */
         return code1;
     }
@@ -123,7 +130,7 @@ Code appcode(Code code1, Code code2){
         rescode.size = code1.size + code2.size;
         /*
         print_code(stdout, &rescode);
-        printf("FINE append. \n********\n");
+        printf("END append. \n********\n");
         */
         return rescode;
     }

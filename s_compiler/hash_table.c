@@ -1,3 +1,9 @@
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief This contains all function to manage the hash table.
+ */
+
 //http://en.wikipedia.org/wiki/List_of_prime_numbers
 #include "hash_table.h"
 #include "parser/parser.h"

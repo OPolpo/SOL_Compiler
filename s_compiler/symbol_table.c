@@ -1,3 +1,9 @@
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief This contains all function to manage the symbol table.
+ */
+
 #include "symbol_table.h"
 #include "parser/parser.h"
 #include "semantic.h"

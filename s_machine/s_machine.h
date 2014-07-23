@@ -45,8 +45,6 @@ typedef struct str_c_node{
 
 void start_machine();
 void end_machine();
-// void *newmem(int size);
-// void freemem(char *p, int size);
 
 Adescr * top_astack();
 Adescr * push_astack();
@@ -68,7 +66,6 @@ void move_down_istack(int to_move, int this_much);
 
 void load_scode();
 void machine_error(char * err_str);
-
 
 int pop_int();
 void push_int(int i);

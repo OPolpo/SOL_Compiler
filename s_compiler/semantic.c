@@ -1,3 +1,9 @@
+/**
+ * @author Andrea Bocchese
+ * @author Ilaria Martinelli
+ * @brief This file perform the semantic analisys and the code generation.
+ */
+
 #include "semantic.h"
 #include "parser/parser.h"
 #include "tree.h"
