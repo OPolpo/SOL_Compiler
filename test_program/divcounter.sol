@@ -1,7 +1,7 @@
 func divino():int
 	var count:int;
 		word, searched:string;
-		divina: vector[5000] of
+		divina: vector[4999] of
 		 string;
 
 begin divino
