@@ -1,6 +1,8 @@
 #ifndef S_EXEC
 #define S_EXEC
 
+#define DEBUG 0
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "s_machine.h"

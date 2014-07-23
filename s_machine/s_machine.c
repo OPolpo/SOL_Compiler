@@ -32,7 +32,9 @@ int main(int argc, char* argv[]){
     print_str_c_table();
 	while((stat = &prog[pc++])->op != S_HALT){
         exec(stat);
+#if DEBUG
         printf("ap: %d, op: %d, ip: %d\n", ap, op, ip);
+#endif
     }
     
     printf("\n");
@@ -42,7 +44,7 @@ int main(int argc, char* argv[]){
 }
 
 /**
- * @brief This functin open the input file and do the initial memory allocation of data structures.
+ * @brief This functin opens the input file and do the initial memory allocation of data structures.
  * @param input the s_code filename.
  */
 void start_machine(char * input) {
@@ -64,7 +66,7 @@ void start_machine(char * input) {
 }
 
 /**
- * @brief This functin free the data structures.
+ * @brief This function frees the data structures.
  */
 void end_machine() {
     printf("\n%d %d %d\n", ap, op, ip);
@@ -82,7 +84,7 @@ void end_machine() {
 }
 
 /**
- * return a pointer the top of the astack.
+ * This function returns a pointer to the top of the astack.
  * @return The Adescr* on top of the astack.
  */
 Adescr * top_astack(){
@@ -93,9 +95,9 @@ Adescr * top_astack(){
 }
 
 /**
- * @brief Allocate memory for the adescr adn put it on top of the astack.
+ * @brief This function allocates memory for the adescr and puts it on top of the astack.
  *
- * If necessary expand the astack.
+ * If necessary it expands the astack.
  *
  * @return a pointer to the top of astack.
  */
@@ -121,9 +123,9 @@ void pop_astack() {
 }
 
 /**
- * @brief return the poitner of an object given the index of the ostak.
+ * @brief return the pointer of an object given the index of the ostack.
  * @param i The index of the object.
- * @return the Odescr** the point to the given index.
+ * @return the Odescr** that points to the given index.
  */
 Odescr ** get_p2objects(int i){
     return &ostack[i];
@@ -394,7 +396,7 @@ int hash_str_c(char * s){
 }
 
 /**
- * @brief this function free all string table
+ * @brief this function frees all string table
  */
 void free_str_c_table(){
     int i=0;

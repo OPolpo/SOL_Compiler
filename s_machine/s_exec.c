@@ -1,7 +1,7 @@
 /**
  * @author Andrea Bocchese
  * @author Ilaria Martinelli
- * @brief This file contains th function for the excecution of the s_code instruction, the I/O function are in a separated file.
+ * @brief This file contains th functions for the excecution of the s_code instructions, the I/O functions are in a separated file.
  */
 
 #include "s_exec.h"
@@ -14,11 +14,9 @@ extern Pschema format_root;
 extern int parse_format();
 
 void exec(Scode *stat) {
-    //print_code_instruction(stat);
-    //printf("pc %d, ap %d, op %d, ip %d\n",pc,ap,op,ip);
-    
-    //printf("[%3d] exec %d\n", pc, stat->op);
+#if DEBUG
     printf("pc: %d  ",pc);
+#endif
     switch (stat->op) {
         case S_PUSH:
             exec_push(stat->args[0].ival, stat->args[1].ival, stat->args[2].ival, pc+1);
@@ -87,7 +85,6 @@ void exec(Scode *stat) {
         case S_RETURN: exec_return(); break;
         default: machine_error("Unknown operator"); break;
     }
-    //printf("pc %d, op %d\n",pc,get_next_op());
 }
 
 void exec_toint(){
