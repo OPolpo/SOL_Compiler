@@ -55,9 +55,10 @@ int main(int argc, char ** argv){
 		}
 	}
 	else{
-		printf("\tUsage: compiler [-o output_name] source_name.sol\n");
+		printf("\tUsage: %s [-o output_name] source_name.sol\n", argv[0]);
 		exit(0);
 	}
+	
 	if((result = yyparse()) == 0){
         //printf("sizeof\nchar:\t%lu\nint:\t%lu\nfloat:\t%lu\nstring:\t%lu\n", sizeof(char), sizeof(int), sizeof(float), sizeof(char *));
         
