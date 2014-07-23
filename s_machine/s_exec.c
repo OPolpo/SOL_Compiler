@@ -259,7 +259,6 @@ void exec_ile(){
     int n, m;
     n = pop_int();
     m = pop_int();
-      //  printf("-- %d <= %d -> %d\n",m,n,m<=n);
     push_bool(m<=n);
 }
 
@@ -385,7 +384,7 @@ void exec_sto(int env_offset, int oid){
     Adescr * a_declaration = top_astack();
     int i;
     for (i=env_offset; i>0; i--) {
-        a_declaration = a_declaration->alink; // not sure TODO check
+        a_declaration = a_declaration->alink;
     }
     Odescr * o_to_store = *(get_p2objects(a_declaration->pos_objects) + oid-1);
     if (o_to_store->mode == EMB) {
@@ -401,7 +400,7 @@ void exec_lda(int env_offset, int oid){
     Adescr * a_declaration = top_astack();
     int i;
     for (i=env_offset; i>0; i--) {
-        a_declaration = a_declaration->alink; // not sure TODO check
+        a_declaration = a_declaration->alink;
     }
     Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
     push_ostack();
@@ -415,19 +414,15 @@ void exec_cat(int num, int size){
     for (i=0; i<num; i++) {
         if(top_ostack()->mode == EMB){
             memcpy(start-top_ostack()->size, &(top_ostack()->inst), top_ostack()->size);
-            //temp_size += top_ostack()->size;
         }else{
             memcpy(start-top_ostack()->size, top_ostack()->inst.sval, top_ostack()->size);
-            //temp_size += top_ostack()->size;
-            move_down_istack(size, top_ostack()->size); // not sure TODO check
+            move_down_istack(size, top_ostack()->size);
             start -= top_ostack()->size;
             new_inst -= top_ostack()->size;
-            //FIND A WAY TO USE IT
         }
         start -= top_ostack()->size;
         pop_ostack();
     }
-    //if (temp_size != size) machine_error("exec_cat");
     Odescr * new_obj = push_ostack();
     new_obj->mode = STA;
     new_obj->size = size;
@@ -438,12 +433,11 @@ void exec_lod(int env_offset, int oid){
     Adescr * a_declaration = top_astack();
     int i;
     for (i=env_offset; i>0; i--) {
-        a_declaration = a_declaration->alink; // not sure TODO check
+        a_declaration = a_declaration->alink;
     }
     Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
     push_ostack();
     memcpy(top_ostack(), o_to_lod, sizeof(Odescr));
-    //printf("-->%d\n", top_ostack()->inst.ival);
     
     if (top_ostack()->mode == STA) {
         char * i_address = push_istack(top_ostack()->size);
@@ -458,7 +452,7 @@ void exec_read(int offset, int oid, char * format){
     Adescr * a_declaration = top_astack();
     int i;
     for (i=offset; i>0; i--) {
-        a_declaration = a_declaration->alink; // not sure TODO check
+        a_declaration = a_declaration->alink;
     }
     Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
     basic_read(stdin, o_to_lod, format_root);
@@ -479,7 +473,7 @@ void exec_fread(int offset, int oid, char * format){
     Adescr * a_declaration = top_astack();
     int i;
     for (i=offset; i>0; i--) {
-        a_declaration = a_declaration->alink; // not sure TODO check
+        a_declaration = a_declaration->alink;
     }
     Odescr * o_to_lod = *(get_p2objects(a_declaration->pos_objects) + oid-1);
     basic_read(fp, o_to_lod, format_root);
@@ -565,9 +559,7 @@ void exec_ldc(char arg1){
     push_char(arg1);
 }
 
-// void exec_func(int arg1){
-   
-// }
+// void exec_func(int arg1){}
 
 void exec_goto(int arg1){
     pc = arg1;
@@ -630,4 +622,3 @@ void exec_news(int size){
     po->size = size;
     po->inst.sval = push_istack(size);
 }
-

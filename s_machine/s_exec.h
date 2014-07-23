@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "s_machine.h"
-//#include "../s_shared/schema.h"
 
 void exec(Scode *stat);
 
@@ -79,11 +78,5 @@ void exec_fda(int arg1);
 void exec_ldi(int arg1);
 void exec_new(int arg1);
 void exec_news(int arg1);
-
-/*int basic_write(char* format, FILE * stream, char * addr);
-int format_string(char format, Value * inst);
-int write_vect(char * format, FILE* stream, char* addr);
-int write_struct(char * format, FILE* stream, char* addr);*/
-
 
 #endif

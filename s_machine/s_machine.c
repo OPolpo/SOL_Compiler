@@ -29,16 +29,18 @@ int main(int argc, char* argv[]){
         exit(0);
     }
 	start_machine(argv[1]);
-    print_str_c_table();
 	while((stat = &prog[pc++])->op != S_HALT){
         exec(stat);
 #if DEBUG
         printf("ap: %d, op: %d, ip: %d\n", ap, op, ip);
 #endif
     }
-    
+
+#if DEBUG  
     printf("\n");
     print_str_c_table();
+#endif
+
     end_machine();
     return 0;
 }
@@ -69,8 +71,9 @@ void start_machine(char * input) {
  * @brief This function frees the data structures.
  */
 void end_machine() {
+#if DEBUG  
     printf("\n%d %d %d\n", ap, op, ip);
-
+#endif
     freemem((char*)prog, sizeof(Scode)*code_size);
     freemem((char*)astack, sizeof(Adescr*)*asize);
     freemem((char*)ostack, sizeof(Odescr*)*osize);
@@ -437,5 +440,3 @@ void machine_error(char * msg){
     fprintf(stderr, "Machine error: %s\n", msg);
     exit(EXIT_FAILURE);
 }
-
-
